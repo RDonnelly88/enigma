@@ -3,12 +3,12 @@ from typing import List
 
 
 class Plugboard:
-    def __init__(self, pairs: List[PlugboardPair]):
-        self.pairs = pairs
+    def __init__(self, plugboard_pairs: List[PlugboardPair]) -> None:
+        self.plugboard_pairs = plugboard_pairs
         self._validate_pairs()
         self.left = ALPHABET
         self.right = ALPHABET
-        for pair in pairs:
+        for pair in plugboard_pairs:
             pos_a = self.left.find(pair.a)
             pos_b = self.left.find(pair.b)
             self.left = self.left[:pos_a] + pair.b + self.left[pos_a + 1 :]

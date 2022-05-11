@@ -26,6 +26,9 @@ class Enigma:
         self.rotor_key = rotor_key
         self.rotor_rings = rotor_rings
 
+        self._initialise_enigma_machine()
+
+    def _initialise_enigma_machine(self):
         self._set_rotor_rings()
         self._set_key()
 

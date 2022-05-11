@@ -2,7 +2,7 @@ from config.config import ALPHABET, Wiring
 
 
 class Reflector:
-    def __init__(self, wiring: Wiring):
+    def __init__(self, wiring: Wiring) -> None:
         self.left = ALPHABET
         self.right = wiring.wiring
 

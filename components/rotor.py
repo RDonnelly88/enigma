@@ -2,7 +2,7 @@ from config.config import ALPHABET, Wiring
 
 
 class Rotor:
-    def __init__(self, wiring: Wiring, notch: str):
+    def __init__(self, wiring: Wiring, notch: str) -> None:
         self.left = ALPHABET
         self.right = wiring.wiring
         self.notch = notch
@@ -28,9 +28,9 @@ class Rotor:
         print(self.left)
         print(self.right)
 
-    def rotate(self, n: int = 1, forward: bool = True) -> None:
-        for _ in range(n):
-            if forward:
+    def rotate(self, num_of_rotations: int = 1, rotate_forward: bool = True) -> None:
+        for _ in range(num_of_rotations):
+            if rotate_forward:
                 self.left = self.left[1:] + self.left[0]
                 self.right = self.right[1:] + self.right[0]
             else:
@@ -43,7 +43,7 @@ class Rotor:
 
     def set_ring(self, ring: int) -> None:
         # rotate backwards first (index =1)
-        self.rotate(ring - 1, forward=False)
+        self.rotate(num_of_rotations=ring - 1, rotate_forward=False)
 
         # adjust turnover notch in relation to the wiring
         n_notch = ALPHABET.find(self.notch)
