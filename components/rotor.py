@@ -3,36 +3,48 @@ from config.config import ALPHABET, Wiring
 
 class Rotor:
     def __init__(self, wiring: Wiring, notch: str):
-        self.left_alphabet = ALPHABET
-        self.right_alphabet = wiring.wiring
+        self.left = ALPHABET
+        self.right = wiring.wiring
         self.notch = notch
 
     @property
-    def left_first_value(self):
-        return self.left_alphabet[0]
+    def get_first_value_left(self):
+        return self.left[0]
 
     @property
     def right_first_value(self):
-        return self.right_alphabet[0]
+        return self.right[0]
 
     def forward(self, signal: int) -> int:
-        letter = self.right_alphabet[signal]
-        return self.left_alphabet.find(letter)
+        letter = self.right[signal]
+        return self.left.find(letter)
 
     def backward(self, signal: int) -> int:
-        letter = self.left_alphabet[signal]
-        return self.right_alphabet.find(letter)
+        letter = self.left[signal]
+        return self.right.find(letter)
 
     def show(self) -> None:
         print("Showing Rotor")
-        print(self.left_alphabet)
-        print(self.right_alphabet)
+        print(self.left)
+        print(self.right)
 
-    def rotate(self, n=1) -> None:
+    def rotate(self, n: int = 1, forward: bool = True) -> None:
         for _ in range(n):
-            self.left_alphabet = self.left_alphabet[1:] + self.left_alphabet[0]
-            self.right_alphabet = self.right_alphabet[1:] + self.right_alphabet[0]
+            if forward:
+                self.left = self.left[1:] + self.left[0]
+                self.right = self.right[1:] + self.right[0]
+            else:
+                self.left = self.left[25] + self.left[:25]
+                self.right = self.right[25] + self.right[:25]
 
     def rotate_to_letter(self, letter: str) -> None:
         n = ALPHABET.find(letter)
         self.rotate(n)
+
+    def set_ring(self, ring: int) -> None:
+        # rotate backwards first (index =1)
+        self.rotate(ring - 1, forward=False)
+
+        # adjust turnover notch in relation to the wiring
+        n_notch = ALPHABET.find(self.notch)
+        self.notch = ALPHABET[(n_notch - ring) % 26]

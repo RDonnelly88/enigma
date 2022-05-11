@@ -11,10 +11,15 @@ class Wiring:
     def __post_init__(self):
         self.wiring = self.wiring.upper()
         if len(set(self.wiring)) != 26:
-            raise ValueError(f'Wiring Specified is not correct. Check length or duplicate values! {self.wiring}')
+            raise ValueError(
+                f"Wiring Specified is not correct. Check length or duplicate values! {self.wiring}"
+            )
 
         if len(set(self.wiring).difference(ALPHABET)) != 0:
-            raise ValueError(f'Wiring Specified is not correct. Check for non alphabetic values! {self.wiring}')
+            raise ValueError(
+                f"Wiring Specified is not correct. Check for non alphabetic values! {self.wiring}"
+            )
+
 
 @dataclass
 class RotorKey:
@@ -26,6 +31,29 @@ class RotorKey:
         self.a = self.a.upper()
         self.b = self.b.upper()
         self.c = self.c.upper()
+
+        if self.a not in ALPHABET:
+            raise ValueError(f"{self.a} not alphabetic!")
+        if self.b not in ALPHABET:
+            raise ValueError(f"{self.b} not alphabetic!")
+        if self.c not in ALPHABET:
+            raise ValueError(f"{self.c} not alphabetic!")
+
+
+@dataclass
+class RotorRings:
+    a: int
+    b: int
+    c: int
+
+    def __post_init__(self):
+        if 26 <= self.a >= 1:
+            raise ValueError(f"{self.a} not between 1 and 26")
+        if 26 <= self.b >= 1:
+            raise ValueError(f"{self.b} not between 1 and 26")
+        if 26 <= self.c >= 1:
+            raise ValueError(f"{self.c} not between 1 and 26")
+
 
 @dataclass
 class PlugboardPair:

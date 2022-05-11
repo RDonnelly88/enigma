@@ -6,25 +6,21 @@ class Plugboard:
     def __init__(self, pairs: List[PlugboardPair]):
         self.pairs = pairs
         self._validate_pairs()
-        self.left_alphabet = ALPHABET
-        self.right_alphabet = ALPHABET
+        self.left = ALPHABET
+        self.right = ALPHABET
         for pair in pairs:
-            pos_a = self.left_alphabet.find(pair.a)
-            pos_b = self.left_alphabet.find(pair.b)
-            self.left_alphabet = (
-                self.left_alphabet[:pos_a] + pair.b + self.left_alphabet[pos_a + 1 :]
-            )
-            self.left_alphabet = (
-                self.left_alphabet[:pos_b] + pair.a + self.left_alphabet[pos_b + 1 :]
-            )
+            pos_a = self.left.find(pair.a)
+            pos_b = self.left.find(pair.b)
+            self.left = self.left[:pos_a] + pair.b + self.left[pos_a + 1 :]
+            self.left = self.left[:pos_b] + pair.a + self.left[pos_b + 1 :]
 
     def forward(self, signal: int) -> int:
-        letter = self.right_alphabet[signal]
-        return self.left_alphabet.find(letter)
+        letter = self.right[signal]
+        return self.left.find(letter)
 
     def backward(self, signal: int) -> int:
-        letter = self.left_alphabet[signal]
-        return self.right_alphabet.find(letter)
+        letter = self.left[signal]
+        return self.right.find(letter)
 
     def _validate_pairs(self) -> None:
         # TODO

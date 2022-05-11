@@ -12,11 +12,11 @@ plugboard = Plugboard(pairs)
 
 
 def test_plugboard_pairs_right_alphabet_unchanged():
-    assert plugboard.right_alphabet == ALPHABET
+    assert plugboard.right == ALPHABET
 
 
 def test_plugboard_pairs_left_alphabet():
-    assert plugboard.left_alphabet == "RBCDEFKHIJGLMNXPQASTUVWOYZ"
+    assert plugboard.left == "RBCDEFKHIJGLMNXPQASTUVWOYZ"
 
 
 def test_plugboard_forward():

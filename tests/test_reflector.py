@@ -1,5 +1,5 @@
 from components.reflector import Reflector
-from components.reflectors import REFLECTOR_A, REFLECTOR_B, REFLECTOR_C
+from components.historical_reflectors import REFLECTOR_A, REFLECTOR_B, REFLECTOR_C
 
 def test_reflectorA_reflect():
     r = REFLECTOR_A

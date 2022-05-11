@@ -2,6 +2,7 @@ from components.keyboard import Keyboard
 from components.plugboard import Plugboard
 from components.reflector import Reflector
 from components.rotor import Rotor
+from config.config import RotorKey, RotorRings
 
 
 class Enigma:
@@ -13,7 +14,8 @@ class Enigma:
         rotor3: Rotor,
         plugboard: Plugboard,
         keyboard: Keyboard,
-        key: 
+        rotor_key: RotorKey,
+        rotor_rings: RotorRings
     ):
         self.reflector = reflector
         self.rotor1 = rotor1
@@ -21,20 +23,35 @@ class Enigma:
         self.rotor3 = rotor3
         self.plugboard = plugboard
         self.keyboard = keyboard
-    
-    def set_key(self, key: str):
+        self.rotor_key = rotor_key
+        self.rotor_rings = rotor_rings
 
+        self._set_rotor_rings()
+        self._set_key()
+
+    def _set_rotor_rings(self):
+        self.rotor1.set_ring(self.rotor_rings.a)
+        self.rotor2.set_ring(self.rotor_rings.b)
+        self.rotor3.set_ring(self.rotor_rings.c)
+
+    def _set_key(self):
+        self.rotor1.rotate_to_letter(self.rotor_key.a)
+        self.rotor2.rotate_to_letter(self.rotor_key.b)
+        self.rotor3.rotate_to_letter(self.rotor_key.c)
 
     def encrypt(self, letter: str) -> str:
-        if self.rotor2.left_first_value == self.rotor2.notch and self.rotor3.left_first_value == self.rotor3.notch:
+        if (
+            self.rotor2.get_first_value_left == self.rotor2.notch
+            and self.rotor3.get_first_value_left == self.rotor3.notch
+        ):
             self.rotor1.rotate()
             self.rotor2.rotate()
             self.rotor3.rotate()
-        elif self.rotor2.left_first_value == self.rotor2.notch:
+        elif self.rotor2.get_first_value_left == self.rotor2.notch:
             self.rotor1.rotate()
             self.rotor2.rotate()
             self.rotor3.rotate()
-        elif self.rotor3.left_first_value == self.rotor3.notch:
+        elif self.rotor3.get_first_value_left == self.rotor3.notch:
             self.rotor2.rotate()
             self.rotor3.rotate()
         else:
