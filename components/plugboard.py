@@ -1,5 +1,6 @@
-from config.config import ALPHABET, PlugboardPair
 from typing import List
+
+from config.config import ALPHABET, PlugboardPair
 
 
 class Plugboard:
