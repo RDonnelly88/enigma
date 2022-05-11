@@ -11,14 +11,10 @@ class Wiring:
     def __post_init__(self):
         self.wiring = self.wiring.upper()
         if len(set(self.wiring)) != 26:
-            raise ValueError(
-                f"Wiring Specified is not correct. Check length or duplicate values! {self.wiring}"
-            )
+            raise ValueError(f"Wiring Specified is not correct. Check length or duplicate values! {self.wiring}")
 
         if len(set(self.wiring).difference(ALPHABET)) != 0:
-            raise ValueError(
-                f"Wiring Specified is not correct. Check for non alphabetic values! {self.wiring}"
-            )
+            raise ValueError(f"Wiring Specified is not correct. Check for non alphabetic values! {self.wiring}")
 
 
 @dataclass
