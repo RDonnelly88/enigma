@@ -7,13 +7,11 @@ class Rotor:
         self.right = wiring.wiring
         self.notch = notch
 
-    @property
-    def get_first_value_left(self):
-        return self.left[0]
+    def get_value_left(self, n: int) -> str:
+        return self.left[n]
 
-    @property
-    def right_first_value(self):
-        return self.right[0]
+    def get_value_right(self, n: int) -> str:
+        return self.right[n]
 
     def forward(self, signal: int) -> int:
         letter = self.right[signal]
@@ -23,7 +21,7 @@ class Rotor:
         letter = self.left[signal]
         return self.right.find(letter)
 
-    def show(self) -> None:
+    def show_rotor(self) -> None:
         print("Showing Rotor")
         print(self.left)
         print(self.right)
@@ -39,11 +37,11 @@ class Rotor:
 
     def rotate_to_letter(self, letter: str) -> None:
         n = ALPHABET.find(letter)
-        self.rotate(n)
+        self.rotate(num_of_rotations=n)
 
     def set_ring(self, ring: int) -> None:
         # rotate backwards first (index =1)
-        self.rotate(num_of_rotations=ring - 1, rotate_forward=False)
+        self.rotate(num_of_rotations=ring, rotate_forward=False)
 
         # adjust turnover notch in relation to the wiring
         n_notch = ALPHABET.find(self.notch)

@@ -29,12 +29,12 @@ def test_plugboard_backward():
     assert plugboard.forward(1) == 1
 
 
-def test_plugboard_pair_duplicate_value():
+def test_plugboard_pairs_duplicate_value():
     with pytest.raises(ValueError):
-        PlugboardPair("A", "A")
-
-
-# def test_plugboard_duplicate_pairs():
-#         with pytest.raises(ValueError):
-#             plugboard = Plugboard([PlugboardPair('A', 'B'),
-#                         PlugboardPair('B', 'C')])
+        _ = Plugboard(
+            [
+                PlugboardPair("A", "R"),
+                PlugboardPair("G", "K"),
+                PlugboardPair("O", "A"),
+            ]
+        )

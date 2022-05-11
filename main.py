@@ -14,7 +14,7 @@ def main():
 
     KEYBOARD = Keyboard()
 
-    ROTOR_RINGS = RotorRings(1, 1, 2)
+    ROTOR_RINGS = RotorRings(2, 2, 2)
     ROTOR_KEY = RotorKey("C", "A", "T")
     ENIGMA = Enigma(
         reflector=REFLECTOR_B,
@@ -27,7 +27,7 @@ def main():
         rotor_rings=ROTOR_RINGS,
     )
 
-    message = "ROSSISTHEBEST"
+    message = "TESTINGTESTINGTESTINGTESTING"
     cipher_text = ""
     for letter in message:
         cipher_text = cipher_text + ENIGMA.encrypt(letter)

@@ -44,17 +44,17 @@ class Enigma:
 
     def encrypt(self, letter: str) -> str:
         if (
-            self.rotor2.get_first_value_left == self.rotor2.notch
-            and self.rotor3.get_first_value_left == self.rotor3.notch
+            self.rotor2.get_value_left(0) == self.rotor2.notch
+            and self.rotor3.get_value_left(0) == self.rotor3.notch
         ):
             self.rotor1.rotate()
             self.rotor2.rotate()
             self.rotor3.rotate()
-        elif self.rotor2.get_first_value_left == self.rotor2.notch:
+        elif self.rotor2.get_value_left(0) == self.rotor2.notch:
             self.rotor1.rotate()
             self.rotor2.rotate()
             self.rotor3.rotate()
-        elif self.rotor3.get_first_value_left == self.rotor3.notch:
+        elif self.rotor3.get_value_left(0) == self.rotor3.notch:
             self.rotor2.rotate()
             self.rotor3.rotate()
         else:
