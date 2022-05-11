@@ -34,7 +34,7 @@ def test_plugboard_pairs_duplicate_value():
         _ = Plugboard(
             [
                 PlugboardPair("A", "R"),
-                PlugboardPair("G", "K"),
+                PlugboardPair("G", "J"),
                 PlugboardPair("O", "A"),
             ]
         )

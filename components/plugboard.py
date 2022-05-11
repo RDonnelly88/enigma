@@ -23,5 +23,9 @@ class Plugboard:
         return self.right.find(letter)
 
     def _validate_pairs(self) -> None:
-        # TODO
-        pass
+        vals = []
+        for pair in self.plugboard_pairs:
+            vals.append(pair.a)
+            vals.append(pair.b)
+        if len(vals) != len(set(vals)):
+            raise ValueError(f'Duplicate value found in Plugboard pairs! {vals}')
