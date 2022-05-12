@@ -3,6 +3,14 @@ from components.plugboard import Plugboard
 from components.reflector import Reflector
 from components.rotor import Rotor
 from config.config import RotorKey, RotorRings
+from dataclasses import dataclass
+from typing import List
+
+
+@dataclass
+class EnigmaResult:
+    cipher: str
+    path: List[int]
 
 
 class Enigma:
@@ -15,7 +23,7 @@ class Enigma:
         plugboard: Plugboard,
         keyboard: Keyboard,
         rotor_key: RotorKey,
-        rotor_rings: RotorRings
+        rotor_rings: RotorRings,
     ):
         self.reflector = reflector
         self.rotor1 = rotor1
@@ -42,11 +50,8 @@ class Enigma:
         self.rotor2.rotate_to_letter(self.rotor_key.b)
         self.rotor3.rotate_to_letter(self.rotor_key.c)
 
-    def encrypt(self, letter: str) -> str:
-        if (
-            self.rotor2.get_value_left(0) == self.rotor2.notch
-            and self.rotor3.get_value_left(0) == self.rotor3.notch
-        ):
+    def encrypt(self, letter: str) -> EnigmaResult:
+        if self.rotor2.get_value_left(0) == self.rotor2.notch and self.rotor3.get_value_left(0) == self.rotor3.notch:
             self.rotor1.rotate()
             self.rotor2.rotate()
             self.rotor3.rotate()
@@ -61,13 +66,33 @@ class Enigma:
             self.rotor3.rotate()
 
         signal = self.keyboard.forward(letter)
+        path = [signal, signal]
         signal = self.plugboard.forward(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.rotor3.forward(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.rotor2.forward(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.rotor1.forward(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.reflector.reflect(signal)
+        path.append(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.rotor1.backward(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.rotor2.backward(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.rotor3.backward(signal)
+        path.append(signal)
+        path.append(signal)
         signal = self.plugboard.backward(signal)
-        return self.keyboard.backward(signal)
+        path.append(signal)
+        path.append(signal)
+        return EnigmaResult(self.keyboard.backward(signal), path)

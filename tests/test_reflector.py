@@ -5,6 +5,6 @@ WIRING = Wiring("EJMZALYXVBWFCRQUONTSPIKHGD")
 
 
 def test_reflector_reflect():
-    r = Reflector(wiring=WIRING)
+    r = Reflector(wiring=WIRING, name='Test')
     assert r.reflect(0) == 4  # A is D
     assert r.reflect(25) == 3

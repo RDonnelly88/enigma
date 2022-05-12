@@ -1,11 +1,23 @@
 from config.config import ALPHABET, Wiring
+from config.pygame_config import (
+    COMPONENT_BORDER_RADIUS,
+    COMPONENT_LETTERS_COLOR,
+    COMPONENT_BORDER_COLOR,
+    COMPONENT_BORDER_WIDTH,
+    ROTOR_FIRST_LETTER_COLOR,
+    BACKGROUND,
+    ROTOR_FIRST_LETTER_BORDER_RADIUS,
+)
+
+import pygame
 
 
 class Rotor:
-    def __init__(self, wiring: Wiring, notch: str) -> None:
+    def __init__(self, wiring: Wiring, notch: str, name: str) -> None:
         self.left = ALPHABET
         self.right = wiring.wiring
         self.notch = notch
+        self.name = name
 
     def get_value_left(self, n: int) -> str:
         return self.left[n]
@@ -45,4 +57,24 @@ class Rotor:
 
         # adjust turnover notch in relation to the wiring
         n_notch = ALPHABET.find(self.notch)
-        self.notch = ALPHABET[(n_notch - ring) % 26]
+        self.notch = ALPHABET[(n_notch - ring) % len(ALPHABET)]
+
+    def draw(self, screen: pygame.surface.Surface, x: int, y: int, w: int, h: int, font: pygame.font.Font):
+        r = pygame.Rect(x, y, w, h)
+        pygame.draw.rect(screen, COMPONENT_BORDER_COLOR, r, width=COMPONENT_BORDER_WIDTH, border_radius=COMPONENT_BORDER_RADIUS)
+        for i in range(len(ALPHABET)):
+            letter = font.render(self.left[i], True, COMPONENT_LETTERS_COLOR)
+            text_box = letter.get_rect(center=(x + w / 4, y + (i + 1) * h / 27))
+
+            if i == 0:
+                pygame.draw.rect(screen, ROTOR_FIRST_LETTER_COLOR, text_box, ROTOR_FIRST_LETTER_BORDER_RADIUS)
+
+            if self.get_value_left(i) == self.notch:
+                letter = font.render(self.notch, True, BACKGROUND)
+                pygame.draw.rect(screen, "white", text_box, 0)
+
+            screen.blit(letter, text_box)
+
+            letter = font.render(self.right[i], True, COMPONENT_LETTERS_COLOR)
+            text_box = letter.get_rect(center=(x + w * 3 / 4, y + (i + 1) * h / 27))
+            screen.blit(letter, text_box)
