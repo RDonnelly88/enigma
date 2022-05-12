@@ -56,8 +56,7 @@ class Rotor:
         self.rotate(num_of_rotations=ring, rotate_forward=False)
 
         # adjust turnover notch in relation to the wiring
-        n_notch = ALPHABET.find(self.notch)
-        self.notch = ALPHABET[(n_notch - ring) % len(ALPHABET)]
+        self.notch = ALPHABET[(ALPHABET.find(self.notch) - ring) % len(ALPHABET)]
 
     def draw(self, screen: pygame.surface.Surface, x: int, y: int, w: int, h: int, font: pygame.font.Font):
         r = pygame.Rect(x, y, w, h)

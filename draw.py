@@ -67,20 +67,30 @@ def draw(
         screen.blit(title, text_box)
 
     # write configuration of machine
-    y = margins.top * 0.25
+    y = height - margins.bottom * 0.25
     x = margins.left * 1.2
     text = font.render(f"Rotor Key = {enigma.rotor_key.a}, {enigma.rotor_key.b}, {enigma.rotor_key.c}", True, COMPONENT_NAME_COLOR)
 
     text_box = text.get_rect(center=(x, y))
     screen.blit(text, text_box)
 
-    y = margins.top * 0.5
-    x = margins.left * 1.2
+    y = height - margins.bottom * 0.5
+    x = margins.left * 1.3
     text = font.render(
         f"Rotor Rings = {ALPHABET[enigma.rotor_rings.a]}, {ALPHABET[enigma.rotor_rings.b]}, {ALPHABET[enigma.rotor_rings.c]}",
         True,
         COMPONENT_NAME_COLOR,
     )
 
+    text_box = text.get_rect(center=(x, y))
+    screen.blit(text, text_box)
+
+    y = height - margins.bottom * 0.5
+    x = width / 2
+    text = font.render(
+        f"Plugboard Pairs: {[(p.a, p.b) for p in enigma.plugboard.plugboard_pairs]}",
+        True,
+        COMPONENT_NAME_COLOR,
+    )
     text_box = text.get_rect(center=(x, y))
     screen.blit(text, text_box)
