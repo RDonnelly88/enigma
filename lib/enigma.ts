@@ -96,7 +96,7 @@ export function validate(settings: Settings): string[] {
 }
 
 /** The plugboard as a lookup: each letter's partner, or itself if unplugged. */
-function plugboardMap(pairs: string[]): number[] {
+export function plugboardMap(pairs: string[]): number[] {
   const map = Array.from({ length: 26 }, (_, i) => i);
   for (const [a, b] of pairs) {
     map[toIndex(a)] = toIndex(b);

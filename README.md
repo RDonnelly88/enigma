@@ -39,7 +39,8 @@ npm run e2e       # Playwright, desktop and phone
 | `components/machine/` | Keyboard, lampboard, rotors, plugboard, the lid and the wiring view |
 | `components/story/` | The story's interactive diagrams |
 | `components/ui/` | The design system: slider, rail, chapter, demo frame, column chart |
-| `lib/story/` | The logic behind the story's diagrams: key sheets, stepping, frequencies, the 1930s procedure |
+| `lib/story/` | The logic behind the story's diagrams: key sheets, stepping, frequencies, the 1930s procedure, Rejewski's cycles and Turing's loop test |
+| `components/breaking/` | The breaking pages' interactive diagrams |
 | `tests/` | The machine checked against known historical settings and messages |
 | `e2e/` | Playwright; `screenshots.spec.ts` is the visual record |
 

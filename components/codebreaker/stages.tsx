@@ -46,12 +46,12 @@ export function Stage({
       aria-label={`Stage ${number}: ${title}`}
       className={cn("rounded-sm bg-paper p-4 text-paper-ink shadow-md transition-opacity", state === "waiting" && "opacity-50")}
     >
-      <h2 className="flex items-center gap-2 font-semibold">
+      <h3 className="flex items-center gap-2 font-semibold">
         <span className="grid size-6 place-items-center rounded-full bg-case text-xs text-case-ink">
           {state === "done" ? <Check className="size-3.5" /> : state === "running" ? <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" /> : number}
         </span>
         {title}
-      </h2>
+      </h3>
       {children && <div className="mt-3">{children}</div>}
     </section>
   );

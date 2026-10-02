@@ -40,3 +40,10 @@ test("story", async ({ page }, { project }) => {
   await page.goto("/");
   await page.screenshot({ path: `e2e/screenshots/${project.name}-story.png`, fullPage: true });
 });
+
+test("breaking pages", async ({ page }, { project }) => {
+  await page.goto("/crib");
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-crib-story.png`, fullPage: true });
+  await page.goto("/codebreaker");
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-codebreaker-story.png`, fullPage: true });
+});

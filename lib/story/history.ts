@@ -87,3 +87,81 @@ export const WEAKNESSES: Moment[] = [
     text: "Some key lists followed rules meant to look random: no rotor in the same place two days running, no cable joining neighbouring letters. Each rule shrank the number of keys left to try.",
   },
 ];
+
+/** How Enigma was broken by hand, from Poznań to Bletchley. */
+export const BREAKING_HISTORY: Moment[] = [
+  {
+    when: "1929",
+    title: "A cryptology course",
+    text: "Poland's Cipher Bureau runs a secret course for mathematics students at Poznań University. Three of them, Marian Rejewski, Jerzy Różycki and Henryk Zygalski, are taken on.",
+  },
+  {
+    when: "1932",
+    title: "The wiring, from mathematics",
+    text: "Rejewski works out the wiring of the army's rotors using the theory of permutations, helped by settings that French intelligence had bought from a German in the cipher office.",
+  },
+  {
+    when: "Mid-1930s",
+    title: "A catalogue of fingerprints",
+    text: "With a device called the cyclometer, the Poles catalogue the indicator cycle lengths of every rotor order and position. Most days' keys can now be looked up.",
+  },
+  {
+    when: "1938",
+    title: "Bomby and sheets",
+    text: "A change of procedure breaks the catalogue. The Poles answer with the bomba, an electrical machine, and with Zygalski's perforated sheets. Then rotors IV and V arrive and the work multiplies tenfold.",
+  },
+  {
+    when: "July 1939",
+    title: "Pyry",
+    text: "Five weeks before the invasion, at a forest site near Warsaw, the Poles show British and French codebreakers everything, and give each a replica Enigma.",
+  },
+  {
+    when: "1939",
+    title: "Bletchley Park",
+    text: "Britain's codebreakers move to a country house in Buckinghamshire. By the end of the war nearly ten thousand people work there, around three quarters of them women.",
+  },
+  {
+    when: "1940",
+    title: "The Bombe",
+    text: "Alan Turing's Bombe goes into service in March, testing rotor settings against a crib. Gordon Welchman's diagonal board makes it far more powerful by the summer.",
+  },
+  {
+    when: "1941",
+    title: "Naval Enigma",
+    text: "Captured material, including papers from U-110 in May, lets Turing's Hut 8 read the navy's traffic, and convoys are routed around the U-boat packs.",
+  },
+  {
+    when: "1942",
+    title: "Blackout, and back",
+    text: "From February the four-rotor M4 shuts Bletchley out of U-boat traffic. In October sailors recover papers from the sinking U-559, two of them drowning; by December the traffic is being read again.",
+  },
+  {
+    when: "1943",
+    title: "American Bombes",
+    text: "The US Navy's own high-speed Bombes come into service, taking on much of the four-rotor work. Britain and America between them build hundreds of machines.",
+  },
+];
+
+/** Breaking Enigma by computer, long after the war. */
+export const COMPUTER_HISTORY: Moment[] = [
+  {
+    when: "1995",
+    title: "Ciphertext alone",
+    text: "James Gillogly shows that a home computer can recover an Enigma key from nothing but the ciphertext, using the index of coincidence and hill climbing.",
+  },
+  {
+    when: "2005",
+    title: "Unread wartime messages",
+    text: "Geoff Sullivan and Frode Weierud refine the method and use it on real German army traffic from the war.",
+  },
+  {
+    when: "2006",
+    title: "The M4 Project",
+    text: "Volunteers' computers, coordinated over the internet, break four-rotor naval messages intercepted in 1942 that had gone unbroken since the war.",
+  },
+  {
+    when: "2017",
+    title: "Shorter and shorter",
+    text: "Olaf Ostwald and Frode Weierud publish refinements that break much shorter messages, with heavier plugboards, than the early methods could.",
+  },
+];

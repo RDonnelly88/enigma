@@ -2,19 +2,20 @@ import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/crib");
+  await page.waitForLoadState("networkidle");
 });
 
 test("is reachable from the machine", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Cribs & the Bombe" }).click();
-  await expect(page.getByRole("heading", { name: "Crib dragging" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Cribs & the Bombe" })).toBeVisible();
 });
 
 test("the true position of the practice crib survives and gives a menu", async ({ page }) => {
   // The practice message hides WETTERVORHERSAGE after 23 letters
   await page.getByRole("button", { name: "Position 24, possible" }).click();
   await expect(page.getByTestId("verdict")).toHaveText("possible");
-  await expect(page.getByRole("img", { name: /^Menu of \d+ letters and 16 links/ })).toBeVisible();
+  await expect(page.locator("#cribs").getByRole("img", { name: /^Menu of \d+ letters and 16 links/ })).toBeVisible();
 });
 
 test("a clash rules a position out and is shown in red", async ({ page }) => {
