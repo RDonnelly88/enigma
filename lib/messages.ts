@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS, lettersToPositions, type Settings } from "./enigma";
+import { DEFAULT_SETTINGS, encipher, lettersToPositions, type Settings } from "./enigma";
 
 export type Intercept = {
   id: string;
@@ -45,3 +45,25 @@ export const INTERCEPTS: Intercept[] = [
       "NCZW VUSX PNYM INHZ XMQX SFWX WLKJ AHSH NMCO CCAK UQPM KCSM HKSE INJU SBLK IOSX CKUB HMLL XCSJ USRR DVKO HULX WCCB GVLI YXEO AHXR HKKF VDRE WEZL XOBA FGYU JQUK GRTV UKAM EURB VEKS UHHV OYHA BCJW MAKL FKLM YFVN RIZR VVRT KOFD ANJM OLBG FFLE OPRG TFLV RHOW OPBE KVWM UQFM PWPA RMFH AGKX IIBG",
   },
 ];
+
+/**
+ * A practice intercept for crib dragging. Weather ships sent the same kind of
+ * report every day, so "WETTERVORHERSAGE" (weather forecast) was a reliable
+ * guess for words somewhere in the message. The key here is the exercise's
+ * secret; the page only ever shows the ciphertext.
+ */
+const PRACTICE_PLAINTEXT =
+  "ANXBEFEHLSHABERXUBOOTEXWETTERVORHERSAGEXBISKAYAXREGENXWINDAUSSUEDWESTXSTAERKEFUENFXSICHTMITTEL";
+
+export const PRACTICE_CRIB = "WETTERVORHERSAGE";
+
+export const PRACTICE_CIPHERTEXT = encipher(
+  {
+    ...DEFAULT_SETTINGS,
+    rotors: ["IV", "II", "V"],
+    rings: [6, 21, 15],
+    positions: lettersToPositions("RTZ"),
+    plugboard: ["AE", "BF", "CM", "DQ", "HU", "JN", "LX", "PR", "SZ", "VW"],
+  },
+  PRACTICE_PLAINTEXT,
+).text;

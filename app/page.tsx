@@ -39,11 +39,11 @@ export default function Home() {
   };
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6 sm:py-10">
-      <header className="flex items-end justify-between gap-4">
+    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-4 pb-10">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-stencil text-4xl font-bold tracking-[0.3em] sm:text-5xl">ENIGMA</h1>
-          <p className="mt-1 max-w-prose text-sm text-room-muted">
+          <h1 className="sr-only">The machine</h1>
+          <p className="max-w-prose text-sm text-room-muted">
             Set the rotors, plug the cables and press a key. The current runs through the machine and lights a lamp, and
             the same settings turn the ciphertext back into the message.
           </p>
@@ -56,7 +56,7 @@ export default function Home() {
         >
           {sound ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
         </button>
-      </header>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
         <section aria-label="The machine" className="wood rounded-xl p-2.5 shadow-2xl sm:p-4">
