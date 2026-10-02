@@ -8,6 +8,13 @@ It models the army's three-rotor M3 and the navy's four-rotor M4, with
 rotors I to VIII, reflectors A, B and C, the thin reflectors and the Beta and
 Gamma wheels. Two real intercepted messages are included to decrypt.
 
+Two more pages are about breaking it. The crib dragger slides a guessed word
+along an intercept and rules out every position where a letter would encrypt
+as itself, then draws the menu Turing's Bombe was wired from. The codebreaker
+recovers a key from the ciphertext alone with Gillogly's statistical attack,
+running in a Web Worker: it succeeds on long messages with a light plugboard
+and, like the method itself, fails on the ten-cable traffic of 1939 onwards.
+
 ## Running it
 
 ```bash
@@ -22,7 +29,9 @@ npm run e2e       # Playwright, desktop and phone
 | | |
 |---|---|
 | `lib/enigma.ts` | The machine itself: pure functions, no UI |
-| `lib/messages.ts` | The historical intercepts and their keys |
+| `lib/messages.ts` | The historical intercepts and the practice messages |
+| `lib/crib.ts` | Crib positions and the Bombe's menu |
+| `lib/codebreaker.ts` | The ciphertext-only attack; `lib/corpus.ts` is the text it learns letter pairs from |
 | `hooks/use-machine.ts` | Machine state for the page: settings, tape, held key |
 | `components/machine/` | Keyboard, lampboard, rotors, plugboard, the lid and the wiring view |
 | `tests/` | The machine checked against known historical settings and messages |
