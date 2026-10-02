@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/*
+ * The machine is black crinkle paint over a wooden case, with bakelite keys
+ * and lamps glowing through stencilled glass. Every colour is a token so the
+ * daylight theme can lighten the room without repainting the machine.
+ */
+:root {
+  --room: #e9e2d4;
+  --room-ink: #2a2118;
+  --room-muted: #6b5d4c;
+  --wood: #7a4a26;
+  --wood-dark: #4e2d14;
+  --case: #1d1c1a;
+  --case-edge: #34322e;
+  --case-ink: #d9d2c3;
+  --case-muted: #8f8778;
+  --metal: #b9b4a8;
+  --metal-dark: #6e695f;
+  --key: #151413;
+  --key-ink: #ece6d6;
+  --lamp-off: #2b2925;
+  --lamp-ink-off: #5d574d;
+  --lamp-on: #ffd36b;
+  --lamp-glow: #ffb020;
+  --lamp-ink-on: #3a2400;
+  --paper: #f3ecd9;
+  --paper-ink: #2b2620;
+  --paper-muted: #8a7f6a;
+  --cable: #b0302a;
+  --signal-in: #2fa37f;
+  --signal-out: #e0a526;
+  --signal-turn: #d8443a;
+  --danger: #b3261e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --room: #121110;
+    --room-ink: #e8e1d2;
+    --room-muted: #9b917f;
+    --paper: #e6dcc3;
+    --danger: #ff8a80;
+  }
+}
+
+:root[data-theme="dark"] {
+  --room: #121110;
+  --room-ink: #e8e1d2;
+  --room-muted: #9b917f;
+  --paper: #e6dcc3;
+  --danger: #ff8a80;
+}
+
+/* `inline` because the values are custom properties; without it the tokens
+   would be resolved once and never follow the theme. */
+@theme inline {
+  --color-room: var(--room);
+  --color-room-ink: var(--room-ink);
+  --color-room-muted: var(--room-muted);
+  --color-wood: var(--wood);
+  --color-wood-dark: var(--wood-dark);
+  --color-case: var(--case);
+  --color-case-edge: var(--case-edge);
+  --color-case-ink: var(--case-ink);
+  --color-case-muted: var(--case-muted);
+  --color-metal: var(--metal);
+  --color-metal-dark: var(--metal-dark);
+  --color-key: var(--key);
+  --color-key-ink: var(--key-ink);
+  --color-lamp-off: var(--lamp-off);
+  --color-lamp-ink-off: var(--lamp-ink-off);
+  --color-lamp-on: var(--lamp-on);
+  --color-lamp-glow: var(--lamp-glow);
+  --color-lamp-ink-on: var(--lamp-ink-on);
+  --color-paper: var(--paper);
+  --color-paper-ink: var(--paper-ink);
+  --color-paper-muted: var(--paper-muted);
+  --color-cable: var(--cable);
+  --color-signal-in: var(--signal-in);
+  --color-signal-out: var(--signal-out);
+  --color-signal-turn: var(--signal-turn);
+  --color-danger: var(--danger);
+  --font-stencil: var(--font-stencil-face);
+  --font-type: var(--font-type-face);
+  --font-sans: var(--font-sans-face);
+}
+
+body {
+  background: var(--room);
+  color: var(--room-ink);
+  font-family: var(--font-sans-face), system-ui, sans-serif;
+}
+
+/* The case's crinkle finish: fine noise over the paint */
+.crinkle {
+  background-color: var(--case);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgb(255 255 255 / 0.035) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 60%, rgb(0 0 0 / 0.25) 0 1px, transparent 1.5px);
+  background-size: 5px 5px, 7px 7px;
+}
+
+.wood {
+  background-color: var(--wood);
+  background-image: repeating-linear-gradient(
+    92deg,
+    rgb(0 0 0 / 0.08) 0 2px,
+    transparent 2px 9px,
+    rgb(255 255 255 / 0.04) 9px 11px,
+    transparent 11px 23px
+  );
+}
+
+/* Ridged edge of a rotor's thumbwheel */
+.knurl {
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--metal-dark) 0 2px,
+    var(--metal) 2px 4px
+  );
+}
+
+@utility tape-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.125rem;
+  border: 1px solid color-mix(in oklab, var(--paper-ink) 35%, transparent);
+  padding: 0.25rem 0.625rem;
+  font-weight: 500;
+  &:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--paper-ink) 8%, transparent);
+  }
+  &:disabled {
+    opacity: 0.45;
+  }
+}
