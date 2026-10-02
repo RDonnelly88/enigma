@@ -67,3 +67,67 @@ export const PRACTICE_CIPHERTEXT = encipher(
   },
   PRACTICE_PLAINTEXT,
 ).text;
+
+export type Practice = {
+  id: string;
+  title: string;
+  story: string;
+  language: "german" | "english";
+  ciphertext: string;
+};
+
+/**
+ * Intercepts for the codebreaker, each enciphered here from a plaintext and
+ * key the page never shows. Six cables is what the Polish codebreakers faced
+ * in the early 1930s; ten is what the army used from 1939.
+ */
+export const CODEBREAKER_PRACTICE: Practice[] = [
+  {
+    id: "six-cables",
+    title: "Six cables, 1930s",
+    story: "An army report from the years when the plugboard carried six cables. Long enough, and plugged lightly enough, for statistics alone.",
+    language: "german",
+    ciphertext: encipher(
+      {
+        ...DEFAULT_SETTINGS,
+        rotors: ["II", "V", "III"],
+        rings: [9, 17, 22],
+        positions: lettersToPositions("KQM"),
+        plugboard: ["AJ", "CP", "GL", "KW", "MY", "RZ"],
+      },
+      "ANXDASXOBERKOMMANDOXDERXWEHRMACHTXDIEXUEBUNGXDERXDRITTENXDIVISIONXBEGINNTXAMXMONTAGXUMXSECHSXUHRXDIEXTRUPPENXSAMMELNXSICHXIMXRAUMXNOERDLICHXDERXSTADTXDIEXVERSORGUNGXERFOLGTXUEBERXDENXBAHNHOFXFUNKVERKEHRXNURXNACHXBEFEHLXDERXKOMMANDEURXMELDETXDIEXBEREITSCHAFTXBISXSONNTAGXABENDXENDE",
+    ).text,
+  },
+  {
+    id: "ten-cables",
+    title: "Ten cables, 1940",
+    story: "The same kind of message after the army went to ten cables. Only six letters now pass the plugboard untouched. Try it, and see why Bletchley needed cribs.",
+    language: "german",
+    ciphertext: encipher(
+      {
+        ...DEFAULT_SETTINGS,
+        rotors: ["IV", "I", "II"],
+        rings: [3, 14, 7],
+        positions: lettersToPositions("XVB"),
+        plugboard: ["AJ", "BW", "CK", "DN", "EV", "FR", "GO", "HP", "LT", "MS"],
+      },
+      "ANXDIEXHEERESGRUPPEXNORDXDERXANGRIFFXAUFXDIEXSTADTXWIRDXUMXZWEIXTAGEXVERSCHOBENXDIEXPANZERDIVISIONXBLEIBTXINXIHRENXSTELLUNGENXUNDXSICHERTXDIEXBRUECKENXAMXFLUSSXNACHSCHUBXANXMUNITIONXUNDXTREIBSTOFFXISTXDRINGENDXERFORDERLICHXMELDUNGXUEBERXDIEXLAGEXBISXMORGENXFRUEHXERBETENXENDE",
+    ).text,
+  },
+  {
+    id: "english",
+    title: "Your own message, in English",
+    story: "Five cables and plain English. The codebreaker scores English letter pairs instead of German ones.",
+    language: "english",
+    ciphertext: encipher(
+      {
+        ...DEFAULT_SETTINGS,
+        rotors: ["I", "IV", "V"],
+        rings: [12, 5, 19],
+        positions: lettersToPositions("HUT"),
+        plugboard: ["CE", "GJ", "KP", "MX", "QV"],
+      },
+      "MEETMEATTHEOLDBRIDGEATMIDNIGHTANDBRINGTHEMAPSWITHYOUTHEGUARDSCHANGEATELEVENSOWEWILLHAVEALMOSTANHOURBEFOREANYONENOTICESTHATWEAREGONEIFYOUARELATEIWILLWAITBYTHECHURCHUNTILONEANDTHENGOONALONETOTHECOASTWHERETHEBOATISWAITING",
+    ).text,
+  },
+];

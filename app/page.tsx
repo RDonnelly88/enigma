@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Keyboard } from "@/components/machine/keyboard";
 import { Lampboard } from "@/components/machine/lampboard";
@@ -13,6 +13,7 @@ import { Intercepts } from "@/components/intercepts";
 import { useHardwareKeys } from "@/hooks/use-hardware-keys";
 import { useMachine } from "@/hooks/use-machine";
 import type { Settings } from "@/lib/enigma";
+import { readMachineLink } from "@/lib/share";
 import { playKey } from "@/lib/sound";
 
 const SLOT_NAMES = ["Left", "Middle", "Right"] as const;
@@ -31,6 +32,16 @@ export default function Home() {
     [sound, machine.held, blocked, keyDown],
   );
   useHardwareKeys(down, keyUp);
+
+  // Arriving from the codebreaker with a key and its message: set up and type it
+  const { typeMessage } = machine;
+  useEffect(() => {
+    const link = readMachineLink(window.location.search);
+    if (!link) return;
+    configure(link.settings);
+    if (link.text) typeMessage(link.text);
+    window.history.replaceState(null, "", window.location.pathname);
+  }, [configure, typeMessage]);
 
   const turn = (slot: number, delta: number) => {
     const positions = [...settings.positions] as Settings["positions"];

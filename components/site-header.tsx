@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 const LINKS = [
   { href: "/", label: "Machine" },
   { href: "/crib", label: "Crib dragger" },
+  { href: "/codebreaker", label: "Codebreaker" },
 ];
 
 export function SiteHeader() {
