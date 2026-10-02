@@ -15,3 +15,11 @@ test("machine", async ({ page }, { project }) => {
   await page.screenshot({ path: `e2e/screenshots/${project.name}-machine.png`, fullPage: true });
   await page.mouse.up();
 });
+
+test("crib", async ({ page }, { project }) => {
+  await page.goto("/crib");
+  await page.getByRole("button", { name: "Position 24, possible" }).click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-crib.png`, fullPage: true });
+  await page.getByRole("button", { name: /ruled out$/ }).first().click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-crib-clash.png` });
+});
