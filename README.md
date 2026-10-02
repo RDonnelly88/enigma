@@ -1,8 +1,11 @@
 # Enigma
 
-A working Enigma machine in the browser. Set the rotors, plug the cables and
-press a key: the rotors turn, the current runs through the machine and a lamp
-lights. Open the wiring view to watch the current's path through every part.
+The story of the Enigma machine, told with interactive diagrams: what it was,
+how it works, how it was used, why it was so strong and how it was broken. With
+a working machine to try, every key press traced from key to lamp.
+
+The home page is the story. The simulator is at `/machine`; the two breaking
+pages are `/crib` and `/codebreaker`.
 
 It models the army's three-rotor M3 and the navy's four-rotor M4, with
 rotors I to VIII, reflectors A, B and C, the thin reflectors and the Beta and
@@ -34,6 +37,9 @@ npm run e2e       # Playwright, desktop and phone
 | `lib/codebreaker.ts` | The ciphertext-only attack; `lib/corpus.ts` is the text it learns letter pairs from |
 | `hooks/use-machine.ts` | Machine state for the page: settings, tape, held key |
 | `components/machine/` | Keyboard, lampboard, rotors, plugboard, the lid and the wiring view |
+| `components/story/` | The story's interactive diagrams |
+| `components/ui/` | The design system: slider, rail, chapter, demo frame, column chart |
+| `lib/story/` | The logic behind the story's diagrams: key sheets, stepping, frequencies, the 1930s procedure |
 | `tests/` | The machine checked against known historical settings and messages |
 | `e2e/` | Playwright; `screenshots.spec.ts` is the visual record |
 

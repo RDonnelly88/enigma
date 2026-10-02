@@ -6,7 +6,7 @@ describe("machine links", () => {
   it("carry a key and a message there and back", () => {
     const settings = { ...DEFAULT_SETTINGS, rotors: ["V", "I", "III"] as const, plugboard: ["AB"] };
     const link = machineLink({ ...settings, rotors: [...settings.rotors] }, "QWERT");
-    expect(readMachineLink(link.slice(1))).toEqual({ settings: { ...settings, rotors: ["V", "I", "III"] }, text: "QWERT" });
+    expect(readMachineLink(link.split("?")[1])).toEqual({ settings: { ...settings, rotors: ["V", "I", "III"] }, text: "QWERT" });
   });
 
   it("refuse a key the machine can't run", () => {

@@ -107,7 +107,7 @@ export default function CodebreakerPage() {
 
           <p className="text-xs text-paper-muted">
             Assumes reflector B and rotors I to V, as on the army&rsquo;s machine. Messages you make on the{" "}
-            <Link href="/" className="underline underline-offset-2">machine</Link> work too: copy the lit letters and paste them in.
+            <Link href="/machine" className="underline underline-offset-2">machine</Link> work too: copy the lit letters and paste them in.
           </p>
 
           {running ? (

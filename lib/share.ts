@@ -6,7 +6,7 @@ import { validate, type Settings } from "./enigma";
  */
 export function machineLink(settings: Settings, text: string) {
   const params = new URLSearchParams({ key: JSON.stringify(settings), text });
-  return `/?${params}`;
+  return `/machine?${params}`;
 }
 
 export function readMachineLink(search: string): { settings: Settings; text: string } | null {

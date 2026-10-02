@@ -1,168 +1,173 @@
-"use client";
+import Link from "next/link";
+import { Hero } from "@/components/story/hero";
+import { KeyspaceDemo } from "@/components/story/keyspace-demo";
+import { Onward } from "@/components/story/onward";
+import { OperatorDemos } from "@/components/story/operator-demos";
+import { PlugboardDemo } from "@/components/story/plugboard-demo";
+import { ReflectorDemo } from "@/components/story/reflector-demo";
+import { RotorDemo } from "@/components/story/rotor-demo";
+import { SteppingDemo } from "@/components/story/stepping-demo";
+import { SwapDemo } from "@/components/story/swap-demo";
+import { Timeline } from "@/components/story/timeline";
+import { Aside, Chapter, Prose } from "@/components/ui/chapter";
+import { ChapterRail } from "@/components/ui/chapter-rail";
+import { MACHINE_HISTORY, WEAKNESSES } from "@/lib/story/history";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
-import { Keyboard } from "@/components/machine/keyboard";
-import { Lampboard } from "@/components/machine/lampboard";
-import { Lid } from "@/components/machine/lid";
-import { Plugboard } from "@/components/machine/plugboard";
-import { RotorWindow } from "@/components/machine/rotor-window";
-import { Tape } from "@/components/machine/tape";
-import { Walkthrough } from "@/components/machine/walkthrough";
-import { Wiring } from "@/components/machine/wiring";
-import { Intercepts } from "@/components/intercepts";
-import { useHardwareKeys } from "@/hooks/use-hardware-keys";
-import { useMachine } from "@/hooks/use-machine";
-import type { Settings } from "@/lib/enigma";
-import { explain } from "@/lib/explain";
-import { readMachineLink } from "@/lib/share";
-import { playKey } from "@/lib/sound";
+const CHAPTERS = [
+  { id: "what", title: "What it was" },
+  { id: "how", title: "How it works" },
+  { id: "used", title: "How it was used" },
+  { id: "strong", title: "Why it was strong" },
+  { id: "fell", title: "How it fell" },
+];
 
-const SLOT_NAMES = ["Left", "Middle", "Right"] as const;
-
-export default function Home() {
-  const machine = useMachine();
-  const { settings, configure, keyDown, keyUp } = machine;
-  const [sound, setSound] = useState(true);
-  const blocked = machine.errors.length > 0;
-
-  const down = useCallback(
-    (letter: string) => {
-      if (sound && !machine.held && !blocked) playKey();
-      keyDown(letter);
-    },
-    [sound, machine.held, blocked, keyDown],
-  );
-  useHardwareKeys(down, keyUp);
-
-  // Arriving from the codebreaker with a key and its message: set up and type it
-  const { typeMessage } = machine;
-  useEffect(() => {
-    const link = readMachineLink(window.location.search);
-    if (!link) return;
-    configure(link.settings);
-    if (link.text) typeMessage(link.text);
-    window.history.replaceState(null, "", window.location.pathname);
-  }, [configure, typeMessage]);
-
-  const steps = useMemo(() => (machine.last ? explain(settings, machine.last) : []), [settings, machine.last]);
-  // A new key press starts its story from the top
-  const [selected, setSelected] = useState<{ press: unknown; step: number } | null>(null);
-  const selectedStep = selected?.press === machine.last ? selected.step : null;
-  const focus = selectedStep === null ? undefined : steps[selectedStep]?.hop;
-
-  const turn = (slot: number, delta: number) => {
-    const positions = [...settings.positions] as Settings["positions"];
-    positions[slot] = (positions[slot] + delta + 26) % 26;
-    configure({ ...settings, positions });
-  };
-
+export default function Story() {
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-4 pb-10">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="sr-only">The machine</h1>
-          <p className="max-w-prose text-sm text-room-muted">
-            Set the rotors, plug the cables and press a key. The current runs through the machine and lights a lamp, and
-            the same settings turn the ciphertext back into the message.
+    <main className="mx-auto max-w-6xl px-4 pb-24">
+      <Hero />
+      <ChapterRail chapters={CHAPTERS} />
+
+      <Chapter
+        id="what"
+        number={1}
+        eyebrow="What it was"
+        title="A typewriter that lied"
+        intro={
+          <p>
+            Enigma looked like a typewriter in a wooden box. Press a key and, instead of printing it, the machine lit a
+            different letter on a panel of lamps. An operator typed the message, a second wrote down the lamps, and what
+            went out over the radio was nonsense to anyone without the same machine set the same way.
           </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setSound((s) => !s)}
-          aria-label={sound ? "Mute" : "Unmute"}
-          className="rounded-full p-2 text-room-muted hover:text-room-ink"
-        >
-          {sound ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-        </button>
-      </div>
+        }
+      >
+        <Prose>
+          <p>
+            Radio changed war. Orders could reach a tank, an aircraft or a submarine in seconds, wherever it was. But a
+            radio message is heard by anyone listening on that frequency, enemy included. Everything sent had to be
+            enciphered, quickly, by tired signallers in the field, without a codebook that could be captured and read.
+          </p>
+          <p>
+            Enigma was the answer Germany chose. Invented as a commercial product to keep business secrets, it was taken
+            up by the navy, then the army and the air force, and made steadily harder to break. Tens of thousands were
+            built. The Germans believed, with good mathematical reason, that messages sent on it could not be read.
+          </p>
+        </Prose>
+        <Timeline label="The machine's history" moments={MACHINE_HISTORY} />
+        <Aside>Its users thought it unbreakable. They were wrong for reasons that had little to do with the machine itself.</Aside>
+      </Chapter>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
-        <section aria-label="The machine" className="wood self-start rounded-xl p-2.5 shadow-2xl sm:p-4">
-          <div className="crinkle flex flex-col items-center gap-6 rounded-lg border border-case-edge px-2 py-5 sm:gap-8 sm:px-6 sm:py-7">
-            <div className="flex items-end gap-3 rounded-md border border-case-edge bg-black/30 px-4 py-3 sm:gap-5">
-              {settings.model === "M4" && (
-                <RotorWindow
-                  label={settings.greek}
-                  position={settings.greekPosition}
-                  onTurn={(delta) => configure({ ...settings, greekPosition: (settings.greekPosition + delta + 26) % 26 })}
-                />
-              )}
-              {SLOT_NAMES.map((name, i) => (
-                <RotorWindow key={name} label={settings.rotors[i]} position={settings.positions[i]} onTurn={(d) => turn(i, d)} />
-              ))}
-            </div>
+      <Chapter
+        id="how"
+        number={2}
+        eyebrow="How it works"
+        title="Built up, one part at a time"
+        intro={
+          <p>
+            Enigma is a chain of simple parts, each easy to understand on its own. The strength comes from putting them
+            together. Here they are in the order the electric current meets them, starting with the problem they solve.
+          </p>
+        }
+      >
+        <SwapDemo />
+        <Prose>
+          <p>
+            Enigma&rsquo;s answer to letter counting was to keep changing the swap. The scrambling is done by rotors:
+            wheels with 26 brass contacts on each face and a tangle of wires inside, so current entering on one letter
+            leaves on another.
+          </p>
+        </Prose>
+        <RotorDemo />
+        <Prose>
+          <p>
+            One rotor repeats itself every 26 letters, so Enigma used three side by side, each scrambling what the last
+            one handed it, and made them carry each other round like the digits of a mileometer.
+          </p>
+        </Prose>
+        <SteppingDemo />
+        <ReflectorDemo />
+        <PlugboardDemo />
+        <Prose>
+          <p>
+            That is the whole machine: keyboard, plugboard, three rotors, reflector, back through the rotors and the
+            plugboard, to a lamp. Every press turns the rotors and the whole route changes.
+          </p>
+          <p>
+            <Link href="/machine" className="font-sans font-semibold text-brass underline underline-offset-4">
+              Try the full machine
+            </Link>
+            , where every key press is traced through each part, step by step.
+          </p>
+        </Prose>
+      </Chapter>
 
-            <Lampboard lit={machine.held?.output ?? null} />
-            <div className="h-px w-full bg-case-edge" />
-            <Keyboard held={machine.held?.input ?? null} disabled={blocked} onDown={down} onUp={keyUp} />
+      <Chapter
+        id="used"
+        number={3}
+        eyebrow="How it was used"
+        title="Midnight, a key sheet, and two operators"
+        intro={
+          <p>
+            A machine is only as secret as its settings. Every Enigma on a network had to be set exactly alike, every day,
+            by people working in tents, cabins and submarines, and the settings had to reach them without falling into the
+            wrong hands.
+          </p>
+        }
+      >
+        <Prose>
+          <p>
+            Operators usually worked in pairs. One read the message and typed; the other watched the lamps and wrote down
+            each letter as it lit. The result went to a radio operator, who sent it in Morse, usually in groups of five
+            letters. At the other end the same routine ran backwards: copy down the Morse, type it into an identically set
+            machine, and read the message off the lamps.
+          </p>
+        </Prose>
+        <OperatorDemos />
+        <Prose>
+          <p>
+            In May 1940 the army and air force stopped typing the key twice. By then it was too late: the Poles had shown
+            how much it gave away, and had handed everything they knew to Britain and France.
+          </p>
+        </Prose>
+      </Chapter>
 
-            {blocked && (
-              <ul role="alert" className="w-full rounded-sm border border-danger/50 px-3 py-2 text-sm text-danger">
-                {machine.errors.map((e) => (
-                  <li key={e}>{e}</li>
-                ))}
-              </ul>
-            )}
-          </div>
+      <Chapter
+        id="strong"
+        number={4}
+        eyebrow="Why it was strong"
+        title="Numbers too big to search"
+        intro={
+          <p>
+            Enigma&rsquo;s designers were right about the mathematics. Even with a captured machine in front of you, its
+            wiring known, you still had to find the day&rsquo;s key among more possibilities than there are grains of sand
+            on every beach on Earth, and tomorrow there would be a new one.
+          </p>
+        }
+      >
+        <KeyspaceDemo />
+        <Prose>
+          <p>
+            The Germans trusted the numbers, and the numbers were right. What they got wrong were the assumptions behind
+            them: that the enemy could never reconstruct the wiring, that operators would always follow the rules, and that
+            nobody could guess a word of what a message said.
+          </p>
+        </Prose>
+      </Chapter>
 
-          <div className="crinkle mt-2.5 rounded-lg border border-case-edge px-3 py-4 sm:mt-4">
-            <h2 className="mb-2 text-center font-stencil text-xs font-semibold tracking-[0.3em] text-case-muted uppercase">
-              Steckerbrett
-            </h2>
-            <Plugboard pairs={settings.plugboard} onChange={(plugboard) => configure({ ...settings, plugboard })} />
-          </div>
-        </section>
-
-        <div className="flex flex-col gap-6">
-          <Tape
-            input={machine.input}
-            output={machine.output}
-            onRewind={machine.rewind}
-            onClear={machine.clear}
-            onMessage={machine.typeMessage}
-            disabled={blocked}
-          />
-
-          <details className="crinkle group rounded-lg border border-case-edge text-case-ink" open>
-            <summary className="cursor-pointer px-4 py-3 font-stencil text-sm font-bold tracking-widest uppercase">
-              Inside the lid
-            </summary>
-            <div className="px-4 pb-4">
-              <Lid settings={settings} onChange={configure} />
-            </div>
-          </details>
-
-          <Intercepts
-            onLoad={(intercept) => {
-              configure(intercept.settings);
-              machine.clear();
-            }}
-            onType={machine.typeMessage}
-          />
-        </div>
-      </div>
-
-      <section aria-labelledby="wiring" className="crinkle rounded-lg border border-case-edge p-4 text-case-ink">
-        <h2 id="wiring" className="font-stencil text-sm font-bold tracking-widest uppercase">The current&rsquo;s path</h2>
-        <p className="mb-4 text-sm text-case-muted">
-          {machine.last
-            ? `${machine.last.input} went in and lit ${machine.last.output}. Follow it step by step, and pick a step to see its part of the route and how it works.`
-            : "Press a key to trace the current through each part of the machine."}
-        </p>
-        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
-          <div className="lg:sticky lg:top-4 lg:self-start">
-            <Wiring settings={settings} press={machine.last} focus={focus} />
-          </div>
-          {steps.length > 0 && (
-            <Walkthrough
-              steps={steps}
-              selected={selectedStep}
-              onSelect={(step) => setSelected(step === null ? null : { press: machine.last, step })}
-            />
-          )}
-        </div>
-      </section>
+      <Chapter
+        id="fell"
+        number={5}
+        eyebrow="How it fell"
+        title="Cracks in the system"
+        intro={
+          <p>
+            Enigma was not broken by trying every key. It was broken by people who found that each part of the system,
+            the machine, the procedures and the operators, leaked a little, and that the leaks added up.
+          </p>
+        }
+      >
+        <Timeline label="Enigma's weaknesses" moments={WEAKNESSES} />
+        <Onward />
+      </Chapter>
     </main>
   );
 }

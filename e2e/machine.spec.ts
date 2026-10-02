@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/machine");
 });
 
 test("typing AAAAA at the start gives the standard check value", async ({ page }, { project }) => {

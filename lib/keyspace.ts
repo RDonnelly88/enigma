@@ -33,3 +33,18 @@ export function roughly(n: bigint) {
   const scaled = Number(n / 10n ** BigInt(group * 3 - 3)) / 1000;
   return `about ${Math.round(scaled).toLocaleString("en-GB")} ${names[group]}`;
 }
+
+const SECONDS_PER_YEAR = 31_557_600n;
+
+const count = (n: bigint, unit: string) => `${n.toLocaleString("en-GB")} ${unit}${n === 1n ? "" : "s"}`;
+
+/** A duration in seconds, in whichever unit reads best. */
+export function duration(seconds: bigint) {
+  if (seconds < 1n) return "under a second";
+  if (seconds < 60n) return count(seconds, "second");
+  if (seconds < 3600n) return count(seconds / 60n, "minute");
+  if (seconds < 86_400n) return count(seconds / 3600n, "hour");
+  if (seconds < SECONDS_PER_YEAR) return count(seconds / 86_400n, "day");
+  const years = seconds / SECONDS_PER_YEAR;
+  return years < 1000n ? count(years, "year") : `${roughly(years)} years`;
+}

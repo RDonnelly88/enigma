@@ -5,33 +5,40 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 
 const LINKS = [
-  { href: "/", label: "Machine" },
-  { href: "/crib", label: "Crib dragger" },
+  { href: "/", label: "The story" },
+  { href: "/machine", label: "The machine" },
+  { href: "/crib", label: "Cribs & the Bombe" },
   { href: "/codebreaker", label: "Codebreaker" },
 ];
 
 export function SiteHeader() {
   const path = usePathname();
   return (
-    <header className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-x-6 gap-y-3 px-4 pt-6 sm:pt-10">
-      <Link href="/" className="font-stencil text-4xl font-bold tracking-[0.3em] sm:text-5xl">
-        ENIGMA
-      </Link>
-      <nav aria-label="Main" className="flex gap-1 rounded-sm border border-room-muted/40 p-0.5">
-        {LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            aria-current={path === link.href ? "page" : undefined}
-            className={cn(
-              "rounded-[1px] px-3 py-1 font-stencil text-sm font-bold tracking-wider uppercase",
-              path === link.href ? "bg-room-ink text-room" : "text-room-muted hover:text-room-ink",
-            )}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+    <header className="sticky top-0 z-40 border-b border-panel-edge bg-room/85 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
+        <Link href="/" className="shrink-0 font-stencil text-xl font-bold tracking-[0.35em]">
+          ENIGMA
+        </Link>
+        {/* On a phone the links slide sideways rather than wrapping */}
+        <nav aria-label="Main" className="rail -mr-4 ml-auto flex min-w-0 gap-1 overflow-x-auto pr-4">
+          {LINKS.map((link) => {
+            const here = link.href === "/" ? path === "/" : path.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={here ? "page" : undefined}
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap transition-colors",
+                  here ? "bg-room-ink text-room" : "text-room-muted hover:bg-panel hover:text-room-ink",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </header>
   );
 }

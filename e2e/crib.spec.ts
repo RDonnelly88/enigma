@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 
 test("is reachable from the machine", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Crib dragger" }).click();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Cribs & the Bombe" }).click();
   await expect(page.getByRole("heading", { name: "Crib dragging" })).toBeVisible();
 });
 
