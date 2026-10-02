@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Keyboard } from "@/components/machine/keyboard";
 import { Lampboard } from "@/components/machine/lampboard";
@@ -8,11 +8,13 @@ import { Lid } from "@/components/machine/lid";
 import { Plugboard } from "@/components/machine/plugboard";
 import { RotorWindow } from "@/components/machine/rotor-window";
 import { Tape } from "@/components/machine/tape";
+import { Walkthrough } from "@/components/machine/walkthrough";
 import { Wiring } from "@/components/machine/wiring";
 import { Intercepts } from "@/components/intercepts";
 import { useHardwareKeys } from "@/hooks/use-hardware-keys";
 import { useMachine } from "@/hooks/use-machine";
 import type { Settings } from "@/lib/enigma";
+import { explain } from "@/lib/explain";
 import { readMachineLink } from "@/lib/share";
 import { playKey } from "@/lib/sound";
 
@@ -43,6 +45,12 @@ export default function Home() {
     window.history.replaceState(null, "", window.location.pathname);
   }, [configure, typeMessage]);
 
+  const steps = useMemo(() => (machine.last ? explain(settings, machine.last) : []), [settings, machine.last]);
+  // A new key press starts its story from the top
+  const [selected, setSelected] = useState<{ press: unknown; step: number } | null>(null);
+  const selectedStep = selected?.press === machine.last ? selected.step : null;
+  const focus = selectedStep === null ? undefined : steps[selectedStep]?.hop;
+
   const turn = (slot: number, delta: number) => {
     const positions = [...settings.positions] as Settings["positions"];
     positions[slot] = (positions[slot] + delta + 26) % 26;
@@ -70,7 +78,7 @@ export default function Home() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
-        <section aria-label="The machine" className="wood rounded-xl p-2.5 shadow-2xl sm:p-4">
+        <section aria-label="The machine" className="wood self-start rounded-xl p-2.5 shadow-2xl sm:p-4">
           <div className="crinkle flex flex-col items-center gap-6 rounded-lg border border-case-edge px-2 py-5 sm:gap-8 sm:px-6 sm:py-7">
             <div className="flex items-end gap-3 rounded-md border border-case-edge bg-black/30 px-4 py-3 sm:gap-5">
               {settings.model === "M4" && (
@@ -139,10 +147,21 @@ export default function Home() {
         <h2 id="wiring" className="font-stencil text-sm font-bold tracking-widest uppercase">The current&rsquo;s path</h2>
         <p className="mb-4 text-sm text-case-muted">
           {machine.last
-            ? `${machine.last.input} went in and lit ${machine.last.output}. The reflector sends every signal back by a different route, which is why a letter can never encrypt as itself.`
+            ? `${machine.last.input} went in and lit ${machine.last.output}. Follow it step by step, and pick a step to see its part of the route and how it works.`
             : "Press a key to trace the current through each part of the machine."}
         </p>
-        <Wiring settings={settings} press={machine.last} />
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+          <div className="lg:sticky lg:top-4 lg:self-start">
+            <Wiring settings={settings} press={machine.last} focus={focus} />
+          </div>
+          {steps.length > 0 && (
+            <Walkthrough
+              steps={steps}
+              selected={selectedStep}
+              onSelect={(step) => setSelected(step === null ? null : { press: machine.last, step })}
+            />
+          )}
+        </div>
       </section>
     </main>
   );

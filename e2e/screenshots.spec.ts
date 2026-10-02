@@ -14,6 +14,9 @@ test("machine", async ({ page }, { project }) => {
   await page.mouse.down();
   await page.screenshot({ path: `e2e/screenshots/${project.name}-machine.png`, fullPage: true });
   await page.mouse.up();
+  await page.getByRole("button", { name: /Rotor .+, on the way in/ }).first().click();
+  await page.getByText("Notches and stepping").click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-explained.png`, fullPage: true });
 });
 
 test("crib", async ({ page }, { project }) => {
