@@ -3,8 +3,7 @@
   "entry": [
     "app/**/{page,layout,route,error,loading,not-found}.{ts,tsx}",
     "tests/**/*.test.ts",
-    "e2e/**/*.ts",
-    "playwright.config.ts"
+    "e2e/**/*.ts"
   ],
   "project": ["**/*.{ts,tsx,css}"]
 }

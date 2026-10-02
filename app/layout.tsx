@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter, Special_Elite } from "next/font/google";
+import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
 const stencil = Barlow_Condensed({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-stencil-face" });
@@ -21,7 +22,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-GB" className={`${stencil.variable} ${type.variable} ${sans.variable}`}>
-      <body className="min-h-dvh antialiased">{children}</body>
+      <body className="min-h-dvh antialiased">
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }
