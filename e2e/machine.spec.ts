@@ -59,3 +59,32 @@ test("decrypts the U-534 intercept", async ({ page }) => {
   await card.getByRole("button", { name: "Type the message" }).click();
   await expect(page.getByTestId("tape-output")).toContainText("VONVO NJLOO KSJHF FTTTE INSEI NSDRE I");
 });
+
+test("explains a key press step by step", async ({ page }) => {
+  await page.getByLabel("Type or paste a message").fill("A");
+  await page.getByRole("button", { name: "Type it" }).click();
+  const steps = page.getByRole("list", { name: "Step by step" });
+  await expect(steps.getByRole("button", { name: /^1 You press A/ })).toBeVisible();
+  const rotor = steps.getByRole("button", { name: /Rotor III, on the way in/ });
+  await expect(rotor).toContainText("wires B to D");
+  await rotor.click();
+  await expect(rotor).toHaveAttribute("aria-pressed", "true");
+  await expect(steps.getByRole("button", { name: /Lamp B lights/ })).toBeVisible();
+});
+
+test("the lid explains the parts", async ({ page }) => {
+  await expect(page.getByText("Notch V")).toBeVisible();
+  // With no cables plugged a fast computer could try every key; the army's ten cables changed that
+  await page.getByText("How many keys?").click();
+  await expect(page.getByText(/would take under a year/)).toBeVisible();
+  await page.getByText("Notches and stepping").click();
+  await expect(page.getByText(/double step/).first()).toBeVisible();
+});
+
+test("the wiring and its explanation never widen the page", async ({ page }) => {
+  await page.getByLabel("Type or paste a message").fill("HELLO");
+  await page.getByRole("button", { name: "Type it" }).click();
+  await page.getByRole("button", { name: /Rotor III, on the way in/ }).click();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBe(0);
+});

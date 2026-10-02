@@ -36,7 +36,7 @@ const colour = (hop: Pick<Hop, "direction">) =>
  * every component opened out side by side: in from the key on the right,
  * leftwards through each wheel, round the reflector and back out to a lamp.
  */
-export function Wiring({ settings, press }: { settings: Settings; press: Keypress | null }) {
+export function Wiring({ settings, press, focus }: { settings: Settings; press: Keypress | null; focus?: number }) {
   const reduced = useReducedMotion();
   const scroller = useRef<HTMLDivElement>(null);
   // On a narrow screen the diagram scrolls; start at the keys, where the current begins
@@ -50,29 +50,30 @@ export function Wiring({ settings, press }: { settings: Settings; press: Keypres
   const right = (stage: Column["stage"]) => left(stage) + COLUMN;
 
   // Each hop crosses one component, then a straight wire carries it to the next
-  const segments: { d: string; stroke: string }[] = [];
+  // Each segment belongs to a hop of the path, so one hop can be picked out
+  const segments: { d: string; stroke: string; hop: number }[] = [];
   if (press) {
     const first = press.path[0];
-    segments.push({ d: `M ${left("keys") + COLUMN / 2} ${y(first.from)} H ${right("plugboard")}`, stroke: colour(first) });
+    segments.push({ d: `M ${left("keys") + COLUMN / 2} ${y(first.from)} H ${right("plugboard")}`, stroke: colour(first), hop: 0 });
     press.path.forEach((hop, i) => {
       const stroke = colour(hop);
       if (hop.direction === "turn") {
         const x = right("reflector");
-        segments.push({ d: `M ${x} ${y(hop.from)} C ${x - COLUMN * 0.9} ${y(hop.from)}, ${x - COLUMN * 0.9} ${y(hop.to)}, ${x} ${y(hop.to)}`, stroke });
+        segments.push({ d: `M ${x} ${y(hop.from)} C ${x - COLUMN * 0.9} ${y(hop.from)}, ${x - COLUMN * 0.9} ${y(hop.to)}, ${x} ${y(hop.to)}`, stroke, hop: i });
       } else if (hop.direction === "in") {
-        segments.push({ d: `M ${right(hop.stage)} ${y(hop.from)} L ${left(hop.stage)} ${y(hop.to)}`, stroke });
+        segments.push({ d: `M ${right(hop.stage)} ${y(hop.from)} L ${left(hop.stage)} ${y(hop.to)}`, stroke, hop: i });
       } else {
-        segments.push({ d: `M ${left(hop.stage)} ${y(hop.from)} L ${right(hop.stage)} ${y(hop.to)}`, stroke });
+        segments.push({ d: `M ${left(hop.stage)} ${y(hop.from)} L ${right(hop.stage)} ${y(hop.to)}`, stroke, hop: i });
       }
       const next = press.path[i + 1];
       if (next) {
         const fromX = hop.direction === "in" ? left(hop.stage) : right(hop.stage);
         const toX = next.direction === "in" || next.direction === "turn" ? right(next.stage) : left(next.stage);
-        segments.push({ d: `M ${fromX} ${y(hop.to)} H ${toX}`, stroke: colour(next) });
+        segments.push({ d: `M ${fromX} ${y(hop.to)} H ${toX}`, stroke: colour(next), hop: i + 1 });
       }
     });
     const last = press.path.at(-1)!;
-    segments.push({ d: `M ${right("plugboard")} ${y(last.to)} H ${left("keys") + COLUMN / 2}`, stroke: colour(last) });
+    segments.push({ d: `M ${right("plugboard")} ${y(last.to)} H ${left("keys") + COLUMN / 2}`, stroke: colour(last), hop: press.path.length - 1 });
   }
 
   // The contacts the current touched, column by column
@@ -133,11 +134,11 @@ export function Wiring({ settings, press }: { settings: Settings; press: Keypres
             d={s.d}
             fill="none"
             stroke={s.stroke}
-            strokeWidth={3}
+            strokeWidth={focus === s.hop ? 5 : 3}
             strokeLinecap="round"
             initial={reduced ? false : { pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ delay: i * step, duration: reduced ? 0 : step * 1.5, ease: "linear" }}
+            animate={{ pathLength: 1, opacity: focus === undefined || focus === s.hop ? 1 : 0.15 }}
+            transition={{ delay: i * step, duration: reduced ? 0 : step * 1.5, ease: "linear", opacity: { duration: 0.15, delay: 0 } }}
           />
         ))}
         {press && (

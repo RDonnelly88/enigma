@@ -12,6 +12,7 @@ import {
   type Settings,
 } from "@/lib/enigma";
 import { cn } from "@/lib/cn";
+import { LidGuide } from "./lid-guide";
 
 const SLOTS = ["Left", "Middle", "Right"] as const;
 
@@ -111,6 +112,9 @@ export function Lid({ settings, onChange }: { settings: Settings; onChange: (set
                 </option>
               ))}
             </select>
+            <span className="text-xs text-case-muted">
+              Notch {ROTORS[settings.rotors[i]].notches.split("").join(" & ")}
+            </span>
           </Field>
         ))}
       </div>
@@ -132,6 +136,8 @@ export function Lid({ settings, onChange }: { settings: Settings; onChange: (set
           />
         ))}
       </div>
+
+      <LidGuide settings={settings} />
     </div>
   );
 }

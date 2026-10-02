@@ -146,6 +146,8 @@ export type Hop = { stage: Stage; direction: "in" | "out" | "turn"; from: number
 export type Keypress = {
   input: string;
   output: string;
+  /** Rotor positions before the key went down. */
+  before: [number, number, number];
   /** Rotor positions after the key went down, which is when the current flows. */
   positions: [number, number, number];
   path: Hop[];
@@ -185,7 +187,7 @@ export function press(settings: Settings, letter: string): Keypress {
   for (const w of [...wheels].reverse()) hop(w.stage, "out", throughWheel(w.spec, signal, w.position, w.ring, true));
   hop("plugboard", "out", plugs[signal]);
 
-  return { input, output: toLetter(signal), positions, path };
+  return { input, output: toLetter(signal), before: settings.positions, positions, path };
 }
 
 /**
