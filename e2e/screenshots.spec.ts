@@ -23,3 +23,12 @@ test("crib", async ({ page }, { project }) => {
   await page.getByRole("button", { name: /ruled out$/ }).first().click();
   await page.screenshot({ path: `e2e/screenshots/${project.name}-crib-clash.png` });
 });
+
+test("codebreaker", async ({ page }, { project }) => {
+  test.setTimeout(240_000);
+  await page.goto("/codebreaker");
+  await page.getByRole("button", { name: /English/ }).click();
+  await page.getByRole("button", { name: "Break it" }).click();
+  await page.getByTestId("verdict").waitFor({ timeout: 200_000 });
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-codebreaker.png`, fullPage: true });
+});
