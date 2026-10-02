@@ -258,10 +258,17 @@ function keyFor(rotors: Key["rotors"], l: number, m: number, r: number, t: numbe
  * every pair of letters, plugging them together (and freeing their old
  * partners), and keeps the single change that scores best.
  */
-function climbPlugs(ciphertext: Uint8Array, table: Uint8Array, start: Uint8Array, score: (t: Uint8Array) => number) {
+function climbPlugs(
+  ciphertext: Uint8Array,
+  table: Uint8Array,
+  start: Uint8Array,
+  score: (t: Uint8Array) => number,
+  onStep?: (plugs: Uint8Array, score: number) => void,
+) {
   const out = new Uint8Array(ciphertext.length);
   let plugs: Uint8Array = start.slice();
   let current = score(decipher(ciphertext, table, plugs, out));
+  onStep?.(plugs, current);
   for (;;) {
     let bestPlugs: Uint8Array | null = null;
     let bestScore = current;
@@ -285,6 +292,7 @@ function climbPlugs(ciphertext: Uint8Array, table: Uint8Array, start: Uint8Array
     if (!bestPlugs) return { plugs, score: current };
     plugs = bestPlugs;
     current = bestScore;
+    onStep?.(plugs, current);
   }
 }
 
@@ -383,4 +391,23 @@ export function breakCipher(text: string, options: Options = DEFAULT_OPTIONS, re
 export function looksReadable(score: number, language: Language) {
   const sample = language === "german" ? GERMAN.toUpperCase().trim().replace(/[^A-Z]+/g, "X") : ENGLISH.replace(/[^a-z]/gi, "");
   return score > bigramScore(toNumbers(sample), language) - 0.6;
+}
+
+export type ClimbStep = { plugboard: string[]; score: number; text: string };
+
+/**
+ * The plugboard climb on its own, for watching: given the right rotors and
+ * rings, every step of the climb from an empty plugboard, scored on letter
+ * pairs, as the cable that helped most goes in.
+ */
+export function climbHistory(text: string, settings: Settings, language: Language): ClimbStep[] {
+  const ciphertext = toNumbers(text);
+  const key: Key = { rotors: settings.rotors, rings: settings.rings, positions: settings.positions, reflector: settings.reflector };
+  const table = scramblers(key, ciphertext.length);
+  const out = new Uint8Array(ciphertext.length);
+  const steps: ClimbStep[] = [];
+  climbPlugs(ciphertext, table, NO_PLUGS, (t) => bigramScore(t, language), (plugs, score) =>
+    steps.push({ plugboard: pairs(plugs), score, text: toText(decipher(ciphertext, table, plugs, out)) }),
+  );
+  return steps;
 }

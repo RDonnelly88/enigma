@@ -5,12 +5,14 @@ const BREAK_TIMEOUT = 120_000;
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/codebreaker");
+  // Wait for the page to hydrate, or typing lands before React is listening
+  await page.waitForLoadState("networkidle");
 });
 
 test("is reachable from the header", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Codebreaker" }).click();
-  await expect(page.getByRole("heading", { name: "Codebreaker" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Codebreaker" })).toBeVisible();
 });
 
 test("needs enough ciphertext to try", async ({ page }) => {

@@ -57,16 +57,19 @@ const PRACTICE_PLAINTEXT =
 
 export const PRACTICE_CRIB = "WETTERVORHERSAGE";
 
-export const PRACTICE_CIPHERTEXT = encipher(
-  {
-    ...DEFAULT_SETTINGS,
-    rotors: ["IV", "II", "V"],
-    rings: [6, 21, 15],
-    positions: lettersToPositions("RTZ"),
-    plugboard: ["AE", "BF", "CM", "DQ", "HU", "JN", "LX", "PR", "SZ", "VW"],
-  },
-  PRACTICE_PLAINTEXT,
-).text;
+/** The practice intercept's secret key, used only to demonstrate how the Bombe tests a setting. */
+export const PRACTICE_KEY: Settings = {
+  ...DEFAULT_SETTINGS,
+  rotors: ["IV", "II", "V"],
+  rings: [6, 21, 15],
+  positions: lettersToPositions("RTZ"),
+  plugboard: ["AE", "BF", "CM", "DQ", "HU", "JN", "LX", "PR", "SZ", "VW"],
+};
+
+/** Where the crib really sits in the practice intercept. */
+export const PRACTICE_CRIB_AT = PRACTICE_PLAINTEXT.indexOf("WETTERVORHERSAGE");
+
+export const PRACTICE_CIPHERTEXT = encipher(PRACTICE_KEY, PRACTICE_PLAINTEXT).text;
 
 export type Practice = {
   id: string;
@@ -81,6 +84,15 @@ export type Practice = {
  * key the page never shows. Six cables is what the Polish codebreakers faced
  * in the early 1930s; ten is what the army used from 1939.
  */
+/** The six-cable practice message's key, used to show the plugboard climb on its own. */
+export const SIX_CABLE_KEY: Settings = {
+  ...DEFAULT_SETTINGS,
+  rotors: ["II", "V", "III"],
+  rings: [9, 17, 22],
+  positions: lettersToPositions("KQM"),
+  plugboard: ["AJ", "CP", "GL", "KW", "MY", "RZ"],
+};
+
 export const CODEBREAKER_PRACTICE: Practice[] = [
   {
     id: "six-cables",
@@ -88,13 +100,7 @@ export const CODEBREAKER_PRACTICE: Practice[] = [
     story: "An army report from the years when the plugboard carried six cables. Long enough, and plugged lightly enough, for statistics alone.",
     language: "german",
     ciphertext: encipher(
-      {
-        ...DEFAULT_SETTINGS,
-        rotors: ["II", "V", "III"],
-        rings: [9, 17, 22],
-        positions: lettersToPositions("KQM"),
-        plugboard: ["AJ", "CP", "GL", "KW", "MY", "RZ"],
-      },
+      SIX_CABLE_KEY,
       "ANXDASXOBERKOMMANDOXDERXWEHRMACHTXDIEXUEBUNGXDERXDRITTENXDIVISIONXBEGINNTXAMXMONTAGXUMXSECHSXUHRXDIEXTRUPPENXSAMMELNXSICHXIMXRAUMXNOERDLICHXDERXSTADTXDIEXVERSORGUNGXERFOLGTXUEBERXDENXBAHNHOFXFUNKVERKEHRXNURXNACHXBEFEHLXDERXKOMMANDEURXMELDETXDIEXBEREITSCHAFTXBISXSONNTAGXABENDXENDE",
     ).text,
   },
