@@ -27,9 +27,9 @@ def main():
 
     PLUGBOARD = Plugboard([PlugboardPair("A", "B"), PlugboardPair("C", "D"), PlugboardPair("E", "F")])
     KEYBOARD = Keyboard()
-    rotor3 = historical_rotors.ROTOR_1
-    rotor2 = historical_rotors.ROTOR_2
-    rotor1 = historical_rotors.ROTOR_4
+    rotor3 = historical_rotors.rotor_1()
+    rotor2 = historical_rotors.rotor_2()
+    rotor1 = historical_rotors.rotor_4()
     reflector = historical_reflectors.REFLECTOR_B
     ROTOR_RINGS = RotorRings(1, 1, 1)
     ROTOR_KEY = RotorKey("C", "A", "T")
@@ -77,16 +77,14 @@ def main():
             if event.type == pygame.QUIT:
                 animating = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    rotor2.rotate(1)
-                else:
-                    key = event.unicode
-                    if key.upper() in ALPHABET:
-                        letter = key.upper()
-                        INPUT = INPUT + letter
-                        engima_result = ENIGMA.encrypt(letter)
-                        ENCRYPTION_PATH = engima_result.path
-                        OUTPUT = OUTPUT + engima_result.cipher
+                letter = event.unicode.upper()
+                # Shift, Ctrl and the arrow keys send an empty string, and an
+                # empty string is "in" every string, so check the length too
+                if len(letter) == 1 and letter in ALPHABET:
+                    INPUT = INPUT + letter
+                    enigma_result = ENIGMA.encrypt(letter)
+                    ENCRYPTION_PATH = enigma_result.path
+                    OUTPUT = OUTPUT + enigma_result.cipher
 
 
 if __name__ == "__main__":

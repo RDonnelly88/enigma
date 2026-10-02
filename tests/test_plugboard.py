@@ -25,8 +25,8 @@ def test_plugboard_forward():
 
 
 def test_plugboard_backward():
-    assert plugboard.forward(0) == 17
-    assert plugboard.forward(1) == 1
+    assert plugboard.backward(17) == 0
+    assert plugboard.backward(1) == 1
 
 
 def test_plugboard_pairs_duplicate_value():
@@ -38,3 +38,8 @@ def test_plugboard_pairs_duplicate_value():
                 PlugboardPair("O", "A"),
             ]
         )
+
+
+def test_plugboard_pair_must_be_a_letter():
+    with pytest.raises(ValueError):
+        PlugboardPair("A", "1")

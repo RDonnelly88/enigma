@@ -28,27 +28,22 @@ class RotorKey:
         self.b = self.b.upper()
         self.c = self.c.upper()
 
-        if self.a not in ALPHABET:
-            raise ValueError(f"{self.a} not alphabetic!")
-        if self.b not in ALPHABET:
-            raise ValueError(f"{self.b} not alphabetic!")
-        if self.c not in ALPHABET:
-            raise ValueError(f"{self.c} not alphabetic!")
+        for letter in (self.a, self.b, self.c):
+            if len(letter) != 1 or letter not in ALPHABET:
+                raise ValueError(f"{letter} not a single letter!")
 
 
 @dataclass
 class RotorRings:
+    # Zero-indexed: 0 is ring setting A (no offset), 25 is Z
     a: int
     b: int
     c: int
 
     def __post_init__(self):
-        if 26 <= self.a >= 1:
-            raise ValueError(f"{self.a} not between 1 and 26")
-        if 26 <= self.b >= 1:
-            raise ValueError(f"{self.b} not between 1 and 26")
-        if 26 <= self.c >= 1:
-            raise ValueError(f"{self.c} not between 1 and 26")
+        for ring in (self.a, self.b, self.c):
+            if not 0 <= ring <= 25:
+                raise ValueError(f"{ring} not between 0 (A) and 25 (Z)")
 
 
 @dataclass
@@ -59,5 +54,9 @@ class PlugboardPair:
     def __post_init__(self):
         self.a = self.a.upper()
         self.b = self.b.upper()
+        if len(self.a) != 1 or self.a not in ALPHABET:
+            raise ValueError(f"{self.a} not a single letter!")
+        if len(self.b) != 1 or self.b not in ALPHABET:
+            raise ValueError(f"{self.b} not a single letter!")
         if self.a == self.b:
             raise ValueError(f"A cannot equal B in plugboard! {self.a} - {self.b}")

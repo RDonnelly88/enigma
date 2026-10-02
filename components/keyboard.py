@@ -16,7 +16,12 @@ class Keyboard:
         self,
         letter: str,
     ) -> int:
-        return ALPHABET.find(letter.upper())
+        letter = letter.upper()
+        # find() returns 0 for "" and -1 for anything else unknown, and both
+        # would quietly encrypt as a real letter
+        if len(letter) != 1 or letter not in ALPHABET:
+            raise ValueError(f"{letter!r} is not a letter the machine can encrypt!")
+        return ALPHABET.find(letter)
 
     def backward(self, signal: int) -> str:
         return ALPHABET[signal]
