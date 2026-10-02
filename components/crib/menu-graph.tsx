@@ -35,7 +35,8 @@ export function MenuGraph({ links }: { links: Link[] }) {
   const at = Object.fromEntries(
     letters.map((letter, i) => {
       const angle = (i / letters.length) * Math.PI * 2 - Math.PI / 2;
-      return [letter, { x: SIZE / 2 + RADIUS * Math.cos(angle), y: SIZE / 2 + RADIUS * Math.sin(angle) }];
+      // Rounded so the server's markup matches the browser's to the last digit
+      return [letter, { x: Math.round((SIZE / 2 + RADIUS * Math.cos(angle)) * 100) / 100, y: Math.round((SIZE / 2 + RADIUS * Math.sin(angle)) * 100) / 100 }];
     }),
   );
   const count = loops(links);

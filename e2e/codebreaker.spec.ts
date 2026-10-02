@@ -32,7 +32,7 @@ test.describe("full searches", () => {
     await expect(verdict).toContainText("AN DAS OBERKOMMANDO DER WEHRMACHT");
 
     await verdict.getByRole("link", { name: "Check it on the machine" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/machine");
     await expect(page.getByTestId("tape-output")).toContainText("ANXDA SXOBE RKOMM ANDOX");
   });
 

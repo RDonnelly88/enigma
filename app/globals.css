@@ -32,6 +32,18 @@
   --signal-out: #e0a526;
   --signal-turn: #d8443a;
   --danger: #b3261e;
+  /* The site's own chrome: the room the machine sits in, raised panels for
+     the explanations, and brass for anything you can grab and move */
+  --panel: #f4efe4;
+  --panel-edge: #d6ccb9;
+  --brass: #8a6510;
+  --brass-soft: #e7d6a8;
+  --brass-ink: #fffaf0;
+  /* Chart marks: one series in a light step, the highlighted mark in a dark
+     one. Checked with the palette validator for both modes; the light step is
+     under 3:1 on the panel, so every chart also carries labels and a table. */
+  --chart-mark: #c9a65a;
+  --chart-accent: #8a6510;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,6 +53,13 @@
     --room-muted: #9b917f;
     --paper: #e6dcc3;
     --danger: #ff8a80;
+    --panel: #1b1a18;
+    --panel-edge: #302d29;
+    --brass: #d9ae45;
+    --brass-soft: #4a3c1c;
+    --brass-ink: #1a1408;
+    --chart-mark: #845a00;
+    --chart-accent: #b98918;
   }
 }
 
@@ -50,6 +69,13 @@
   --room-muted: #9b917f;
   --paper: #e6dcc3;
   --danger: #ff8a80;
+  --panel: #1b1a18;
+  --panel-edge: #302d29;
+  --brass: #d9ae45;
+  --brass-soft: #4a3c1c;
+  --brass-ink: #1a1408;
+  --chart-mark: #845a00;
+  --chart-accent: #b98918;
 }
 
 /* `inline` because the values are custom properties; without it the tokens
@@ -81,6 +107,14 @@
   --color-signal-out: var(--signal-out);
   --color-signal-turn: var(--signal-turn);
   --color-danger: var(--danger);
+  --color-panel: var(--panel);
+  --color-panel-edge: var(--panel-edge);
+  --color-brass: var(--brass);
+  --color-brass-soft: var(--brass-soft);
+  --color-brass-ink: var(--brass-ink);
+  --color-chart-mark: var(--chart-mark);
+  --color-chart-accent: var(--chart-accent);
+  --font-serif: var(--font-serif-face);
   --font-stencil: var(--font-stencil-face);
   --font-type: var(--font-type-face);
   --font-sans: var(--font-sans-face);
@@ -134,5 +168,90 @@ body {
   }
   &:disabled {
     opacity: 0.45;
+  }
+}
+
+/*
+ * Sliders are the site's main control, so they get a proper finish: a hairline
+ * rail, the travelled part in brass, and a brass knob big enough for a thumb.
+ * The fill comes from --fill, which the Slider component keeps up to date.
+ */
+.slider {
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  --fill: 0%;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--brass) var(--fill), var(--panel-edge) var(--fill));
+}
+.slider::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--brass) var(--fill), var(--panel-edge) var(--fill));
+}
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  margin-top: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #fff6d8, var(--brass) 55%, #5a420c);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+  transition: transform 120ms;
+}
+.slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #fff6d8, var(--brass) 55%, #5a420c);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+}
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.slider:focus-visible {
+  outline: none;
+}
+.slider:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--room-ink);
+  outline-offset: 2px;
+}
+.slider:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--room-ink);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .slider::-webkit-slider-thumb {
+    transition: none;
+  }
+}
+
+/* Horizontal rails scroll by hand or by button, and hide their scrollbar */
+.rail {
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal ease-out both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
   }
 }

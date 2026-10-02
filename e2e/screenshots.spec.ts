@@ -2,7 +2,7 @@ import { test } from "@playwright/test";
 
 // The visual record. Look at these after any visual change.
 test("machine", async ({ page }, { project }) => {
-  await page.goto("/");
+  await page.goto("/machine");
   await page.getByRole("button", { name: "Plug A" }).click();
   await page.getByRole("button", { name: "Plug M" }).click();
   await page.getByRole("button", { name: "Plug Q" }).click();
@@ -34,4 +34,9 @@ test("codebreaker", async ({ page }, { project }) => {
   await page.getByRole("button", { name: "Break it" }).click();
   await page.getByTestId("verdict").waitFor({ timeout: 200_000 });
   await page.screenshot({ path: `e2e/screenshots/${project.name}-codebreaker.png`, fullPage: true });
+});
+
+test("story", async ({ page }, { project }) => {
+  await page.goto("/");
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-story.png`, fullPage: true });
 });
