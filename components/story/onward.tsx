@@ -5,12 +5,12 @@ const PAGES = [
   {
     href: "/day",
     title: "A day in 1941",
-    text: "Follow one day of messages from both sides: the German operator's midnight key change, and Bletchley reading his orders within the hour.",
+    text: "Follow one day of messages from both sides: the German operator’s midnight key change, and Bletchley reading his orders within the hour.",
   },
   {
     href: "/crib",
     title: "Cribs & the Bombe",
-    text: "How Polish mathematicians first broke Enigma in 1932, and how Bletchley Park turned their work into an industry that read it through the war.",
+    text: "How Polish mathematicians first broke Enigma in 1932, how Bletchley Park turned their work into an industry, and a turn at being the Bombe yourself.",
   },
   {
     href: "/codebreaker",
@@ -20,7 +20,7 @@ const PAGES = [
   {
     href: "/certificate",
     title: "Your certificate",
-    text: "Take the codebreaker’s test, and earn a certificate with your name enciphered on Enigma.",
+    text: "Two tests: a quiz, and an intercept to break against the clock with a crib and a Bombe. Pass, and earn a certificate with your name enciphered on Enigma.",
   },
 ];
 

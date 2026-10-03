@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Lightbulb, Play, RotateCcw, Timer } from "lucide-react";
 import { MenuGraph } from "@/components/crib/menu-graph";
+import { Stamp } from "@/components/ui/stamp";
 import { Gloss, readable } from "@/components/glossary/gloss";
 import { Plugboard } from "@/components/machine/plugboard";
 import { store, useStored } from "@/hooks/use-stored";
@@ -439,7 +440,8 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
         {stop && (
           <>
             <div className="rounded-lg border-2 border-signal-in bg-room p-4" data-testid="bombe-stop">
-              <p className="font-stencil text-2xl font-bold tracking-widest text-signal-in">STOP</p>
+              <Stamp ink="green" tilt={-6} className="text-2xl">Stop</Stamp>
+              <span className="sr-only">The Bombe stopped.</span>
               <p className="mt-1">
                 Rotor order <strong>{stop.order.join(" ")}</strong>, rotors at <strong className="font-type">{letters(stop.start)}</strong>.
               </p>

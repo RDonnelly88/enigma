@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter, Source_Serif_4, Special_Elite } from "next/font/google";
 import { GlossaryProvider } from "@/components/glossary/glossary";
 import { NextPage } from "@/components/next-page";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { PREPAINT } from "@/lib/preferences";
 import "./globals.css";
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SiteHeader />
           {children}
           <NextPage />
+          <SiteFooter />
         </GlossaryProvider>
       </body>
     </html>

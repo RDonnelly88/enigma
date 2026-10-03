@@ -25,7 +25,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     question: "Why did the rotors turn with every key press?",
-    options: ["To keep the wiring cool", "To count how many letters were typed", "So the same letter came out differently each time", "To wind the machine's clock"],
+    options: ["To keep the wiring cool", "To count how many letters were typed", "So the same letter came out differently each time", "To wind the machine’s clock"],
     answer: 2,
     why: "With the rotors turning, pressing E twice gives two different letters, so counting letters gets a codebreaker nowhere.",
     learnMore: { href: "/#how", label: "How the rotors scramble" },
@@ -39,7 +39,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     question: "What did the plugboard on the front of the machine do?",
-    options: ["Swapped pairs of letters with cables", "Powered the lamps", "Connected the machine to the radio", "Stored the day's settings"],
+    options: ["Swapped pairs of letters with cables", "Powered the lamps", "Connected the machine to the radio", "Stored the day’s settings"],
     answer: 0,
     why: "Each cable swapped two letters, on the way in and on the way out, multiplying the number of possible settings enormously.",
     learnMore: { href: "/#how", label: "The plugboard" },
@@ -55,7 +55,7 @@ export const QUESTIONS: Question[] = [
     question: "Who first broke Enigma, and when?",
     options: ["Bletchley Park, in 1940", "American engineers, in 1943", "Polish mathematicians, in 1932", "A German spy, in 1938"],
     answer: 2,
-    why: "Marian Rejewski worked out the army's rotor wiring in 1932, seven years before the war began.",
+    why: "Marian Rejewski worked out the army’s rotor wiring in 1932, seven years before the war began.",
     learnMore: { href: "/crib#poland", label: "Poland, 1932" },
   },
   {
@@ -81,7 +81,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     question: "How can a computer break an Enigma message today with no crib at all?",
-    options: ["It tries every possible key one by one", "It measures how much the letters look like real language", "It can't: it still needs a crib", "It looks the answer up"],
+    options: ["It tries every possible key one by one", "It measures how much the letters look like real language", "It can’t: it still needs a crib", "It looks the answer up"],
     answer: 1,
     why: "Nearly right settings leave text that is a little like German. A computer can measure that and climb towards the answer.",
     learnMore: { href: "/codebreaker#ioc", label: "Telling nearly right from wrong" },

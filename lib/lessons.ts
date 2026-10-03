@@ -42,7 +42,7 @@ export const LESSONS: Lesson[] = [
     title: "Press a key",
     task: "Click a key on the machine, or type a letter on your own keyboard.",
     lesson: (s) =>
-      `${s.input ? `${s.input[0]} lit ${s.output[0]}. ` : ""}That lamp is the ciphertext. An operator's partner wrote down each lamp as it lit, and that is what went out over the radio.`,
+      `${s.input ? `${s.input[0]} lit ${s.output[0]}. ` : ""}That lamp is the ciphertext. An operator’s partner wrote down each lamp as it lit, and that is what went out over the radio.`,
     done: (s) => s.input.length >= 1,
     learnMore: { href: "/#what", label: "What Enigma was" },
   },
@@ -60,7 +60,7 @@ export const LESSONS: Lesson[] = [
     title: "A letter is never itself",
     task: "Type the whole alphabet, A to Z.",
     lesson: () =>
-      "Not one letter lit its own lamp, and it never will. The reflector sends the current back by a different wire every time. That single flaw is what the crib dragger and Turing's Bombe were built on.",
+      "Not one letter lit its own lamp, and it never will. The reflector sends the current back by a different wire every time. That single flaw is what the crib dragger and Turing’s Bombe were built on.",
     done: (s) => s.input.includes(ALPHABET),
     learnMore: { href: "/crib#cribs", label: "How codebreakers used it" },
   },
@@ -79,7 +79,7 @@ export const LESSONS: Lesson[] = [
     title: "Set the rotors",
     task: "Turn the rotor windows to B L A, using the thumbwheels or their arrows.",
     lesson: () =>
-      "Where the rotors start is part of the key. Each message began at its own start position, so even with the same day's settings, no two messages were enciphered alike.",
+      "Where the rotors start is part of the key. Each message began at its own start position, so even with the same day’s settings, no two messages were enciphered alike.",
     done: (s) => s.settings.positions.join() === lettersToPositions("BLA").join(),
     learnMore: { href: "/#used", label: "How operators set up" },
   },
@@ -89,7 +89,7 @@ export const LESSONS: Lesson[] = [
     task: "With the rotors set to A D U, press three keys and watch the middle window.",
     setup: { ...DEFAULT_SETTINGS, positions: lettersToPositions("ADU") },
     lesson: () =>
-      "The middle rotor moved on two key presses running, and took the left one with it. It's a quirk of the stepping mechanism, and it means the rotors come round again after 16,900 letters, not 17,576.",
+      "The middle rotor moved on two key presses running, and took the left one with it. It’s a quirk of the stepping mechanism, and it means the rotors come round again after 16,900 letters, not 17,576.",
     done: (s) => s.doubleSteps >= 1,
     learnMore: { href: "/#how", label: "Three rotors, stepping" },
   },
@@ -119,7 +119,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "navy",
-    title: "The navy's fourth rotor",
+    title: "The navy’s fourth rotor",
     task: "Switch to the four-rotor M4 with the key sent to U-534 in 1945, and type in its message.",
     setup: u534.settings,
     lesson: () =>
