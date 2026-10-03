@@ -17,12 +17,17 @@ const PAGES = [
     title: "Codebreaker",
     text: "Break a message yourself, with no key and no guesses, the way a computer does it today.",
   },
+  {
+    href: "/certificate",
+    title: "Your certificate",
+    text: "Take the codebreaker’s test, and earn a certificate with your name enciphered on Enigma.",
+  },
 ];
 
-/** The two pages on breaking the machine, as large cards to carry the reader on. */
+/** The pages that follow the story, as large cards to carry the reader on. */
 export function Onward() {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2">
       {PAGES.map((p) => (
         <Link
           key={p.href}

@@ -34,6 +34,10 @@ export default function CribsAndTheBombe() {
         number={1}
         eyebrow="Poland, 1932"
         title="Mathematics against a machine"
+        short={{
+          says: "In 1932 a young Polish mathematician, Marian Rejewski, worked out how the army’s Enigma was wired, using maths and some settings sold by a German spy. Then he used the doubled message key to find each day’s settings.",
+          bigIdea: "Enigma was first broken in Poland, seven years before the war.",
+        }}
         intro={
           <p>
             French and British codebreakers had looked at the military Enigma and made little headway. Poland, with Germany
@@ -68,6 +72,10 @@ export default function CribsAndTheBombe() {
         number={2}
         eyebrow="Bletchley Park"
         title="An industry of codebreaking"
+        short={{
+          says: "Just before the war, the Poles shared everything they knew with Britain and France. Britain’s codebreakers worked at Bletchley Park, a country house that grew to nearly ten thousand people, most of them women. They kept it secret for thirty years.",
+          bigIdea: "Codebreaking became a huge, secret team effort.",
+        }}
         intro={
           <p>
             In July 1939, at a forest site outside Warsaw, the Poles gave everything to their British and French allies:
@@ -95,6 +103,10 @@ export default function CribsAndTheBombe() {
         number={3}
         eyebrow="Cribs"
         title="Guess a word, rule out a place"
+        short={{
+          says: "Codebreakers guessed words that were probably in a message, like the German for weather forecast. A guessed word is called a crib. Because no letter can turn into itself, they could rule out lots of places where the guess couldn’t fit.",
+          bigIdea: "A good guess is the first step to breaking a code.",
+        }}
         intro={
           <p>
             Every attack on Enigma at Bletchley started with a guess. Weather reports said <em>WETTERVORHERSAGE</em>,
@@ -111,6 +123,10 @@ export default function CribsAndTheBombe() {
         number={4}
         eyebrow="The Bombe"
         title="Testing a guess against every setting"
+        short={{
+          says: "Alan Turing designed the Bombe, a machine that took a crib and raced through the rotor settings, throwing out every one that couldn’t be right. The few left were tested by hand until the message turned into German.",
+          bigIdea: "The Bombe didn’t read messages. It ruled out wrong settings, fast.",
+        }}
         intro={
           <p>
             Knowing where a crib sits still leaves millions of rotor settings and an unknown plugboard. Alan Turing saw that
@@ -130,6 +146,10 @@ export default function CribsAndTheBombe() {
         number={5}
         eyebrow="What it changed"
         title="Ultra"
+        short={{
+          says: "The secrets read at Bletchley were called Ultra. They told Britain and its allies where U-boats were hunting and what enemy armies were planning. Some historians think it shortened the war by up to two years.",
+          bigIdea: "Reading the enemy’s messages changed the war.",
+        }}
         intro={
           <p>
             The intelligence from Enigma was called Ultra, and it reached commanders throughout the war: the positions of
