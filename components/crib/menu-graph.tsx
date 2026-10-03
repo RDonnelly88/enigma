@@ -30,7 +30,16 @@ function onLoop(links: Link[], index: number) {
  * happened. Lines that close a loop are what let the Bombe reject a wrong
  * rotor setting on its own.
  */
-export function MenuGraph({ links }: { links: Link[] }) {
+export function MenuGraph({
+  links,
+  onPick,
+  picked,
+}: {
+  links: Link[];
+  /** Makes the letters buttons, for picking one out of the menu. */
+  onPick?: (letter: string) => void;
+  picked?: string;
+}) {
   const letters = [...new Set(links.flatMap((l) => [l.a, l.b]))].sort();
   const at = Object.fromEntries(
     letters.map((letter, i) => {
@@ -54,7 +63,7 @@ export function MenuGraph({ links }: { links: Link[] }) {
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         className="mx-auto block w-full max-w-sm"
         // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
-        role="img"
+        role={onPick ? "group" : "img"}
         aria-label={`Menu of ${letters.length} letters and ${links.length} links with ${count} ${count === 1 ? "loop" : "loops"}`}
       >
         {[...pairs.values()].map((group) => {
@@ -78,8 +87,24 @@ export function MenuGraph({ links }: { links: Link[] }) {
           );
         })}
         {letters.map((letter) => (
-          <g key={letter}>
-            <circle cx={at[letter].x} cy={at[letter].y} r={13} fill="var(--case)" />
+          <g
+            key={letter}
+            {...(onPick && {
+              role: "button",
+              tabIndex: 0,
+              "aria-label": `Letter ${letter}`,
+              "aria-pressed": picked === letter,
+              className: "cursor-pointer outline-none [&:focus-visible>circle]:stroke-brass [&:focus-visible>circle]:stroke-[3]",
+              onClick: () => onPick(letter),
+              onKeyDown: (e: React.KeyboardEvent) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onPick(letter);
+                }
+              },
+            })}
+          >
+            <circle cx={at[letter].x} cy={at[letter].y} r={13} fill={picked === letter ? "var(--brass)" : "var(--case)"} />
             <text x={at[letter].x} y={at[letter].y + 5} textAnchor="middle" className="fill-case-ink font-stencil text-[14px] font-bold">
               {letter}
             </text>

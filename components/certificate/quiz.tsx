@@ -1,40 +1,17 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Printer, RotateCcw, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { PASS_MARK, QUESTIONS, rank, score } from "@/lib/quiz";
 import { Certificate, type Award } from "./certificate";
+import { store, useStored } from "@/hooks/use-stored";
+import { BREAK_STORE, parseBreak } from "./break-intercept";
 
-const STORE = "enigma.certificate";
-const changed = new Set<() => void>();
+export const AWARD_STORE = "enigma.certificate";
 
-// The certificate is kept in localStorage, which only exists in the browser,
-// so it is read as an external store: nothing on the server, the saved one after
-function subscribe(onChange: () => void) {
-  changed.add(onChange);
-  window.addEventListener("storage", onChange);
-  return () => {
-    changed.delete(onChange);
-    window.removeEventListener("storage", onChange);
-  };
-}
-function readStored() {
-  try {
-    return window.localStorage.getItem(STORE);
-  } catch {
-    return null;
-  }
-}
-function store(award: Award | null) {
-  try {
-    if (award) window.localStorage.setItem(STORE, JSON.stringify(award));
-    else window.localStorage.removeItem(STORE);
-  } catch {}
-  changed.forEach((f) => f());
-}
-function parse(raw: string | null): Award | null {
+export function parse(raw: string | null): Award | null {
   if (!raw) return null;
   try {
     const a = JSON.parse(raw) as Award;
@@ -48,7 +25,8 @@ const blank = () => QUESTIONS.map(() => null as number | null);
 
 /** Ten questions, one at a time, each explained once answered; pass and you get a certificate with your name on. */
 export function Quiz() {
-  const saved = parse(useSyncExternalStore(subscribe, readStored, () => null));
+  const saved = parse(useStored(AWARD_STORE));
+  const broken = useStored(BREAK_STORE);
   const [answers, setAnswers] = useState(blank);
   const [at, setAt] = useState(0);
   const [name, setName] = useState("");
@@ -61,7 +39,7 @@ export function Quiz() {
   if (saved) {
     return (
       <div className="flex flex-col gap-6">
-        <Certificate award={saved} />
+        <Certificate award={saved} broke={parseBreak(broken)} />
         <div className="no-print flex flex-wrap justify-center gap-3">
           <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-full bg-room-ink px-5 py-2.5 text-sm font-semibold text-room">
             <Printer className="size-4" /> Print or save as PDF
@@ -69,7 +47,7 @@ export function Quiz() {
           <button
             type="button"
             onClick={() => {
-              store(null);
+              store(AWARD_STORE, null);
               restart();
             }}
             className="inline-flex items-center gap-2 rounded-full border border-panel-edge px-5 py-2.5 text-sm font-semibold hover:border-brass"
@@ -105,7 +83,7 @@ export function Quiz() {
             className="flex flex-col gap-3 sm:flex-row"
             onSubmit={(e) => {
               e.preventDefault();
-              if (name.trim()) store({ name: name.trim(), score: total, date: new Date().toISOString() });
+              if (name.trim()) store(AWARD_STORE, { name: name.trim(), score: total, date: new Date().toISOString() });
             }}
           >
             <label className="sr-only" htmlFor="certificate-name">

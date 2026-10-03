@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { enciphered, QUESTIONS, rank } from "@/lib/quiz";
+import { rating } from "@/lib/story/challenge";
+import { clock, type BreakResult } from "./break-intercept";
 
 export type Award = { name: string; score: number; date: string };
 
 /** The certificate itself, laid out to print on its own as a page. */
-export function Certificate({ award }: { award: Award }) {
+export function Certificate({ award, broke }: { award: Award; broke?: BreakResult | null }) {
   const title = rank(award.score);
   const secret = enciphered(award.name);
   const date = new Date(award.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
@@ -21,6 +23,14 @@ export function Certificate({ award }: { award: Award }) {
         >
           PASSED
         </p>
+        {broke && (
+          <p
+            aria-hidden
+            className="absolute top-3 left-3 -rotate-12 rounded border-[3px] border-signal-in px-2 py-0.5 font-stencil text-sm font-bold tracking-[0.2em] text-signal-in opacity-80 sm:top-10 sm:left-10 sm:border-4 sm:px-3 sm:py-1 sm:text-2xl"
+          >
+            BROKEN
+          </p>
+        )}
         <p className="font-stencil text-sm font-bold tracking-[0.5em] text-paper-muted">ENIGMA</p>
         <h2 className="mt-4 font-stencil text-4xl leading-none font-bold tracking-wide sm:text-6xl">Codebreaker&rsquo;s certificate</h2>
         <p className="mt-8 font-serif text-lg italic">This is to certify that</p>
@@ -35,6 +45,12 @@ export function Certificate({ award }: { award: Award }) {
           questions correctly, earning the title of
         </p>
         <p className="mt-3 font-stencil text-3xl font-bold tracking-widest uppercase sm:text-4xl">{title}</p>
+        {broke && (
+          <p className="mx-auto mt-6 max-w-xl font-serif text-lg leading-relaxed" data-testid="certificate-break">
+            and broke an intercept with a Bombe in <strong>{clock(broke.seconds)}</strong>, as a{" "}
+            <strong>{rating(broke.seconds)}</strong>.
+          </p>
+        )}
 
         <div className="mx-auto mt-10 max-w-xl border-t border-paper-ink/30 pt-6">
           <p className="text-[11px] font-semibold tracking-[0.25em] text-paper-muted uppercase">Your name, as Enigma would send it</p>
