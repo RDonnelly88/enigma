@@ -55,6 +55,7 @@ export function ChapterRail({ chapters }: { chapters: Item[] }) {
             <li key={c.id}>
               <a
                 href={`#${c.id}`}
+                title={c.title}
                 aria-current={c.id === active ? "true" : undefined}
                 className={cn(
                   "flex items-baseline gap-2 text-xs transition-colors",
@@ -62,7 +63,8 @@ export function ChapterRail({ chapters }: { chapters: Item[] }) {
                 )}
               >
                 <span className={cn("font-stencil", c.id === active && "text-brass")}>{String(i + 1).padStart(2, "0")}</span>
-                <span className={cn("max-w-28", c.id !== active && "sr-only 2xl:not-sr-only")}>{c.title}</span>
+                {/* Names need the margin of a very wide screen; anything narrower and they run into the text */}
+                <span className="sr-only max-w-28 2xl:not-sr-only">{c.title}</span>
               </a>
             </li>
           ))}

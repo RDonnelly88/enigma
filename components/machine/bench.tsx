@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { ArrowDown, Volume2, VolumeX } from "lucide-react";
 import { Intercepts } from "@/components/intercepts";
 import { Incoming } from "@/components/machine/incoming";
 import { Keyboard } from "@/components/machine/keyboard";
@@ -53,6 +53,8 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
   // showed, else the first unfinished
   const [picked, setActive] = useState<string | null>(lesson && LESSONS.some((l) => l.id === lesson) ? lesson : null);
   const active = picked ?? machine.justCompleted ?? LESSONS.find((l) => !machine.completed.includes(l.id))?.id ?? LESSONS[0].id;
+  const activeIndex = Math.max(0, LESSONS.findIndex((l) => l.id === active));
+  const activeLesson = LESSONS[activeIndex];
 
   // Storage only exists in the browser, so earlier progress comes back after the first render
   useEffect(() => {
@@ -140,6 +142,25 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,38rem)_minmax(0,1fr)]">
         <div className="flex flex-col gap-6 lg:sticky lg:top-20 lg:self-start">
+          {/* On a phone the lessons sit below the machine, so say what to do where the keys are */}
+          <button
+            type="button"
+            onClick={() => {
+              setPanel("lessons");
+              document.getElementById("bench-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="flex items-start gap-3 rounded-lg border border-panel-edge bg-panel px-3 py-2.5 text-left text-sm lg:hidden"
+            data-testid="lesson-strip"
+          >
+            <span className="mt-0.5 shrink-0 font-stencil text-xs font-bold text-brass">{activeIndex + 1}/{LESSONS.length}</span>
+            <span className="min-w-0 flex-1">
+              <span className="font-semibold">{activeLesson.title}. </span>
+              <span className="text-room-muted">
+                {machine.completed.includes(activeLesson.id) ? "Done: see what it showed below." : activeLesson.task}
+              </span>
+            </span>
+            <ArrowDown className="mt-0.5 size-4 shrink-0 text-brass" aria-hidden />
+          </button>
           <section aria-label="The machine" className="stage wood rounded-xl p-2.5 shadow-2xl sm:p-4">
             <div className="crinkle relative flex flex-col items-center gap-6 overflow-hidden rounded-lg border border-case-edge px-2 py-5 sm:gap-7 sm:px-6 sm:py-6">
               <p className="nameplate rounded-sm px-4 py-0.5 font-stencil text-sm font-bold tracking-[0.5em]" aria-hidden>
@@ -183,7 +204,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
           />
         </div>
 
-        <div className="min-w-0">
+        <div id="bench-panel" className="min-w-0 scroll-mt-20">
           <Tabs
             label="About the machine"
             value={panel}

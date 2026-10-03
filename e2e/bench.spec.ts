@@ -81,3 +81,14 @@ test("a secret without its key can be taken to the codebreaker", async ({ page }
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("textbox", { name: /Ciphertext/ })).toHaveValue("QWERTYUIOPASDFGHJKLZXCVBNM");
 });
+
+test("on a phone, the lesson to do sits above the machine", async ({ page }, { project }) => {
+  test.skip(project.name !== "mobile", "the lessons sit beside the machine on a wide screen");
+  await page.goto("/machine");
+  const strip = page.getByTestId("lesson-strip");
+  await expect(strip).toContainText("Press a key");
+  await page.getByRole("button", { name: "Q", exact: true }).click();
+  await expect(strip).toContainText("Done");
+  await strip.click();
+  await expect(page.getByTestId("lesson-learnt")).toBeInViewport();
+});
