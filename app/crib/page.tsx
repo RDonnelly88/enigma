@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BeTheBombe } from "@/components/breaking/be-the-bombe";
 import { BombeWalkthrough } from "@/components/breaking/bombe-walkthrough";
 import { RejewskiDemo } from "@/components/breaking/rejewski-demo";
 import { CribTool } from "@/components/crib/crib-tool";
@@ -136,6 +137,13 @@ export default function CribsAndTheBombe() {
           </p>
         }
       >
+        <BeTheBombe />
+        <Prose>
+          <p>
+            That is all the Bombe did, with a longer crib, real rotors and every one of the 17,576 drum positions, for every
+            rotor order. Here it is on the practice intercept, from the crib to the message read.
+          </p>
+        </Prose>
         <BombeWalkthrough />
         <Aside>
           The Bombe did not read messages. It threw out wrong settings so fast that the few left could be tried by hand.
