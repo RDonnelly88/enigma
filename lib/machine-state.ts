@@ -1,4 +1,4 @@
-import { ALPHABET, press, validate, type Keypress, type Settings } from "./enigma";
+import { ALPHABET, DEFAULT_SETTINGS, press, validate, type Keypress, type Settings } from "./enigma";
 import { LESSONS } from "./lessons";
 
 /**
@@ -38,7 +38,9 @@ export type Action =
   | { type: "clear" }
   | { type: "transmitted" }
   | { type: "shared" }
-  | { type: "restore"; completed: string[] };
+  | { type: "restore"; completed: string[] }
+  /** A fresh machine on the default settings, lessons kept unless `lessons` says to forget them too. */
+  | { type: "reset"; lessons: boolean };
 
 function act(state: State, action: Action): State {
   switch (action.type) {
@@ -92,6 +94,8 @@ function act(state: State, action: Action): State {
       return { ...state, transmitted: true };
     case "shared":
       return { ...state, shared: true };
+    case "reset":
+      return action.lessons ? initialState(DEFAULT_SETTINGS) : { ...initialState(DEFAULT_SETTINGS), completed: state.completed };
     case "restore": {
       const known = action.completed.filter((id) => LESSONS.some((l) => l.id === id) && !state.completed.includes(id));
       return known.length ? { ...state, completed: [...known, ...state.completed] } : state;

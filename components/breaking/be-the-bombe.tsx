@@ -1,5 +1,6 @@
 "use client";
 
+import { Gloss } from "@/components/glossary/gloss";
 import { useEffect, useRef, useState } from "react";
 import { Check, Power, X, Zap } from "lucide-react";
 import { useReducedMotion } from "motion/react";
@@ -127,30 +128,32 @@ export function BeTheBombe() {
 function Trace({ cards, guess }: { cards: number[][]; guess: number }) {
   const { hops, consistent } = follow(cards, guess);
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-panel-edge bg-room p-3" data-testid="bombe-trace">
-      <p className="text-sm">
-        Guess: <strong className="font-type">E</strong> is plugged to <strong className="font-type">{letter(guess)}</strong>.
-      </p>
-      {hops.slice(1).map((hop, i) => {
-        const into = hops[i].plug;
-        return (
-          <div key={i} className="flex flex-col gap-1">
-            <p className="text-sm">
-              Card for letter {LOOP[i].at}: <span className="font-type font-bold">{letter(into)}</span> swaps with{" "}
-              <span className="font-type font-bold">{letter(hop.plug)}</span>, so <strong className="font-type">{hop.letter}</strong> is
-              plugged to <strong className="font-type">{letter(hop.plug)}</strong>.
-            </p>
-            <Card card={cards[i]} highlight={into} />
-          </div>
-        );
-      })}
-      <p className={cn("flex items-center gap-1.5 text-sm font-semibold", consistent ? "text-signal-in" : "text-signal-turn")}>
-        {consistent ? <Check className="size-4" /> : <X className="size-4" />}
-        {consistent
-          ? `It comes back to ${letter(guess)}. The guess holds up.`
-          : `But you said E is plugged to ${letter(guess)}. A cable can’t go two places: this guess is wrong.`}
-      </p>
-    </div>
+    <Gloss>
+      <div className="flex flex-col gap-2 rounded-lg border border-panel-edge bg-room p-3" data-testid="bombe-trace">
+        <p className="text-sm">
+          Guess: <strong className="font-type">E</strong> is plugged to <strong className="font-type">{letter(guess)}</strong>.
+        </p>
+        {hops.slice(1).map((hop, i) => {
+          const into = hops[i].plug;
+          return (
+            <div key={i} className="flex flex-col gap-1">
+              <p className="text-sm">
+                Card for letter {LOOP[i].at}: <span className="font-type font-bold">{letter(into)}</span> swaps with{" "}
+                <span className="font-type font-bold">{letter(hop.plug)}</span>, so <strong className="font-type">{hop.letter}</strong> is
+                plugged to <strong className="font-type">{letter(hop.plug)}</strong>.
+              </p>
+              <Card card={cards[i]} highlight={into} />
+            </div>
+          );
+        })}
+        <p className={cn("flex items-center gap-1.5 text-sm font-semibold", consistent ? "text-signal-in" : "text-signal-turn")}>
+          {consistent ? <Check className="size-4" /> : <X className="size-4" />}
+          {consistent
+            ? `It comes back to ${letter(guess)}. The guess holds up.`
+            : `But you said E is plugged to ${letter(guess)}. A cable can’t go two places: this guess is wrong.`}
+        </p>
+      </div>
+    </Gloss>
   );
 }
 
@@ -222,78 +225,80 @@ function Wires({ cards, right, drums }: { cards: number[][]; right: boolean; dru
   const all = done && lit.size === 26;
 
   return (
-    <section className="flex flex-col gap-3">
-      <h4 className="text-sm font-semibold">3. Now do it the machine&rsquo;s way</h4>
-      <p className="max-w-2xl text-sm leading-relaxed text-room-muted">
-        The Bombe didn&rsquo;t try guesses one at a time. E had a cable of 26 wires, one for each possible plug. Current fed into one
-        wire ran through the drums round the loop and came back on the wire that guess leads to, then on again, lighting every
-        guess the first one implies, all in an instant.
-      </p>
-      <div className="crinkle rounded-lg border border-case-edge p-3">
-        <p className="mb-2 text-[11px] font-semibold tracking-[0.2em] text-case-muted uppercase">E&rsquo;s 26 wires · drums at {drums}</p>
-        <div className="flex flex-wrap gap-1" data-testid="bombe-wires">
-          {ALPHABET.split("").map((ch, i) => {
-            const on = lit?.has(i);
-            return (
-              <button
-                key={ch}
-                type="button"
-                onClick={() => run(i)}
-                disabled={running}
-                aria-label={`Feed current into wire ${ch}`}
-                className={cn(
-                  "grid size-7 place-items-center rounded-full border-2 font-stencil text-xs font-bold transition-colors duration-150 motion-reduce:transition-none",
-                  on ? "border-lamp-glow bg-lamp-on text-lamp-ink-on shadow-[0_0_10px_2px_var(--lamp-glow)]" : "border-metal-dark bg-lamp-off text-lamp-ink-off",
-                  i === start && lit && "ring-2 ring-case-ink",
-                )}
-              >
-                {ch}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => run(start)}
-          disabled={running}
-          className="inline-flex items-center gap-2 rounded-full bg-room-ink px-4 py-2 text-sm font-semibold text-room disabled:opacity-50"
-        >
-          <Power className="size-4" /> Switch on, current into wire {letter(start)}
-        </button>
-        <span className="text-xs text-room-muted">Or tap any wire to feed it.</span>
-      </div>
-      {done && (
-        <p className={cn("rounded-lg px-4 py-3 text-sm leading-relaxed", all ? "bg-signal-turn/15" : "bg-signal-in/15")} data-testid="wires-verdict">
-          {all ? (
-            <>
-              <strong>All 26 lit.</strong> Every guess leads to every other, so none of them can be E&rsquo;s cable: the position is
-              impossible. The drums click on to the next one, about twenty times a second on a real Bombe.
-            </>
-          ) : lit.size === 1 ? (
-            <>
-              <strong>Only {letter(start)} lights.</strong> The current goes round and comes straight back to the wire it started
-              on: that guess agrees with itself. E is plugged to {letter(start)}.
-            </>
-          ) : (
-            <>
-              <strong>Only {lit.size} of 26 lit.</strong> Not everything, so the position can&rsquo;t be thrown out and the Bombe stops.
-              The answer is among the dark wires.{" "}
-              {right && (
-                <button type="button" onClick={() => run(ANSWER)} className="inline-flex items-center gap-1 font-semibold text-brass underline">
-                  <Zap className="size-3.5" /> Feed wire {letter(ANSWER)}
-                </button>
-              )}
-            </>
-          )}
+    <Gloss>
+      <section className="flex flex-col gap-3">
+        <h4 className="text-sm font-semibold">3. Now do it the machine&rsquo;s way</h4>
+        <p className="max-w-2xl text-sm leading-relaxed text-room-muted">
+          The Bombe didn&rsquo;t try guesses one at a time. E had a cable of 26 wires, one for each possible plug. Current fed into one
+          wire ran through the drums round the loop and came back on the wire that guess leads to, then on again, lighting every
+          guess the first one implies, all in an instant.
         </p>
-      )}
-      <p className="max-w-2xl text-xs leading-relaxed text-room-muted">
-        A real menu had several loops, joined through Gordon Welchman&rsquo;s diagonal board, which uses the fact that a cable works
-        both ways. With that, a wrong position lit every wire and a right one left exactly one dark: the answer.
-      </p>
-    </section>
+        <div className="crinkle rounded-lg border border-case-edge p-3">
+          <p className="mb-2 text-[11px] font-semibold tracking-[0.2em] text-case-muted uppercase">E&rsquo;s 26 wires · drums at {drums}</p>
+          <div className="flex flex-wrap gap-1" data-testid="bombe-wires">
+            {ALPHABET.split("").map((ch, i) => {
+              const on = lit?.has(i);
+              return (
+                <button
+                  key={ch}
+                  type="button"
+                  onClick={() => run(i)}
+                  disabled={running}
+                  aria-label={`Feed current into wire ${ch}`}
+                  className={cn(
+                    "grid size-7 place-items-center rounded-full border-2 font-stencil text-xs font-bold transition-colors duration-150 motion-reduce:transition-none",
+                    on ? "border-lamp-glow bg-lamp-on text-lamp-ink-on shadow-[0_0_10px_2px_var(--lamp-glow)]" : "border-metal-dark bg-lamp-off text-lamp-ink-off",
+                    i === start && lit && "ring-2 ring-case-ink",
+                  )}
+                >
+                  {ch}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => run(start)}
+            disabled={running}
+            className="inline-flex items-center gap-2 rounded-full bg-room-ink px-4 py-2 text-sm font-semibold text-room disabled:opacity-50"
+          >
+            <Power className="size-4" /> Switch on, current into wire {letter(start)}
+          </button>
+          <span className="text-xs text-room-muted">Or tap any wire to feed it.</span>
+        </div>
+        {done && (
+          <p className={cn("rounded-lg px-4 py-3 text-sm leading-relaxed", all ? "bg-signal-turn/15" : "bg-signal-in/15")} data-testid="wires-verdict">
+            {all ? (
+              <>
+                <strong>All 26 lit.</strong> Every guess leads to every other, so none of them can be E&rsquo;s cable: the position is
+                impossible. The drums click on to the next one, about twenty times a second on a real Bombe.
+              </>
+            ) : lit.size === 1 ? (
+              <>
+                <strong>Only {letter(start)} lights.</strong> The current goes round and comes straight back to the wire it started
+                on: that guess agrees with itself. E is plugged to {letter(start)}.
+              </>
+            ) : (
+              <>
+                <strong>Only {lit.size} of 26 lit.</strong> Not everything, so the position can&rsquo;t be thrown out and the Bombe stops.
+                The answer is among the dark wires.{" "}
+                {right && (
+                  <button type="button" onClick={() => run(ANSWER)} className="inline-flex items-center gap-1 font-semibold text-brass underline">
+                    <Zap className="size-3.5" /> Feed wire {letter(ANSWER)}
+                  </button>
+                )}
+              </>
+            )}
+          </p>
+        )}
+        <p className="max-w-2xl text-xs leading-relaxed text-room-muted">
+          A real menu had several loops, joined through Gordon Welchman&rsquo;s diagonal board, which uses the fact that a cable works
+          both ways. With that, a wrong position lit every wire and a right one left exactly one dark: the answer.
+        </p>
+      </section>
+    </Gloss>
   );
 }
 

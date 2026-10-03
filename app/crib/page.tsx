@@ -56,7 +56,7 @@ export default function CribsAndTheBombe() {
             solving equations, one of the great feats of applied mathematics.
           </p>
           <p>
-            Then he found a way to read the daily keys. The doubled <Term id="message-key">message key</Term> at the head of every message was the opening.
+            Then he found a way to read each day&rsquo;s key. The doubled <Term id="message-key">message key</Term> at the head of every message was the opening.
           </p>
         </Prose>
         <RejewskiDemo />

@@ -46,5 +46,5 @@ test("each page leads on to the next, and the last back to the machine", async (
     await expect(page.getByRole("link", { name: next, exact: true }).first()).toHaveAttribute("aria-current", "page");
   }
   await page.getByRole("contentinfo").getByRole("link", { name: /Send a secret/ }).click();
-  await expect(page.locator('[data-lesson="share"] button')).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator('[data-lesson="share"] > button')).toHaveAttribute("aria-expanded", "true");
 });

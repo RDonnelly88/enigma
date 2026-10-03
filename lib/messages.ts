@@ -8,7 +8,7 @@ export type Intercept = {
   ciphertext: string;
 };
 
-/** Real messages whose keys are known, to decrypt on the machine. */
+/** Real messages whose keys are known, to decipher on the machine. */
 export const INTERCEPTS: Intercept[] = [
   {
     id: "barbarossa",

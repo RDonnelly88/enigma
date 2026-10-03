@@ -148,7 +148,7 @@ export function testStart(order: Order, start: [number, number, number], links: 
   return survivors;
 }
 
-/** Runs one wheel order over a slice of its start positions, numbered 0 (AAA) to 17,575 (ZZZ). */
+/** Runs one rotor order over a slice of its start positions, numbered 0 (AAA) to 17,575 (ZZZ). */
 export function runBombe(order: Order, links: Link[], test: string, from = 0, to = 26 ** 3): Stop[] {
   const stops: Stop[] = [];
   for (let n = from; n < to; n++) {

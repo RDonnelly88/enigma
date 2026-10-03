@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, BookOpen, Search, X } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { TERMS, findTerm, searchTerms } from "@/lib/glossary";
+import { TERMS, findTerm, gloss, searchTerms } from "@/lib/glossary";
 import { GlossaryVisual } from "./visuals";
 
 type Glossary = { open: (id?: string) => void };
@@ -39,7 +39,12 @@ export function GlossaryProvider({ children }: { children: React.ReactNode }) {
 
 const useGlossary = () => useContext(GlossaryContext);
 
-/** A technical word in running text: underlined, and a tap opens the glossary at it. */
+/**
+ * A technical word in running text: underlined, and a tap opens the glossary
+ * at it. The rule everywhere: underline a term the first time it appears in a
+ * block of reading (a chapter, a demo's explanation, a card, a lesson), and
+ * never in buttons, labels or charts.
+ */
 export function Term({ id, children }: { id: string; children: React.ReactNode }) {
   const { open } = useGlossary();
   const term = findTerm(id);
@@ -52,6 +57,23 @@ export function Term({ id, children }: { id: string; children: React.ReactNode }
     >
       {children}
     </button>
+  );
+}
+
+/** A string of reading, from a lesson, an event or a card, with its terms underlined by the same rule as any block. */
+export function Glossed({ text }: { text: string }) {
+  return (
+    <>
+      {gloss(text, new Set()).map((piece, i) =>
+        typeof piece === "string" ? (
+          piece
+        ) : (
+          <Term key={i} id={piece.id}>
+            {piece.text}
+          </Term>
+        ),
+      )}
+    </>
   );
 }
 

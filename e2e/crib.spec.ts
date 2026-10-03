@@ -21,7 +21,7 @@ test("the true position of the practice crib survives and gives a menu", async (
 test("a clash rules a position out and is shown in red", async ({ page }) => {
   const ruledOut = page.getByRole("button", { name: /ruled out$/ }).first();
   await ruledOut.click();
-  await expect(page.getByTestId("verdict")).toContainText("would encrypt as itself");
+  await expect(page.getByTestId("verdict")).toContainText("would be enciphered as itself");
   await expect(page.locator("[data-clash]").first()).toBeVisible();
   await expect(page.getByText("no point building its menu")).toBeVisible();
 });

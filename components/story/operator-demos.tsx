@@ -40,7 +40,7 @@ function KeySheet({ selected, onSelect }: { selected: number; onSelect: (day: nu
     <Demo title="A month of keys" prompt="Pick a day">
       <div className="rounded-sm bg-paper p-4 text-paper-ink shadow-md sm:p-5">
         <p className="text-center font-type text-sm tracking-[0.3em] uppercase">Geheime Kommandosache</p>
-        <p className="mt-1 text-center text-xs text-paper-muted">A practice sheet laid out like a 1930s army key list</p>
+        <p className="mt-1 text-center text-xs text-paper-muted">A practice sheet laid out like a 1930s army key sheet</p>
         <div className="mt-4 max-h-80 overflow-auto">
           <table className="w-full min-w-[34rem] text-left font-type text-sm">
             <thead className="sticky top-0 bg-paper text-[11px] tracking-wider text-paper-muted">
@@ -354,7 +354,7 @@ function Receiving({ dayKey, indicator, body }: { dayKey: DailyKey; indicator: s
           ))}
         </ol>
       </div>
-      <TryIt lesson="barbarossa">Decrypt a real 1941 message on the machine</TryIt>
+      <TryIt lesson="barbarossa">Decipher a real 1941 message on the machine</TryIt>
     </Demo>
   );
 }

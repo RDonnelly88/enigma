@@ -21,6 +21,8 @@ export function useMachine(initial: Settings = DEFAULT_SETTINGS) {
     clear: useCallback(() => dispatch({ type: "clear" }), []),
     markTransmitted: useCallback(() => dispatch({ type: "transmitted" }), []),
     markShared: useCallback(() => dispatch({ type: "shared" }), []),
+    /** Back to a fresh machine on the default settings; with `lessons`, signals school starts over too. */
+    reset: useCallback((lessons: boolean) => dispatch({ type: "reset", lessons }), []),
     /** Brings back lessons finished on an earlier visit. */
     restoreLessons: useCallback((completed: string[]) => dispatch({ type: "restore", completed }), []),
   };

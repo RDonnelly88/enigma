@@ -92,3 +92,20 @@ test("on a phone, the lesson to do sits above the machine", async ({ page }, { p
   await strip.click();
   await expect(page.getByTestId("lesson-learnt")).toBeInViewport();
 });
+
+test("the machine resets to the default settings, and the lessons can start over", async ({ page }) => {
+  await page.goto("/machine");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Plug A" }).click();
+  await page.getByRole("button", { name: "Plug M" }).click();
+  await page.getByLabel("Type or paste a message").fill("Hello");
+  await page.getByRole("button", { name: "Type it" }).click();
+  await expect(page.getByTestId("tape-input")).not.toHaveText(/Press a key/);
+  await page.getByRole("button", { name: "Reset the machine" }).click();
+  await expect(page.getByTestId("tape-input")).toHaveText(/Press a key/);
+  await expect(page.getByTestId("lesson-progress")).not.toHaveText(/^0 of/);
+  await page.getByRole("button", { name: "Start the lessons again" }).click();
+  await expect(page.getByTestId("lesson-progress")).toHaveText(/^0 of/);
+  await page.reload();
+  await expect(page.getByTestId("lesson-progress")).toHaveText(/^0 of/);
+});

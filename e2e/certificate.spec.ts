@@ -39,3 +39,18 @@ test("too many wrong answers means no certificate, and a pointer to what to read
   await expect(page.getByRole("button", { name: "Make my certificate" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: QUESTIONS[0].learnMore.label }).first()).toBeVisible();
 });
+
+test("the quiz can be started again part way through, and saved results cleared", async ({ page }) => {
+  await page.goto("/certificate");
+  await page.waitForLoadState("networkidle");
+  await answer(page, (i) => QUESTIONS[i].answer);
+  await page.getByLabel("Your name").fill("Ada");
+  await page.getByRole("button", { name: "Make my certificate" }).click();
+  await page.getByRole("button", { name: /Clear my results/ }).click();
+  await expect(page.getByTestId("quiz")).toBeVisible();
+  await page.getByTestId("quiz").getByRole("radio", { name: QUESTIONS[0].options[0], exact: true }).click();
+  await page.getByRole("button", { name: "Next question" }).click();
+  await expect(page.getByText(`Question 2 of ${QUESTIONS.length}`)).toBeVisible();
+  await page.getByRole("button", { name: "Start again" }).click();
+  await expect(page.getByText(`Question 1 of ${QUESTIONS.length}`)).toBeVisible();
+});

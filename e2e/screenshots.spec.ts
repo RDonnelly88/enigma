@@ -98,6 +98,7 @@ test("break an intercept", async ({ page }, { project }) => {
   await page.getByRole("button", { name: "Lock it in" }).click();
   await shot("menu");
   await page.getByRole("button", { name: `Letter ${testLetter(menuAt(CHALLENGE.cribAt))}` }).click();
+  await page.getByRole("button", { name: /^Wire the Bombe/ }).click();
   await page.getByRole("button", { name: "Start the Bombes" }).click();
   await page.getByTestId("bombe-stop").waitFor({ timeout: 60_000 });
   await shot("stop");
