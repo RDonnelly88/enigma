@@ -3,6 +3,11 @@ import { ArrowRight } from "lucide-react";
 
 const PAGES = [
   {
+    href: "/day",
+    title: "A day in 1941",
+    text: "Follow one day of messages from both sides: the German operator's midnight key change, and Bletchley reading his orders within the hour.",
+  },
+  {
     href: "/crib",
     title: "Cribs & the Bombe",
     text: "How Polish mathematicians first broke Enigma in 1932, and how Bletchley Park turned their work into an industry that read it through the war.",
@@ -17,7 +22,7 @@ const PAGES = [
 /** The two pages on breaking the machine, as large cards to carry the reader on. */
 export function Onward() {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-3">
       {PAGES.map((p) => (
         <Link
           key={p.href}

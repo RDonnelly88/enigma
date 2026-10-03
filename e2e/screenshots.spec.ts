@@ -48,3 +48,10 @@ test("breaking pages", async ({ page }, { project }) => {
   await page.goto("/codebreaker");
   await page.screenshot({ path: `e2e/screenshots/${project.name}-codebreaker-story.png`, fullPage: true });
 });
+
+test("day", async ({ page }, { project }) => {
+  await page.goto("/day");
+  await page.waitForLoadState("networkidle");
+  for (let i = 0; i < 9; i++) await page.getByRole("button", { name: "Next event" }).click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-day.png`, fullPage: true });
+});
