@@ -216,3 +216,28 @@ export function playAircraft(seconds = 9): () => void {
     for (const e of engines) e.stop(ctx.currentTime + 0.35);
   };
 }
+
+/** A guess being checked: a quick run of relay clicks, the checking machine working through the menu. */
+export function playChecking(clicks = 6) {
+  const ctx = audio();
+  if (!ctx) return;
+  for (let i = 0; i < clicks; i++) {
+    burst(ctx, { at: ctx.currentTime + i * 0.11 + Math.random() * 0.02, length: 0.015, frequency: 3000 + Math.random() * 800, gain: 0.35, q: 3 });
+  }
+}
+
+/** A check that fails: a short, dull buzz. */
+export function playReject() {
+  const ctx = audio();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const level = ctx.createGain();
+  osc.type = "square";
+  osc.frequency.value = 110;
+  level.gain.setValueAtTime(0.0001, ctx.currentTime);
+  level.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.02);
+  level.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.28);
+  osc.connect(level).connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.3);
+}

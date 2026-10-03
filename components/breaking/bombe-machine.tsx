@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { ALPHABET, step as stepRotors, type Settings } from "@/lib/enigma";
 import { PRACTICE_ENGLISH, PRACTICE_PLAINTEXT } from "@/lib/messages";
 import { DISCOVERY, FROM_STOP, LOOP, SCAN, candidate, partialRead, testStop } from "@/lib/story/checking";
-import { playStamp } from "@/lib/sound";
+import { playChecking, playReject, playStrikes } from "@/lib/sound";
 import { cn } from "@/lib/cn";
 
 /** The rotor windows as they stand for a given letter of the message. */
@@ -54,19 +54,25 @@ export function BombeMachine() {
     return () => clearTimeout(tick);
   }, [phase, paused, right]);
 
-  // A tested stop either holds, and the run is over, or is thrown out and the drums carry on
+  // A tested stop either holds, and the run is over, or is thrown out and the drums carry on. The verdict
+  // sounds partway through, so it is heard while the reason is on screen, before the drums move
   useEffect(() => {
     if (phase !== "testing" || paused) return;
+    const holds = testStop(right).holds;
+    playChecking();
+    const verdict = setTimeout(() => (holds ? playStrikes(1) : playReject()), TEST_MS * 0.45);
     const done = setTimeout(() => {
-      if (testStop(right).holds) {
+      if (holds) {
         setPhase("found");
-        playStamp();
       } else {
         setThrownOut((n) => n + 1);
         setPhase("running");
       }
     }, TEST_MS);
-    return () => clearTimeout(done);
+    return () => {
+      clearTimeout(verdict);
+      clearTimeout(done);
+    };
   }, [phase, paused, right]);
 
   const start = () => {
