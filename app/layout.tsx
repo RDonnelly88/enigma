@@ -13,8 +13,14 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-sans-face" });
 // The story is long-form reading, which a serif carries better than the UI face
 const serif = Source_Serif_4({ subsets: ["latin"], variable: "--font-serif-face" });
 
+// Shared links need absolute addresses for their images: the live site's own on Vercel, the local server otherwise
+const origin = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(origin),
   title: { default: "Enigma", template: "%s · Enigma" },
+  openGraph: { siteName: "Enigma", type: "website" },
+  twitter: { card: "summary_large_image" },
   description:
     "The story of the Enigma machine: how it worked, how it was used, why it was so strong, and how it was broken. With a working machine to try.",
 };
