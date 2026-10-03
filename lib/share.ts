@@ -27,21 +27,24 @@ export function readMachineLink(search: string): { settings: Settings; text: str
 const name = (raw: string | null) => (raw ?? "").replace(/[^\p{L}\p{N} '-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 24);
 
 /**
- * A link carrying only the ciphertext: the key has to reach its recipient some
+ * A link carrying the ciphertext, for the key to reach its recipient some
  * other way. Who it's from and for travel in the clear, as the address on a
- * real signal did.
+ * real signal did. The key can ride along too, for convenience, at the price
+ * of anyone holding the link being able to read it.
  */
-export function secretLink(ciphertext: string, { from = "", to = "" }: { from?: string; to?: string } = {}) {
+export function secretLink(ciphertext: string, { from = "", to = "", key }: { from?: string; to?: string; key?: Settings } = {}) {
   const params = new URLSearchParams({ cipher: ciphertext });
   if (name(from)) params.set("from", name(from));
   if (name(to)) params.set("to", name(to));
+  if (key) params.set("k", keyCode(key));
   return `/machine?${params}`;
 }
 
 /** Who a secret is from and for, where the link says. */
 export function readAddress(search: string) {
   const params = new URLSearchParams(search);
-  return { from: name(params.get("from")), to: name(params.get("to")) };
+  const key = params.get("k");
+  return { from: name(params.get("from")), to: name(params.get("to")), key: key ? readKeyCode(key) : null };
 }
 
 export function readSecret(search: string) {

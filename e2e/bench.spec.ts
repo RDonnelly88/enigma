@@ -60,8 +60,8 @@ test("a secret travels by link and key card, and reads back at the other end", a
   await page.getByLabel("From", { exact: true }).fill("Ada");
   await page.getByLabel("To", { exact: true }).fill("Alan");
   await expect(page.getByTestId("key-card")).toContainText("For Alan · from Ada");
-  const link = await page.getByLabel("Link to the ciphertext").inputValue();
-  const key = await page.getByLabel("The key, as one line").inputValue();
+  const link = await page.getByLabel("Link to send").inputValue();
+  const key = (await page.getByTestId("key-code").textContent())!;
   expect(link).toContain(`cipher=${sent}`);
   expect(link).not.toContain("key=");
   const [reflector, rotors, rings, start, cables] = key.split(" · ");
@@ -89,6 +89,25 @@ test("a secret travels by link and key card, and reads back at the other end", a
   await friend.getByRole("button", { name: "Reply with the same key" }).click();
   await expect(friend.getByTestId("received")).toHaveCount(0);
   await expect(friend.getByTestId("tape-output")).toHaveText("");
+});
+
+test("a key put in the link sets the machine itself, and says what that gives away", async ({ page, context }) => {
+  await open(page);
+  await typeAll(page, "HELLO");
+  await tab(page, "Messages");
+  const plain = await page.getByLabel("Link to send").inputValue();
+  await page.getByLabel(/Put the key in the link too/).check();
+  await expect(page.getByText("anyone who gets hold of the link can read the message")).toBeVisible();
+  const link = await page.getByLabel("Link to send").inputValue();
+  expect(plain).not.toContain("k=");
+  expect(link).toContain("k=");
+
+  const friend = await context.newPage();
+  await friend.goto(link);
+  await friend.waitForLoadState("networkidle");
+  await expect(friend.getByRole("form", { name: "Key card" })).toHaveCount(0);
+  await friend.getByRole("button", { name: "Set the machine and read it" }).click();
+  await expect(friend.getByTestId("received-text")).toHaveText("HELLO");
 });
 
 test("a key code sent as one line works on the key card too", async ({ page }) => {

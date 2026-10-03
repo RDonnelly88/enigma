@@ -46,7 +46,7 @@ function storedLessons(): string[] {
  * other everything about it, tabbed: the lessons, the trace of the last key
  * press, the settings under the lid, and messages to load, send or transmit.
  */
-type Secret = { cipher: string; from: string; to: string };
+type Secret = { cipher: string; from: string; to: string; key: Settings | null };
 
 export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?: Secret | null }) {
   const machine = useMachine(DEFAULT_SETTINGS);
@@ -153,6 +153,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
           ciphertext={secret.cipher}
           from={secret.from}
           to={secret.to}
+          sentKey={secret.key}
           onRead={(key) => {
             setUp(key);
             typeAloud(secret.cipher);

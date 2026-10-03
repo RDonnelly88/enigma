@@ -1,11 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Printer } from "lucide-react";
+import { Check, Copy, Printer } from "lucide-react";
 import { Stamp } from "@/components/ui/stamp";
 import { ALPHABET, GREEK_ROTORS, M3_REFLECTORS, M4_REFLECTORS, ROTORS, type Settings } from "@/lib/enigma";
 import { keyCode, readKeyCode } from "@/lib/share";
 import { cn } from "@/lib/cn";
+
+
+/** Puts text on the clipboard; refused access leaves the text on show to copy by hand. */
+export async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {}
+}
 
 const letters = (ns: number[]) => ns.map((n) => ALPHABET[n]).join(" ");
 
@@ -25,7 +33,8 @@ function rows(s: Settings) {
  * A key written out as a card to hand over, like a strip cut from a key
  * sheet: everything the other machine needs, and nothing of the message.
  */
-export function KeyCard({ settings, from, to, onPrint }: { settings: Settings; from?: string; to?: string; onPrint?: () => void }) {
+export function KeyCard({ settings, from, to, onUse }: { settings: Settings; from?: string; to?: string; onUse?: () => void }) {
+  const [copied, setCopied] = useState(false);
   return (
     <div className="flex flex-col gap-2">
       <figure data-testid="key-card" className="print-me relative rounded-sm border-2 border-dashed border-paper-muted/60 bg-paper p-4 font-type text-paper-ink shadow-md">
@@ -49,15 +58,33 @@ export function KeyCard({ settings, from, to, onPrint }: { settings: Settings; f
           ))}
         </dl>
         <figcaption className="mt-3 border-t border-dashed border-paper-muted/50 pt-2 font-sans text-xs text-paper-muted">
-          Or type the whole key as one line: <span className="font-type text-paper-ink">{keyCode(settings)}</span>
+          Or type the whole key as one line: <span className="font-type text-paper-ink" data-testid="key-code">{keyCode(settings)}</span>
         </figcaption>
       </figure>
-      <button type="button" onClick={() => {
-          onPrint?.();
-          window.print();
-        }} className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-brass underline underline-offset-2">
-        <Printer className="size-4" /> Print the key card
-      </button>
+      <div className="flex flex-wrap gap-4 text-sm font-semibold text-brass">
+        <button
+          type="button"
+          onClick={() => {
+            onUse?.();
+            window.print();
+          }}
+          className="inline-flex items-center gap-1.5 underline underline-offset-2"
+        >
+          <Printer className="size-4" /> Print it
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            await copyText(keyCode(settings));
+            onUse?.();
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          }}
+          className="inline-flex items-center gap-1.5 underline underline-offset-2"
+        >
+          {copied ? <Check className="size-4" /> : <Copy className="size-4" />} {copied ? "Copied" : "Copy the key as one line"}
+        </button>
+      </div>
     </div>
   );
 }

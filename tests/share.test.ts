@@ -52,9 +52,16 @@ describe("key codes", async () => {
 
   it("carry who a secret is from and for, as plain names", () => {
     const link = secretLink("QWERT", { from: "Ada", to: "Mr <b>Turing</b>!" });
-    expect(readAddress(link.split("?")[1])).toEqual({ from: "Ada", to: "Mr bTuringb" });
+    expect(readAddress(link.split("?")[1])).toEqual({ from: "Ada", to: "Mr bTuringb", key: null });
     expect(secretLink("QWERT", { from: "  " })).not.toContain("from=");
-    expect(readAddress("cipher=QWERT")).toEqual({ from: "", to: "" });
+    expect(readAddress("cipher=QWERT")).toEqual({ from: "", to: "", key: null });
+  });
+
+  it("carry the key only when asked to", () => {
+    const key = INTERCEPTS[0].settings;
+    expect(secretLink("QWERT")).not.toContain("k=");
+    expect(readAddress(secretLink("QWERT", { key }).split("?")[1]).key).toEqual({ ...key });
+    expect(readAddress("cipher=QWERT&k=nonsense").key).toBeNull();
   });
 });
 

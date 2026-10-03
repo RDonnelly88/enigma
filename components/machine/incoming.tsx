@@ -16,12 +16,15 @@ export function Incoming({
   ciphertext,
   from,
   to,
+  sentKey,
   onRead,
   onDismiss,
 }: {
   ciphertext: string;
   from: string;
   to: string;
+  /** The key, when the sender put it in the link. */
+  sentKey: Settings | null;
   onRead: (settings: Settings) => void;
   onDismiss: () => void;
 }) {
@@ -38,11 +41,25 @@ export function Incoming({
             <p className="mt-2 font-type text-base break-all">{groups(ciphertext)}</p>
             <Listen text={ciphertext} className="mt-2" />
           </div>
-          <p className="max-w-2xl text-sm leading-relaxed">
-            It&rsquo;s gibberish until your machine is set up exactly like the sender&rsquo;s. They should have given you a key card, the
-            way every operator had the same key sheet. Copy it in, and the machine types the message for you.
-          </p>
-          <KeyCardForm onSet={onRead} />
+          {sentKey ? (
+            <>
+              <p className="max-w-2xl text-sm leading-relaxed">
+                The key came in the link, so the machine can set itself up. Handy, but anyone else who got the link could read it too:
+                that&rsquo;s why real keys travelled separately.
+              </p>
+              <button type="button" onClick={() => onRead(sentKey)} className="w-fit rounded-md bg-room-ink px-4 py-2 text-sm font-semibold text-room">
+                Set the machine and read it
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="max-w-2xl text-sm leading-relaxed">
+                It&rsquo;s gibberish until your machine is set up exactly like the sender&rsquo;s. They should have given you a key card, the
+                way every operator had the same key sheet. Copy it in, and the machine types the message for you.
+              </p>
+              <KeyCardForm onSet={onRead} />
+            </>
+          )}
           <p className="text-sm text-room-muted">
             No key?{" "}
             <Link href={`/codebreaker?cipher=${ciphertext}`} className="font-semibold text-brass underline underline-offset-2">
