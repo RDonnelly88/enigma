@@ -47,10 +47,15 @@ test.describe("cribs and the Bombe", () => {
     // The machine: run it, and it tests every stop itself, throwing out the false ones until one holds
     await next.click();
     await page.getByRole("button", { name: "Run the Bombe" }).click();
-    await expect(page.getByTestId("stop-test")).toContainText("A false stop", { timeout: 15_000 });
-    await expect(page.getByTestId("stop-test")).toContainText("This is the setting", { timeout: 60_000 });
+    await expect(page.getByTestId("candidates")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId("bombe-status")).toContainText("the test holds", { timeout: 60_000 });
     await expect(page.getByTestId("thrown-out")).not.toHaveText(/^0 /);
-    await expect(page.getByTestId("bombe-status")).toContainText("the test holds");
+    await expect(page.getByTestId("stop-test")).toContainText("this is the setting");
+    // Afterwards every position says why it failed
+    await page.getByRole("button", { name: /: a stop, thrown out$/ }).first().click();
+    await expect(page.getByTestId("stop-test")).toContainText("Impossible");
+    await page.getByRole("button", { name: /: no stop$/ }).first().click();
+    await expect(page.getByTestId("stop-test")).toContainText("No stop at");
 
     // The checking machine finishes the plugboard and the message reads
     await next.click();

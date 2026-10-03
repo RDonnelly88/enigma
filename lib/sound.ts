@@ -181,39 +181,76 @@ export function playStrikes(count: number): () => void {
 }
 
 /**
- * Bombers passing overhead: unsynchronised engines beating against each other,
- * growing out of the distance and dropping in pitch as they go over. Returns
- * how to cut it short.
+ * Bombers passing overhead: unsynchronised engines beating against each other
+ * over the roar of the propellers, growing out of the distance and dropping in
+ * pitch as they go over. The engines sit high enough for a phone's speaker to
+ * carry them; their true note is too low for most to play at all. Returns how
+ * to cut it short.
  */
-export function playAircraft(seconds = 9): () => void {
+export function playAircraft(seconds = 10): () => void {
   const ctx = audio();
   if (!ctx) return () => {};
   const t = ctx.currentTime;
-  const low = ctx.createBiquadFilter();
-  low.type = "lowpass";
-  low.frequency.setValueAtTime(300, t);
-  low.frequency.linearRampToValueAtTime(900, t + seconds * 0.5);
-  low.frequency.linearRampToValueAtTime(250, t + seconds);
   const level = ctx.createGain();
   level.gain.setValueAtTime(0.0001, t);
-  level.gain.exponentialRampToValueAtTime(0.16, t + seconds * 0.5);
+  level.gain.exponentialRampToValueAtTime(0.35, t + seconds * 0.45);
   level.gain.exponentialRampToValueAtTime(0.0001, t + seconds);
-  low.connect(level).connect(ctx.destination);
-  const engines = [86, 88.5, 91, 129].map((hz) => {
+  // The propellers' beat: the engines are never quite in step, so the sound throbs
+  const throb = ctx.createGain();
+  throb.gain.value = 0.7;
+  const lfo = ctx.createOscillator();
+  const depth = ctx.createGain();
+  lfo.frequency.value = 5.5;
+  depth.gain.value = 0.3;
+  lfo.connect(depth).connect(throb.gain);
+  lfo.start(t);
+  lfo.stop(t + seconds);
+  throb.connect(level).connect(ctx.destination);
+
+  const tone = ctx.createBiquadFilter();
+  tone.type = "lowpass";
+  tone.frequency.setValueAtTime(700, t);
+  tone.frequency.linearRampToValueAtTime(1800, t + seconds * 0.45);
+  tone.frequency.linearRampToValueAtTime(500, t + seconds);
+  tone.connect(throb);
+  const engines = [176, 181, 186, 264].map((hz) => {
     const osc = ctx.createOscillator();
     osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(hz * 1.04, t);
-    osc.frequency.linearRampToValueAtTime(hz * 0.96, t + seconds);
-    osc.connect(low);
+    osc.frequency.setValueAtTime(hz * 1.05, t);
+    osc.frequency.linearRampToValueAtTime(hz * 0.94, t + seconds);
+    const g = ctx.createGain();
+    g.gain.value = 0.25;
+    osc.connect(g).connect(tone);
     osc.start(t);
     osc.stop(t + seconds);
     return osc;
   });
+
+  // The roar of air through the propellers, as filtered noise
+  const samples = Math.ceil(ctx.sampleRate * seconds);
+  const buffer = ctx.createBuffer(1, samples, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < samples; i++) data[i] = Math.random() * 2 - 1;
+  const roar = ctx.createBufferSource();
+  roar.buffer = buffer;
+  const band = ctx.createBiquadFilter();
+  band.type = "bandpass";
+  band.frequency.value = 400;
+  band.Q.value = 0.7;
+  const roarLevel = ctx.createGain();
+  roarLevel.gain.value = 0.6;
+  roar.connect(band).connect(roarLevel).connect(throb);
+  roar.start(t);
+
   return () => {
     level.gain.cancelScheduledValues(ctx.currentTime);
     level.gain.setValueAtTime(level.gain.value, ctx.currentTime);
     level.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
-    for (const e of engines) e.stop(ctx.currentTime + 0.35);
+    for (const e of [...engines, roar, lfo]) {
+      try {
+        e.stop(ctx.currentTime + 0.35);
+      } catch {}
+    }
   };
 }
 
