@@ -19,7 +19,7 @@ const SLOTS = ["left", "middle", "right"] as const;
 /** "turned 3 places", "not turned", or "turned 1 place" */
 function turned(shift: number) {
   const n = ((shift % 26) + 26) % 26;
-  return n === 0 ? "isn't turned at all" : `is turned ${n} ${n === 1 ? "place" : "places"} round`;
+  return n === 0 ? "isn’t turned at all" : `is turned ${n} ${n === 1 ? "place" : "places"} round`;
 }
 
 function stepping(settings: Settings, press: Keypress): Step {
@@ -119,7 +119,7 @@ export function explain(settings: Settings, press: Keypress): Step[] {
       steps.push({
         hop: i,
         title: `Reflector ${settings.reflector}`,
-        body: `The reflector doesn't turn. It joins letters in fixed pairs and sends the current back the way it came by a different wire: ${toLetter(hop.from)} is paired with ${REFLECTORS[settings.reflector][hop.from]}. Because no letter is paired with itself, a key can never light its own lamp.`,
+        body: `The reflector doesn’t turn. It joins letters in fixed pairs and sends the current back the way it came by a different wire: ${toLetter(hop.from)} is paired with ${REFLECTORS[settings.reflector][hop.from]}. Because no letter is paired with itself, a key can never light its own lamp.`,
       });
     } else {
       steps.push(wheelStep(settings, press, hop, i));

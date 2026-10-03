@@ -20,6 +20,7 @@ test("in short swaps the long reading for summaries, and stays chosen across pag
   await expect(summary).toBeVisible();
   await expect(page.getByText("Radio changed war.")).toBeHidden();
   await page.goto("/crib");
+  await page.waitForLoadState("networkidle");
   await expect(page.getByTestId("in-short").first()).toBeVisible();
   await page.getByRole("radio", { name: "The detail" }).click();
   await expect(page.getByTestId("in-short").first()).toBeHidden();

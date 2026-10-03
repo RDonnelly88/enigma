@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Stamp } from "@/components/ui/stamp";
 import { enciphered, QUESTIONS, rank } from "@/lib/quiz";
 import { rating } from "@/lib/story/challenge";
 import { clock, type BreakResult } from "./break-intercept";
@@ -17,19 +18,13 @@ export function Certificate({ award, broke }: { award: Award; broke?: BreakResul
       data-testid="certificate"
     >
       <div className="relative border-4 border-double border-paper-ink/60 px-5 pt-14 pb-10 text-center sm:px-12 sm:py-14">
-        <p
-          aria-hidden
-          className="absolute top-3 right-3 rotate-12 rounded border-[3px] border-cable px-2 py-0.5 font-stencil text-sm font-bold tracking-[0.2em] text-cable opacity-80 sm:top-10 sm:right-10 sm:border-4 sm:px-3 sm:py-1 sm:text-3xl"
-        >
-          PASSED
-        </p>
+        <Stamp tilt={12} className="absolute top-3 right-3 text-sm sm:top-10 sm:right-10 sm:border-4 sm:px-3 sm:py-1 sm:text-3xl">
+          Passed
+        </Stamp>
         {broke && (
-          <p
-            aria-hidden
-            className="absolute top-3 left-3 -rotate-12 rounded border-[3px] border-signal-in px-2 py-0.5 font-stencil text-sm font-bold tracking-[0.2em] text-signal-in opacity-80 sm:top-10 sm:left-10 sm:border-4 sm:px-3 sm:py-1 sm:text-2xl"
-          >
-            BROKEN
-          </p>
+          <Stamp ink="green" tilt={-12} className="absolute top-3 left-3 text-sm sm:top-10 sm:left-10 sm:border-4 sm:px-3 sm:py-1 sm:text-2xl">
+            Broken
+          </Stamp>
         )}
         <p className="font-stencil text-sm font-bold tracking-[0.5em] text-paper-muted">ENIGMA</p>
         <h2 className="mt-4 font-stencil text-4xl leading-none font-bold tracking-wide sm:text-6xl">Codebreaker&rsquo;s certificate</h2>

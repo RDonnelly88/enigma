@@ -1,6 +1,7 @@
 "use client";
 
 import { Gloss } from "@/components/glossary/gloss";
+import { Stamp } from "@/components/ui/stamp";
 import { useState } from "react";
 import Link from "next/link";
 import { MenuGraph } from "@/components/crib/menu-graph";
@@ -215,8 +216,9 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
     case "ultra":
       return (
         <Gloss>
-          <Paper className="border-l-4 border-signal-in uppercase">
-            <Label>Most secret · Ultra</Label>
+          <Paper className="relative border-l-4 border-signal-in uppercase">
+            <Stamp tilt={-7} className="absolute top-2 right-3 text-sm">Most secret</Stamp>
+            <Label>Ultra</Label>
             <p>To Fighter Command. Bomber wing ordered to attack convoy, grid square 74, at 1600 hours. Source to be protected.</p>
           </Paper>
         </Gloss>

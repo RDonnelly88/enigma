@@ -32,7 +32,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(0),
     lane: "german",
     title: "Midnight: a new key",
-    text: "At a Luftwaffe signals post in northern France, the duty operator opens the machine, fits today's three rotors in order, turns each ring to its number and plugs ten cables, all from the month's key sheet. Every Enigma on the network does the same.",
+    text: "At a Luftwaffe signals post in northern France, the duty operator opens the machine, fits today’s three rotors in order, turns each ring to its number and plugs ten cables, all from the month’s key sheet. Every Enigma on the network does the same.",
     artefact: "key-sheet",
   },
   {
@@ -72,7 +72,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(6, 40),
     lane: "allied",
     title: "To Bletchley Park",
-    text: "The forms go to Bletchley by teleprinter and motorcycle. In Hut 6's registration room, call signs and frequencies identify the network: Red, the Luftwaffe's general key, broken most days since 1940.",
+    text: "The forms go to Bletchley by teleprinter and motorcycle. In Hut 6’s registration room, call signs and frequencies identify the network: Red, the Luftwaffe’s general key, broken most days since 1940.",
     artefact: "registry",
   },
   {
@@ -80,7 +80,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(8, 30),
     lane: "allied",
     title: "A crib",
-    text: "Hut 6 knows this station. It sends a weather report at dawn every day, and it always begins the same way. That guessed opening is the crib, and the reflector's flaw says where it can and can't sit.",
+    text: "Hut 6 knows this station. It sends a weather report at dawn every day, and it always begins the same way. That guessed opening is the crib, and the reflector’s flaw says where it can and can’t sit.",
     artefact: "crib",
   },
   {
@@ -88,7 +88,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(9, 15),
     lane: "allied",
     title: "The menu",
-    text: "A cryptanalyst draws the menu: each crib letter joined to the cipher letter it became, labelled with its place in the message. The loops in it are what will make the Bombe's test sharp.",
+    text: "A cryptanalyst draws the menu: each crib letter joined to the cipher letter it became, labelled with its place in the message. The loops in it are what will make the Bombe’s test sharp.",
     artefact: "menu",
   },
   {
@@ -112,7 +112,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(11, 45),
     lane: "allied",
     title: "Red is broken for the day",
-    text: "With the day's rotors, rings and plugs known, every message on Red until midnight can be read as fast as it arrives, the same way its intended recipients read it.",
+    text: "With the day’s rotors, rings and plugs known, every message on Red until midnight can be read as fast as it arrives, the same way its intended recipients read it.",
     artefact: null,
   },
   {
@@ -136,7 +136,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(14, 25),
     lane: "allied",
     title: "Read within the hour",
-    text: "Intercepted at 14:00, deciphered on the day's key as soon as it reaches Hut 6. No crib, no Bombe: the key is already known.",
+    text: "Intercepted at 14:00, deciphered on the day’s key as soon as it reaches Hut 6. No crib, no Bombe: the key is already known.",
     artefact: "order-read",
   },
   {
@@ -152,7 +152,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(16),
     lane: "german",
     title: "The attack",
-    text: "The bombers find the convoy's fighter escort strengthened and waiting. A spotter plane was seen over the convoy earlier; that, the unit concludes, is how they knew.",
+    text: "The bombers find the convoy’s fighter escort strengthened and waiting. A spotter plane was seen over the convoy earlier; that, the unit concludes, is how they knew.",
     artefact: null,
   },
   {
@@ -160,7 +160,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(23, 50),
     lane: "german",
     title: "Midnight again",
-    text: "The day's key is finished with. At midnight the operator sets up tomorrow's, confident, as his superiors are, that what he sends cannot be read.",
+    text: "The day’s key is finished with. At midnight the operator sets up tomorrow’s, confident, as his superiors are, that what he sends cannot be read.",
     artefact: null,
   },
   {
@@ -168,7 +168,7 @@ export const DAY_EVENTS: DayEvent[] = [
     time: at(23, 55),
     lane: "allied",
     title: "And again tomorrow",
-    text: "At midnight the key changes and Hut 6 starts again from nothing, with tomorrow's dawn weather report as its first crib.",
+    text: "At midnight the key changes and Hut 6 starts again from nothing, with tomorrow’s dawn weather report as its first crib.",
     artefact: null,
   },
 ];

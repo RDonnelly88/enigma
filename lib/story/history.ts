@@ -25,7 +25,7 @@ export const MACHINE_HISTORY: Moment[] = [
   {
     when: "1930",
     title: "The plugboard",
-    text: "The army's Enigma I adds cables that swap pairs of letters. Six cables multiply the number of possible settings by about a hundred billion.",
+    text: "The army’s Enigma I adds cables that swap pairs of letters. Six cables multiply the number of possible settings by about a hundred billion.",
   },
   {
     when: "1938",
@@ -45,7 +45,7 @@ export const MACHINE_HISTORY: Moment[] = [
   {
     when: "1974",
     title: "The secret is out",
-    text: "F. W. Winterbotham's The Ultra Secret tells the public that Bletchley Park had been reading Enigma. The Polish part of the story had appeared in France a year earlier.",
+    text: "F. W. Winterbotham’s The Ultra Secret tells the public that Bletchley Park had been reading Enigma. The Polish part of the story had appeared in France a year earlier.",
   },
 ];
 
@@ -54,7 +54,7 @@ export const WEAKNESSES: Moment[] = [
   {
     when: "The machine",
     title: "No letter becomes itself",
-    text: "The reflector means a letter is never enciphered as itself. Slide a guessed word along a message, and anywhere a letter would land on itself, the guess can't be there.",
+    text: "The reflector means a letter is never enciphered as itself. Slide a guessed word along a message, and anywhere a letter would land on itself, the guess can’t be there.",
   },
   {
     when: "1930 – 1940",
@@ -93,12 +93,12 @@ export const BREAKING_HISTORY: Moment[] = [
   {
     when: "1929",
     title: "A cryptology course",
-    text: "Poland's Cipher Bureau runs a secret course for mathematics students at Poznań University. Three of them, Marian Rejewski, Jerzy Różycki and Henryk Zygalski, are taken on.",
+    text: "Poland’s Cipher Bureau runs a secret course for mathematics students at Poznań University. Three of them, Marian Rejewski, Jerzy Różycki and Henryk Zygalski, are taken on.",
   },
   {
     when: "1932",
     title: "The wiring, from mathematics",
-    text: "Rejewski works out the wiring of the army's rotors using the theory of permutations, helped by settings that French intelligence had bought from a German in the cipher office.",
+    text: "Rejewski works out the wiring of the army’s rotors using the theory of permutations, helped by settings that French intelligence had bought from a German in the cipher office.",
   },
   {
     when: "Mid-1930s",
@@ -108,7 +108,7 @@ export const BREAKING_HISTORY: Moment[] = [
   {
     when: "1938",
     title: "Bomby and sheets",
-    text: "A change of procedure breaks the catalogue. The Poles answer with the bomba, an electrical machine, and with Zygalski's perforated sheets. Then rotors IV and V arrive and the work multiplies tenfold.",
+    text: "A change of procedure breaks the catalogue. The Poles answer with the bomba, an electrical machine, and with Zygalski’s perforated sheets. Then rotors IV and V arrive and the work multiplies tenfold.",
   },
   {
     when: "July 1939",
@@ -118,17 +118,17 @@ export const BREAKING_HISTORY: Moment[] = [
   {
     when: "1939",
     title: "Bletchley Park",
-    text: "Britain's codebreakers move to a country house in Buckinghamshire. By the end of the war nearly ten thousand people work there, around three quarters of them women.",
+    text: "Britain’s codebreakers move to a country house in Buckinghamshire. By the end of the war nearly ten thousand people work there, around three quarters of them women.",
   },
   {
     when: "1940",
     title: "The Bombe",
-    text: "Alan Turing's Bombe goes into service in March, testing rotor settings against a crib. Gordon Welchman's diagonal board makes it far more powerful by the summer.",
+    text: "Alan Turing’s Bombe goes into service in March, testing rotor settings against a crib. Gordon Welchman’s diagonal board makes it far more powerful by the summer.",
   },
   {
     when: "1941",
     title: "Naval Enigma",
-    text: "Captured material, including papers from U-110 in May, lets Turing's Hut 8 read the navy's traffic, and convoys are routed around the U-boat packs.",
+    text: "Captured material, including papers from U-110 in May, lets Turing’s Hut 8 read the navy’s traffic, and convoys are routed around the U-boat packs.",
   },
   {
     when: "1942",
@@ -138,7 +138,7 @@ export const BREAKING_HISTORY: Moment[] = [
   {
     when: "1943",
     title: "American Bombes",
-    text: "The US Navy's own high-speed Bombes come into service, taking on much of the four-rotor work. Britain and America between them build hundreds of machines.",
+    text: "The US Navy’s own high-speed Bombes come into service, taking on much of the four-rotor work. Britain and America between them build hundreds of machines.",
   },
 ];
 

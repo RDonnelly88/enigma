@@ -24,7 +24,7 @@ export function NextPage() {
       };
 
   return (
-    <footer className="mx-auto max-w-6xl px-4 pb-16">
+    <nav aria-label="Next page" className="no-print mx-auto max-w-6xl px-4 pb-16">
       <Link
         href={target.href}
         className="group flex flex-col gap-3 rounded-xl border border-panel-edge bg-panel p-6 transition-colors hover:border-brass sm:flex-row sm:items-center sm:justify-between sm:p-8"
@@ -36,6 +36,6 @@ export function NextPage() {
         </div>
         <ArrowRight className="size-8 shrink-0 text-brass transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
       </Link>
-    </footer>
+    </nav>
   );
 }

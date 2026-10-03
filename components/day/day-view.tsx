@@ -48,19 +48,26 @@ export function DayView() {
     return list;
   }, []);
 
+  /** The time the page stands at: wherever the reading line falls between one event and the next. */
+  const timeOnPage = useCallback(() => {
+    const line = window.scrollY + readingLine();
+    const m = marks();
+    if (!m.length || line <= m[0].y) return 0;
+    const i = m.findLastIndex((k) => k.y <= line);
+    if (i === m.length - 1) return END;
+    const f = (line - m[i].y) / Math.max(1, m[i + 1].y - m[i].y);
+    return Math.min(END, Math.round(m[i].t + f * (m[i + 1].t - m[i].t)));
+  }, [marks]);
+  // Where Next event last sent the page, so quick presses each go one further even mid-scroll
+  const heading = useRef({ time: -1, until: 0 });
+
   // Scrolling is the clock: the time is wherever the reading line falls between one event and the next
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
       if (performance.now() < hold.current) return;
-      const line = window.scrollY + readingLine();
-      const m = marks();
-      if (!m.length || line <= m[0].y) return setTime(0);
-      const i = m.findLastIndex((k) => k.y <= line);
-      if (i === m.length - 1) return setTime(END);
-      const f = (line - m[i].y) / Math.max(1, m[i + 1].y - m[i].y);
-      setTime(Math.min(END, Math.round(m[i].t + f * (m[i + 1].t - m[i].t))));
+      setTime(timeOnPage());
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -73,7 +80,7 @@ export function DayView() {
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(frame);
     };
-  }, [marks]);
+  }, [marks, timeOnPage]);
 
   // Playing scrolls the page gently; any scroll of the reader's own stops it
   useEffect(() => {
@@ -139,9 +146,12 @@ export function DayView() {
               type="button"
               disabled={!next}
               onClick={() => {
-                if (!next) return;
+                const from = performance.now() < heading.current.until ? Math.max(heading.current.time, timeOnPage()) : timeOnPage();
+                const target = DAY_EVENTS.find((e) => e.time > from);
+                if (!target) return;
                 setPlaying(false);
-                scrollToTime(next.time, true);
+                heading.current = { time: target.time, until: performance.now() + 1000 };
+                scrollToTime(target.time, true);
               }}
               className="inline-flex items-center gap-1.5 rounded-full border border-panel-edge px-4 py-1.5 text-sm font-semibold disabled:opacity-40"
             >
