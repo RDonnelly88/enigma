@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { RotorWindow } from "@/components/machine/rotor-window";
+import { TryIt } from "@/components/story/try-it";
 import { Demo } from "@/components/ui/demo";
 import { Slider } from "@/components/ui/slider";
 import { DEFAULT_SETTINGS, ROTORS } from "@/lib/enigma";
@@ -86,6 +87,7 @@ export function SteppingDemo() {
         comes back to where it started after 16,900 key presses. Until then the rotors never stand the same way twice. Army
         rules kept a message to 250 letters, sending anything longer in parts.
       </p>
+      <TryIt lesson="double-step">Catch the double step on the machine</TryIt>
     </Demo>
   );
 }

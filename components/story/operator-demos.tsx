@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { TryIt } from "@/components/story/try-it";
 import { Demo } from "@/components/ui/demo";
 import { Slider } from "@/components/ui/slider";
 import { ALPHABET } from "@/lib/enigma";
@@ -225,6 +226,7 @@ function Procedure({ dayKey }: { dayKey: DailyKey }) {
           .
         </p>
       </div>
+      <TryIt lesson="barbarossa">Decrypt a real 1941 message on the machine</TryIt>
     </Demo>
   );
 }

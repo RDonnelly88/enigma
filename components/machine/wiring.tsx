@@ -91,7 +91,7 @@ export function Wiring({ settings, press, focus }: { settings: Settings; press: 
       <div ref={scroller} className="overflow-x-auto">
       <svg
         viewBox={`-4 0 ${width + 8} ${HEIGHT}`}
-        className="mx-auto block w-full min-w-[30rem] max-w-3xl"
+        className="mx-auto block w-full min-w-[24rem] max-w-3xl"
         // An inline SVG is the image; there's no <img> to swap in
         // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
         role="img"

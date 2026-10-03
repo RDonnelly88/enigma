@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TryIt } from "@/components/story/try-it";
 import { Demo } from "@/components/ui/demo";
 import { Slider } from "@/components/ui/slider";
 import { ALPHABET, ROTORS } from "@/lib/enigma";
@@ -116,6 +117,7 @@ export function RotorDemo() {
           </div>
         </div>
       </div>
+      <TryIt lesson="new-letter">Press the same key on the real machine</TryIt>
     </Demo>
   );
 }

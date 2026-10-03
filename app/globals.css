@@ -255,3 +255,20 @@ body {
     }
   }
 }
+
+/* A pool of warm light on the bench, so the machine sits in a lit room */
+.stage {
+  box-shadow:
+    0 30px 80px -20px rgb(0 0 0 / 0.55),
+    0 0 0 1px rgb(0 0 0 / 0.2),
+    0 0 120px 10px color-mix(in oklab, var(--lamp-glow) 12%, transparent);
+}
+
+/* The brass maker's plate on the lid */
+.nameplate {
+  color: #3a2a08;
+  background: linear-gradient(180deg, #f3dc95, #c9a240 45%, #8f6c1c);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 1px 2px rgb(0 0 0 / 0.6);
+}
