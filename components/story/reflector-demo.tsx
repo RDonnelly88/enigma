@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TryIt } from "@/components/story/try-it";
 import { Demo } from "@/components/ui/demo";
 import { ALPHABET, REFLECTORS } from "@/lib/enigma";
 import { cn } from "@/lib/cn";
@@ -105,6 +106,7 @@ export function ReflectorDemo() {
           </div>
         </div>
       </div>
+      <TryIt lesson="never-itself">Prove it on the machine</TryIt>
     </Demo>
   );
 }

@@ -16,14 +16,21 @@ export function Lampboard({ lit }: { lit: string | null }) {
                 data-lamp={letter}
                 data-lit={on || undefined}
                 className={cn(
-                  "grid size-8 place-items-center rounded-full border-2 border-metal-dark font-stencil text-lg font-bold sm:size-11 sm:text-2xl",
+                  "relative grid size-8 place-items-center rounded-full border-2 border-metal-dark font-stencil text-lg font-bold sm:size-11 sm:text-2xl",
                   "transition-[background-color,box-shadow,color] duration-75 motion-reduce:transition-none",
                   on
                     ? "bg-lamp-on text-lamp-ink-on shadow-[0_0_18px_6px_var(--lamp-glow),inset_0_0_8px_rgb(255_255_255/0.7)]"
                     : "bg-lamp-off text-lamp-ink-off shadow-[inset_0_2px_6px_rgb(0_0_0/0.7)]",
                 )}
               >
-                {letter}
+                {on && (
+                  // The lit lamp's light falls on the panel around it
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute size-40 rounded-full bg-[radial-gradient(circle,var(--lamp-glow)_0%,transparent_65%)] opacity-35"
+                  />
+                )}
+                <span className="relative">{letter}</span>
               </div>
             );
           })}

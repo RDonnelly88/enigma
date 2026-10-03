@@ -2,7 +2,11 @@ import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/machine");
+  // The bench renders in the browser; wait for it before pressing keys
+  await page.waitForLoadState("networkidle");
 });
+
+const tab = (page: import("@playwright/test").Page, name: string) => page.getByRole("tab", { name: new RegExp(`^${name}`) }).click();
 
 test("typing AAAAA at the start gives the standard check value", async ({ page }, { project }) => {
   test.skip(project.name === "mobile", "Hardware keyboard");
@@ -54,6 +58,7 @@ test("the plugboard changes the cipher and can be unplugged", async ({ page }) =
 });
 
 test("decrypts the U-534 intercept", async ({ page }) => {
+  await tab(page, "Messages");
   const card = page.getByRole("article").filter({ hasText: "U-534" });
   await card.getByRole("button", { name: "Set the machine" }).click();
   await card.getByRole("button", { name: "Type the message" }).click();
@@ -63,6 +68,7 @@ test("decrypts the U-534 intercept", async ({ page }) => {
 test("explains a key press step by step", async ({ page }) => {
   await page.getByLabel("Type or paste a message").fill("A");
   await page.getByRole("button", { name: "Type it" }).click();
+  await tab(page, "Trace");
   const steps = page.getByRole("list", { name: "Step by step" });
   await expect(steps.getByRole("button", { name: /^1 You press A/ })).toBeVisible();
   const rotor = steps.getByRole("button", { name: /Rotor III, on the way in/ });
@@ -73,6 +79,7 @@ test("explains a key press step by step", async ({ page }) => {
 });
 
 test("the lid explains the parts", async ({ page }) => {
+  await tab(page, "Settings");
   await expect(page.getByText("Notch V")).toBeVisible();
   // With no cables plugged a fast computer could try every key; the army's ten cables changed that
   await page.getByText("How many keys?").click();
@@ -84,6 +91,7 @@ test("the lid explains the parts", async ({ page }) => {
 test("the wiring and its explanation never widen the page", async ({ page }) => {
   await page.getByLabel("Type or paste a message").fill("HELLO");
   await page.getByRole("button", { name: "Type it" }).click();
+  await tab(page, "Trace");
   await page.getByRole("button", { name: /Rotor III, on the way in/ }).click();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBe(0);

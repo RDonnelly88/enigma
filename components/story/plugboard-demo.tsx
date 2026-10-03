@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ColumnChart } from "@/components/ui/column-chart";
+import { TryIt } from "@/components/story/try-it";
 import { Demo } from "@/components/ui/demo";
 import { Slider } from "@/components/ui/slider";
 import { plugboardWays, roughly } from "@/lib/keyspace";
@@ -67,6 +68,7 @@ export function PlugboardDemo() {
           spare letters left to choose between, and thirteen cables give fewer than nine. The army settled on ten.
         </p>
       </div>
+      <TryIt lesson="plug">Plug a cable on the machine</TryIt>
     </Demo>
   );
 }

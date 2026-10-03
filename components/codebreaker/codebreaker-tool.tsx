@@ -17,8 +17,8 @@ const MIN_LETTERS = 100;
 const groups = (text: string) => text.match(/.{1,5}/g)?.join(" ") ?? "";
 
 /** The codebreaker itself: paste an intercept, break it, and watch each stage of the search. */
-export function CodebreakerTool() {
-  const [ciphertext, setCiphertext] = useState(CODEBREAKER_PRACTICE[0].ciphertext);
+export function CodebreakerTool({ initialCiphertext }: { initialCiphertext?: string | null } = {}) {
+  const [ciphertext, setCiphertext] = useState(initialCiphertext || CODEBREAKER_PRACTICE[0].ciphertext);
   const [language, setLanguage] = useState<Language>(CODEBREAKER_PRACTICE[0].language);
   const { run, start, stop, reset } = useCodebreaker();
   const [now, setNow] = useState(0);

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["/", "/machine", "/crib", "/codebreaker"];
+const PAGES = ["/", "/machine", "/machine?lesson=plug", "/machine?cipher=ABCDE", "/crib", "/codebreaker", "/codebreaker?cipher=ABCDE"];
 
 for (const path of PAGES) {
   test(`${path} renders the same on the server and in the browser`, async ({ page }) => {

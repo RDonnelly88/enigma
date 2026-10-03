@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ClimbDemo } from "@/components/breaking/climb-demo";
 import { IocDemo } from "@/components/breaking/ioc-demo";
-import { CodebreakerTool } from "@/components/codebreaker/codebreaker-tool";
+import { CodebreakerFromLink } from "@/components/codebreaker/from-link";
 import { Timeline } from "@/components/story/timeline";
 import { Chapter, Prose } from "@/components/ui/chapter";
 import { ChapterRail } from "@/components/ui/chapter-rail";
@@ -98,7 +98,7 @@ export default function Codebreaker() {
           </p>
         }
       >
-        <CodebreakerTool />
+        <CodebreakerFromLink />
       </Chapter>
 
       <Chapter

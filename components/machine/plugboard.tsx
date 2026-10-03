@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "motion/react";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/cn";
 import { ROWS } from "./layout";
 
@@ -14,6 +16,9 @@ const SOCKETS: Record<string, { x: number; y: number }> = Object.fromEntries(
   ),
 );
 
+/** How far below a socket's centre its holes are, in the same 900 × 300 box. */
+const HOLES = 13;
+
 type Props = {
   pairs: string[];
   onChange: (pairs: string[]) => void;
@@ -21,6 +26,7 @@ type Props = {
 
 export function Plugboard({ pairs, onChange }: Props) {
   const [holding, setHolding] = useState<string | null>(null);
+  const reduced = usePrefersReducedMotion();
   const partner = (letter: string) => pairs.find((p) => p.includes(letter))?.replace(letter, "") ?? null;
 
   const choose = (letter: string) => {
@@ -43,15 +49,33 @@ export function Plugboard({ pairs, onChange }: Props) {
       <div className="relative aspect-[3/1] w-full">
         <svg viewBox="0 0 900 300" className="pointer-events-none absolute inset-0 z-10 size-full overflow-visible" aria-hidden>
           {pairs.map((pair) => {
-            const a = SOCKETS[pair[0]];
-            const b = SOCKETS[pair[1]];
+            // Cables plug into the holes, which sit below each socket's letter
+            const a = { x: SOCKETS[pair[0]].x, y: SOCKETS[pair[0]].y + HOLES };
+            const b = { x: SOCKETS[pair[1]].x, y: SOCKETS[pair[1]].y + HOLES };
             const droop = Math.max(a.y, b.y) + 40 + Math.abs(a.x - b.x) * 0.12;
             const d = `M ${a.x} ${a.y} Q ${(a.x + b.x) / 2} ${droop} ${b.x} ${b.y}`;
             return (
               <g key={pair}>
                 <path d={d} fill="none" stroke="rgb(0 0 0 / 0.45)" strokeWidth={11} strokeLinecap="round" transform="translate(0 4)" />
-                <path d={d} fill="none" stroke="var(--cable)" strokeWidth={8} strokeLinecap="round" />
+                <motion.path
+                  d={d}
+                  fill="none"
+                  stroke="var(--cable)"
+                  strokeWidth={8}
+                  strokeLinecap="round"
+                  initial={reduced ? false : { pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.45, ease: "easeOut" }}
+                />
                 <path d={d} fill="none" stroke="rgb(255 255 255 / 0.18)" strokeWidth={2} strokeLinecap="round" transform="translate(-1 -2)" />
+                {/* A plug at each end: a bakelite head with two brass pins */}
+                {[a, b].map((p, i) => (
+                  <g key={i} transform={`translate(${p.x} ${p.y})`}>
+                    <rect x={-13} y={-9} width={26} height={18} rx={4} fill="#1a1918" stroke="var(--metal-dark)" strokeWidth={1.5} />
+                    <circle cx={-5} cy={0} r={2.2} fill="var(--metal)" />
+                    <circle cx={5} cy={0} r={2.2} fill="var(--metal)" />
+                  </g>
+                ))}
               </g>
             );
           })}
