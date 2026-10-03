@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AirCoverScene, AtlanticHero, BoardingScene, SinkingScene } from "@/components/art/atlantic-scenes";
 import { ConvoyRouter } from "@/components/atlantic/convoy-router";
 import { M4Twin } from "@/components/atlantic/m4-twin";
 import { Timeline } from "@/components/story/timeline";
@@ -34,6 +35,7 @@ export default function TheUBoatWar() {
           Bletchley Park, a small team trying to read the navy&rsquo;s Enigma.
         </p>
       </PageHero>
+      <AtlanticHero />
       <ChapterRail chapters={CHAPTERS} />
 
       <Chapter
@@ -128,10 +130,13 @@ export default function TheUBoatWar() {
           </p>
           <p>
             Two days later, on 9 May, U-110 attacked a convoy south of Iceland, and the escort group led by the destroyer HMS
-            Bulldog depth-charged it to the surface. Its crew abandoned ship, sure it would sink. It didn&rsquo;t. Sub-Lieutenant David Balme led a boarding party
-            down the hatch and passed up the Enigma machine, the codebooks and the charts. U-110 sank under tow the next day, and
+            Bulldog depth-charged it to the surface. Its crew abandoned ship, sure it would sink. It didn&rsquo;t. Sub-Lieutenant David
+            Balme led a boarding party down the hatch and passed up the Enigma machine, the codebooks and the charts. U-110 sank under tow the next day, and
             her crew, held below on the British ships, never knew it had been boarded. The secret was kept until the 1950s.
           </p>
+        </Prose>
+        <BoardingScene />
+        <Prose>
           <p>
             With a second weather ship&rsquo;s July keys and what Hut 8 had learnt from the books, the U-boats&rsquo; signals
             could now be read, often within hours. In the Admiralty&rsquo;s Submarine Tracking Room, Rodger Winn plotted where
@@ -201,6 +206,9 @@ export default function TheUBoatWar() {
             Brown at the top of the conning tower, who handed them down to the boat alongside, load after load. Then U-559 sank suddenly. Brown got clear. Fasson and Grazier went down with
             her.
           </p>
+        </Prose>
+        <SinkingScene />
+        <Prose>
           <p>
             Among what they saved were the current editions of two books: the short signal book the U-boats used to send
             sightings in a few letters, and the short weather cipher, which squeezed a weather report into a handful. Fasson and
@@ -288,6 +296,7 @@ export default function TheUBoatWar() {
             that was the difference between a convoy arriving and not. In 1943 it was the difference between losing and winning.
           </p>
         </Prose>
+        <AirCoverScene />
         <Timeline label="The war against the U-boats" moments={ATLANTIC_HISTORY} />
       </Chapter>
     </main>

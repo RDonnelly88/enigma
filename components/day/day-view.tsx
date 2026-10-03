@@ -2,7 +2,7 @@
 
 import { useDaySounds } from "./day-sounds";
 import { Glossed } from "@/components/glossary/glossary";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, SkipForward } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -10,6 +10,8 @@ import { buildDay } from "@/lib/story/day";
 import { DAY_EVENTS, type Lane } from "@/lib/story/day-events";
 import { cn } from "@/lib/cn";
 import { ArtefactView } from "./artefacts";
+import { INTERLUDES } from "./interludes";
+import { useScrollProgress } from "@/hooks/use-scroll-progress";
 
 const END = 24 * 60 - 1;
 /** How far down the window the day is read: an event's card reaching this line is the clock reaching its time. */
@@ -213,7 +215,9 @@ export function DayView() {
         {DAY_EVENTS.map((e) => {
           const reached = e.time <= time;
           const isCurrent = current?.id === e.id;
+          const interlude = INTERLUDES[e.id];
           return (
+            <Fragment key={e.id}>
             <li
               key={e.id}
               ref={(el) => {
@@ -266,6 +270,8 @@ export function DayView() {
                 </div>
               </article>
             </li>
+            {interlude && <Interlude id={e.id} Scene={interlude.Scene} faded={time < e.time} />}
+            </Fragment>
           );
         })}
       </ol>
@@ -308,5 +314,17 @@ function StationClock({ minutes }: { minutes: number }) {
       {hand(minute, 21, 2)}
       <circle cx={32} cy={32} r={2.5} fill="var(--signal-turn)" />
     </svg>
+  );
+}
+
+/** A picture of what happened between two moments, moving as the reader scrolls through it. */
+function Interlude({ id, Scene, faded }: { id: string; Scene: (props: { p: number }) => React.ReactNode; faded: boolean }) {
+  const [ref, p] = useScrollProgress<HTMLLIElement>();
+  return (
+    <li ref={ref} className="relative md:mx-auto md:w-3/4" data-interlude={id}>
+      <div className={cn("transition-opacity duration-500 motion-reduce:transition-none", faded && "opacity-40")}>
+        <Scene p={p} />
+      </div>
+    </li>
   );
 }

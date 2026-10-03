@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Eye, EyeOff, RotateCcw } from "lucide-react";
 import { Demo } from "@/components/ui/demo";
 import { Segmented } from "@/components/ui/segmented";
 import { ROUTES, YEARS, packsFor, sail, type Outcome, type Route, type Year } from "@/lib/story/atlantic";
+import { UBoat, Merchant, Destroyer } from "@/components/art/silhouettes";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/cn";
 
 /** Each route as a path across the map from Halifax to Liverpool, and where a pack would lie in wait on it. */
@@ -14,11 +16,55 @@ const PATHS: Record<Route, { d: string; pack: [number, number]; name: string }> 
   south: { d: "M60 150 C 180 250, 420 250, 540 120", pack: [300, 222], name: "Southern route" },
 };
 
+const LIVERPOOL: [number, number] = [540, 120];
+
 const SAYS: Record<Outcome, string> = {
   clear: "Through unseen. The convoy reaches Liverpool, and the U-boats wait on an empty sea.",
   lost: "The pack finds you. It shadows the convoy and attacks night after night, and ships are lost.",
   "fought-off": "The pack finds you, but the escorts are ready, with radar and aircraft overhead. U-boats are sunk, and the rest draw off.",
 };
+
+/** A convoy in miniature: three merchant ships and an escort ahead, drawn about its own centre. */
+function ConvoyShips({ transform }: { transform?: string }) {
+  return (
+    <g transform={transform}>
+      <Merchant transform="translate(-30 -3) scale(0.15)" />
+      <Merchant transform="translate(-34 9) scale(0.15)" />
+      <Merchant transform="translate(-10 3) scale(0.15)" />
+      <Destroyer transform="translate(12 0) scale(0.12)" />
+    </g>
+  );
+}
+
+/**
+ * The convoy sailing the chosen route: all the way to Liverpool, or, where an
+ * unescorted pack waits, only as far as the pack.
+ */
+function Convoy({ route, stop, still }: { route: Route; stop: boolean; still: boolean }) {
+  const motion = useRef<SVGAnimateMotionElement>(null);
+  // An animation added after the page has loaded counts from the page's first moment, so it is started by hand
+  useEffect(() => motion.current?.beginElement(), []);
+  const end = stop ? 0.5 : 1;
+  if (still) {
+    const [x, y] = stop ? PATHS[route].pack : LIVERPOOL;
+    return <ConvoyShips transform={`translate(${x} ${y})`} />;
+  }
+  return (
+    <g>
+      <ConvoyShips />
+      <animateMotion
+        ref={motion}
+        begin="indefinite"
+        dur={stop ? "2.4s" : "4s"}
+        fill="freeze"
+        path={PATHS[route].d}
+        keyPoints={`0;${end}`}
+        keyTimes="0;1"
+        calcMode="linear"
+      />
+    </g>
+  );
+}
 
 type Tally = { sent: number; through: number; hit: number };
 const EMPTY: Tally = { sent: 0, through: 0, hit: 0 };
@@ -29,6 +75,7 @@ const EMPTY: Tally = { sent: 0, through: 0, hit: 0 };
  * shows nothing. The packs and outcomes are illustrative, the difference is not.
  */
 export function ConvoyRouter() {
+  const reduced = usePrefersReducedMotion();
   const [year, setYear] = useState<Year>(1941);
   const [convoy, setConvoy] = useState(0);
   const [chosen, setChosen] = useState<Route | null>(null);
@@ -108,10 +155,15 @@ export function ConvoyRouter() {
                 />
                 {(ultra || chosen) && pack && (
                   <g transform={`translate(${PATHS[r].pack[0]} ${PATHS[r].pack[1]})`} data-testid={`pack-${r}`}>
-                    <circle r={20} className="fill-danger/20 stroke-danger" strokeWidth={2} />
-                    <text y={6} textAnchor="middle" className="fill-danger font-stencil text-[17px] font-bold">
-                      U
-                    </text>
+                    <circle r={22} className="fill-danger/15 stroke-danger" strokeWidth={2} strokeDasharray="4 3" />
+                    <UBoat className="text-danger" transform="translate(-25 4) scale(0.25)" periscope={false} />
+                    {picked && outcome !== "clear" && (
+                      <g className={outcome === "lost" ? "fill-cable" : "fill-brass"}>
+                        {[0, 0.6, 1.2].map((delay, i) => (
+                          <circle key={i} cx={(i - 1) * 9} cy={-6 + (i % 2) * 8} r={9} className="art-pulse" style={{ animationDelay: `${delay}s` }} />
+                        ))}
+                      </g>
+                    )}
                   </g>
                 )}
                 {!ultra && !chosen && (
@@ -122,6 +174,11 @@ export function ConvoyRouter() {
               </g>
             );
           })}
+          {chosen ? (
+            <Convoy key={`${year}-${convoy}`} route={chosen} stop={outcome === "lost"} still={reduced} />
+          ) : (
+            <ConvoyShips transform="translate(66 132)" />
+          )}
           <circle cx={60} cy={150} r={6} className="fill-room-ink" />
           <text x={60} y={180} textAnchor="middle" className="fill-room-ink font-sans text-[17px] font-semibold">
             Halifax
