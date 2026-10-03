@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { BombeDemo } from "@/components/breaking/bombe-demo";
+import { BombeWalkthrough } from "@/components/breaking/bombe-walkthrough";
 import { RejewskiDemo } from "@/components/breaking/rejewski-demo";
 import { CribTool } from "@/components/crib/crib-tool";
 import { Timeline } from "@/components/story/timeline";
 import { Aside, Chapter, Prose } from "@/components/ui/chapter";
 import { ChapterRail } from "@/components/ui/chapter-rail";
 import { PageHero } from "@/components/ui/page-hero";
+import { PRACTICE_CIPHERTEXT, PRACTICE_ENGLISH, PRACTICE_PLAINTEXT } from "@/lib/messages";
 import { BREAKING_HISTORY } from "@/lib/story/history";
 
 const CHAPTERS = [
@@ -118,7 +119,7 @@ export default function CribsAndTheBombe() {
           </p>
         }
       >
-        <BombeDemo />
+        <BombeWalkthrough />
         <Aside>
           The Bombe did not read messages. It threw out wrong settings so fast that the few left could be tried by hand.
         </Aside>
@@ -136,6 +137,16 @@ export default function CribsAndTheBombe() {
           </p>
         }
       >
+        <div className="rounded-xl border-2 border-signal-in bg-panel p-6">
+          <p className="text-xs font-semibold tracking-[0.25em] text-signal-in uppercase">The practice intercept, read</p>
+          <p className="mt-3 font-type text-lg break-all">{PRACTICE_CIPHERTEXT.match(/.{1,5}/g)!.slice(0, 8).join(" ")} …</p>
+          <p className="mt-3 font-type text-xl">{PRACTICE_PLAINTEXT.replace(/X/g, " ")}</p>
+          <p className="mt-3 font-serif text-xl italic">{PRACTICE_ENGLISH}</p>
+          <p className="mt-4 text-sm text-room-muted">
+            From an intercepted jumble to a readable order, with a guessed word, a loop, a machine that threw out wrong
+            settings, and a checking machine. Multiply that by every network, every day, and you have Bletchley Park.
+          </p>
+        </div>
         <Prose>
           <p>
             How much it changed the outcome is still argued over. Some historians have suggested it shortened the war in
