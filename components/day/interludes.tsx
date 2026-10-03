@@ -1,5 +1,5 @@
 import { Plate, Waves } from "@/components/art/plate";
-import { Bomber, DispatchRider, Fighter, ListeningHut, Mast, Merchant } from "@/components/art/silhouettes";
+import { Bomber, BomberSide, Bowser, DispatchRider, Fighter, ListeningHut, Mast, Merchant, Seated, Standing } from "@/components/art/silhouettes";
 
 /** Clamped to 0..1. */
 const unit = (v: number) => Math.min(1, Math.max(0, v));
@@ -224,8 +224,161 @@ function Interception({ p }: { p: number }) {
   );
 }
 
+/** The airfield in France: a hangar, a windsock and a line of parked bombers, for the German side of the day. */
+function Airfield({ children, sky, sun }: { children?: React.ReactNode; sky: string; sun?: { x: number; y: number } }) {
+  return (
+    <>
+      <rect x={0} y={0} width={600} height={200} className={sky} />
+      {sun && <circle cx={sun.x} cy={sun.y} r={26} className="fill-lamp-on/80" />}
+      <rect x={0} y={196} width={600} height={64} className="fill-panel" />
+      <line x1={0} x2={600} y1={196} y2={196} className="stroke-room-ink/40" />
+      <path d="M440 196 L440 146 Q505 108 570 146 L570 196 Z" className="fill-room-ink" />
+      <rect x={485} y={160} width={40} height={36} className="fill-room-ink/40" />
+      {/* The windsock on its pole */}
+      <rect x={576} y={140} width={2} height={56} className="fill-room-ink" />
+      <path d="M578 142 L598 146 L598 152 L578 156 Z" className="fill-cable" />
+      {children}
+    </>
+  );
+}
+
+/** Midnight to 05:45: dawn comes up over the airfield, and the weather observer goes out to his instruments. */
+function Dawn({ p }: { p: number }) {
+  const sun = { x: 120 + p * 60, y: 200 - p * 120 };
+  return (
+    <Plate viewBox="0 0 600 260" figure="05:30" caption="Dawn over the airfield in France. The weather observer reads his instruments: the morning’s report starts here.">
+      <rect x={0} y={0} width={600} height={200} className="fill-case" />
+      <rect x={0} y={0} width={600} height={200} className="fill-brass-soft" opacity={p} />
+      <Airfield sky="fill-none" sun={sun}>
+        <BomberSide transform="translate(120 196) scale(0.75)" className="text-room-ink/80" />
+        <BomberSide transform="translate(270 196) scale(0.75)" className="text-room-ink/80" />
+        {/* The Stevenson screen and the observer walking out to it */}
+        <rect x={350} y={170} width={22} height={18} className="fill-paper stroke-room-ink" />
+        <rect x={360} y={188} width={2} height={8} className="fill-room-ink" />
+        <Standing transform={`translate(${lerp(425, 384, along(p, 0.3, 0.8))} 196) scale(0.55)`} cap />
+      </Airfield>
+    </Plate>
+  );
+}
+
+/** 06:40 to 08:30: in Hut 6 the day's messages are sorted, and the crib room looks for a familiar opening. */
+function CribRoom({ p }: { p: number }) {
+  const slips = 6;
+  return (
+    <Plate viewBox="0 0 600 220" figure="07:00" caption="In Hut 6 the night’s messages are sorted by network, and the crib room hunts for one that opens the way it always does.">
+      <rect x={0} y={0} width={600} height={220} className="fill-brass-soft" />
+      <rect x={0} y={190} width={600} height={30} className="fill-panel" />
+      {/* Blackout blinds and a lamp over the table */}
+      {[60, 240, 420].map((x) => (
+        <rect key={x} x={x} y={30} width={110} height={60} className="fill-case" />
+      ))}
+      <path d="M300 0 L300 40 M280 56 L300 40 L320 56 Z" className="fill-room-ink stroke-room-ink" strokeWidth={2} />
+      <path d="M260 56 L340 56 L380 150 L220 150 Z" className="fill-lamp-on/15" />
+      <rect x={80} y={160} width={440} height={6} className="fill-room-ink" />
+      <rect x={100} y={166} width={6} height={24} className="fill-room-ink" />
+      <rect x={494} y={166} width={6} height={24} className="fill-room-ink" />
+      {[120, 230, 340, 450].map((x, i) => (
+        <Seated key={x} transform={`translate(${x} 190) scale(0.85)`} className={i === 3 ? "text-brass" : "text-room-ink"} />
+      ))}
+      {/* Message slips passed along the table, from one desk to the next */}
+      {Array.from({ length: slips }, (_, i) => {
+        const t = unit(p * 1.4 - i * 0.12);
+        const x = lerp(110, 470, t);
+        return <rect key={i} x={x} y={150 - (i % 2) * 4} width={22} height={10} className="fill-paper stroke-room-ink/40" transform={`rotate(${(i % 3) - 1} ${x} 150)`} />;
+      })}
+      {p > 0.75 && (
+        <text x={470} y={124} textAnchor="middle" className="fill-cable font-stencil text-[13px] font-bold tracking-[0.2em]">
+          WETTER…
+        </text>
+      )}
+    </Plate>
+  );
+}
+
+/** 09:15 to 10:00: the menu goes across to the Bombe hut, where Wrens plug it up. */
+function MenuToBombe({ p }: { p: number }) {
+  const walk = along(p, 0, 0.6);
+  const x = lerp(170, 420, walk);
+  const cables = Math.round(along(p, 0.6, 1) * 5);
+  return (
+    <Plate viewBox="0 0 600 220" figure="09:30" caption="The menu goes across to the Bombe hut. The Wrens plug it up at the back of the machine, a cable for every link, and start the run.">
+      <rect x={0} y={0} width={600} height={170} className="fill-brass-soft" />
+      <rect x={0} y={168} width={600} height={52} className="fill-signal-in/15" />
+      <path d="M0 196 Q300 176 600 196" className="fill-none stroke-paper" strokeWidth={10} />
+      {[
+        [20, "HUT 6"],
+        [440, "BOMBES"],
+      ].map(([hx, name]) => (
+        <g key={name as string} transform={`translate(${hx} 170)`} className="fill-room-ink">
+          <path d="M0 0 L0 -60 L70 -84 L140 -60 L140 0 Z" />
+          <rect x={56} y={-30} width={26} height={30} className="fill-room-ink/60" />
+          <text x={70} y={-38} textAnchor="middle" className="fill-paper font-stencil text-[13px] font-bold tracking-[0.25em]">
+            {name}
+          </text>
+        </g>
+      ))}
+      <g transform={`translate(${x} 188)`}>
+        <Standing transform="scale(0.7)" cap />
+        <rect x={6} y={-44} width={12} height={15} className="fill-paper stroke-room-ink/50" />
+      </g>
+      {/* The plugged cables, filling in at the back of the Bombe */}
+      {Array.from({ length: cables }, (_, i) => (
+        <path key={i} d={`M${454 + i * 14} 162 q7 -22 14 0`} className="fill-none stroke-cable" strokeWidth={3} />
+      ))}
+    </Plate>
+  );
+}
+
+/** 12:30 to 14:00, the German side: the bomber wing is fuelled and armed for the afternoon. */
+function Fuelling({ p }: { p: number }) {
+  const bowser = lerp(-60, 210, along(p, 0, 0.5));
+  return (
+    <Plate viewBox="0 0 600 260" figure="13:00" caption="At the airfield in France the bomber wing is fuelled and armed, waiting for the order that will send it out.">
+      <Airfield sky="fill-brass-soft" sun={{ x: 300, y: 50 }}>
+        <BomberSide transform="translate(170 196)" />
+        <BomberSide transform="translate(320 196) scale(0.8)" className="text-room-ink/80" />
+        <Bowser transform={`translate(${bowser} 196) scale(0.9)`} />
+        {p > 0.5 && <path d={`M${bowser + 50} 182 Q${bowser + 80} 150 172 166`} className="fill-none stroke-room-ink" strokeWidth={2} />}
+        {/* Bombs on a trolley, wheeled in as the afternoon goes on */}
+        <g transform={`translate(${lerp(-80, 120, along(p, 0.4, 0.9))} 196)`}>
+          <rect x={0} y={-8} width={40} height={4} className="fill-room-ink" />
+          <circle cx={6} cy={-2} r={3} className="fill-room-ink" />
+          <circle cx={34} cy={-2} r={3} className="fill-room-ink" />
+          {[4, 18].map((bx) => (
+            <path key={bx} d={`M${bx} -14 L${bx + 12} -14 Q${bx + 18} -11 ${bx + 12} -8 L${bx} -8 Z`} className="fill-room-ink" />
+          ))}
+        </g>
+      </Airfield>
+    </Plate>
+  );
+}
+
+/** 16:00 to midnight: the bombers come home at sunset, convinced a spotter plane gave them away. */
+function Homecoming({ p }: { p: number }) {
+  const t = along(p, 0, 0.8);
+  const x = lerp(-40, 250, t);
+  const y = lerp(80, 196, t * t);
+  return (
+    <Plate viewBox="0 0 600 260" figure="18:30" caption="The bombers come home at sunset. The unit blames the spotter plane seen over the convoy that morning. The secret holds.">
+      <rect x={0} y={0} width={600} height={200} className="fill-brass-soft" />
+      <rect x={0} y={0} width={600} height={200} className="fill-cable/20" opacity={p} />
+      <Airfield sky="fill-none" sun={{ x: 470, y: 120 + p * 80 }}>
+        <g transform={`translate(${x} ${y}) rotate(${lerp(8, 0, t)})`}>
+          <BomberSide transform="scale(0.8)" wheels={t > 0.6} />
+        </g>
+        <BomberSide transform="translate(330 196) scale(0.7)" className="text-room-ink/70" />
+      </Airfield>
+    </Plate>
+  );
+}
+
 /** The moments between two events that get a picture, keyed by the event they follow; each moves from 0 to 1 as it is scrolled past. */
 export const INTERLUDES: Record<string, { Scene: (props: { p: number }) => React.ReactNode }> = {
+  midnight: { Scene: Dawn },
+  registry: { Scene: CribRoom },
+  menu: { Scene: MenuToBombe },
+  hut3: { Scene: Fuelling },
+  attack: { Scene: Homecoming },
   transmit: { Scene: MorseAcross },
   intercept: { Scene: DispatchRun },
   broken: { Scene: HutToHut },

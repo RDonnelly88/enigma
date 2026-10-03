@@ -223,3 +223,40 @@ export function BombeCabinet({ className = "text-room-ink", transform, spin = fa
     </g>
   );
 }
+
+/** A twin-engined bomber from the side, nose to the right, wheels down; origin on the ground under the main wheels. */
+export function BomberSide({ className = "text-room-ink", transform, wheels = true }: Art & { wheels?: boolean }) {
+  return (
+    <g className={cn("fill-current", className)} transform={transform}>
+      <path d="M-70 -30 L-64 -34 L40 -36 Q62 -34 70 -26 Q62 -18 40 -18 L-60 -22 Z" />
+      {/* The glazed nose */}
+      <path d="M50 -35 Q66 -32 70 -26 L50 -24 Z" className="fill-paper/40" />
+      <path d="M-70 -30 L-76 -54 L-66 -54 L-56 -32 Z" />
+      <rect x={-12} y={-30} width={44} height={4} rx={2} />
+      {/* An engine nacelle under the wing, its propeller a blur */}
+      <path d="M0 -32 L30 -32 Q38 -27 30 -21 L0 -22 Z" />
+      <rect x={36} y={-38} width={2} height={22} rx={1} className="opacity-50" />
+      {wheels && (
+        <>
+          <rect x={10} y={-22} width={3} height={14} />
+          <circle cx={12} cy={-6} r={6} />
+          <circle cx={-62} cy={-4} r={3} />
+        </>
+      )}
+    </g>
+  );
+}
+
+/** A fuel bowser, its hose out; origin at the road under the rear wheel. */
+export function Bowser({ className = "text-room-ink", transform }: Art) {
+  return (
+    <g className={cn("fill-current", className)} transform={transform}>
+      <rect x={-20} y={-34} width={60} height={24} rx={10} />
+      <path d="M40 -12 L40 -30 L56 -30 L64 -18 L64 -12 Z" />
+      <rect x={44} y={-27} width={10} height={7} className="fill-paper/50" />
+      <circle cx={-6} cy={-7} r={7} />
+      <circle cx={50} cy={-7} r={7} />
+      <rect x={-20} y={-14} width={84} height={4} />
+    </g>
+  );
+}
