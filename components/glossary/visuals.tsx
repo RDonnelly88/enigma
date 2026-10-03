@@ -1,5 +1,6 @@
 "use client";
 
+import { useBombeSound } from "@/hooks/use-bombe-sound";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { ALPHABET, DEFAULT_SETTINGS, REFLECTORS, encipher, step, type Settings } from "@/lib/enigma";
@@ -245,6 +246,7 @@ function Crib() {
 function Bombe() {
   const [n, setN] = useState(0);
   const [running, setRunning] = useState(false);
+  useBombeSound(running);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const STOP = 4 * 676 + 13 * 26 + 2;
   useEffect(() => () => {

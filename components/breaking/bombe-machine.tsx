@@ -1,5 +1,6 @@
 "use client";
 
+import { useBombeSound } from "@/hooks/use-bombe-sound";
 import { Gloss } from "@/components/glossary/gloss";
 import { useEffect, useMemo, useState } from "react";
 import { Check, Pause, Play, X } from "lucide-react";
@@ -28,6 +29,7 @@ const C = 150;
 export function BombeMachine() {
   const [right, setRight] = useState(0);
   const [running, setRunning] = useState(false);
+  useBombeSound(running);
   const [tested, setTested] = useState<number | null>(null);
   // Nothing has been tested until the first run
   const [started, setStarted] = useState(false);

@@ -1,12 +1,13 @@
 /**
- * Two choices a reader makes once and keeps: light or dark, and reading in
- * short or in detail. Each lives as an attribute on <html>, which the CSS
+ * Choices a reader makes once and keeps: light or dark, reading in short or
+ * in detail, and sound on or off. Each lives as an attribute on <html>, which the CSS
  * reads, and in localStorage, which the inline script reads back before the
  * first paint so a returning reader never sees the other version flash past.
  */
 export const PREFERENCES = {
   theme: { attribute: "data-theme", store: "enigma.theme", values: ["light", "dark"] },
   read: { attribute: "data-read", store: "enigma.read", values: ["short", "detail"] },
+  sound: { attribute: "data-sound", store: "enigma.sound", values: ["on", "off"] },
 } as const;
 
 export type Preference = keyof typeof PREFERENCES;

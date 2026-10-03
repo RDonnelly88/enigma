@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowDown, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { ArrowDown, RotateCcw } from "lucide-react";
 import { Intercepts } from "@/components/intercepts";
 import { Incoming } from "@/components/machine/incoming";
 import { Keyboard } from "@/components/machine/keyboard";
@@ -23,7 +23,7 @@ import { DEFAULT_SETTINGS, type Settings } from "@/lib/enigma";
 import { explain } from "@/lib/explain";
 import { LESSONS } from "@/lib/lessons";
 import { readMachineLink } from "@/lib/share";
-import { playKey } from "@/lib/sound";
+import { playKey, playTeleprinter } from "@/lib/sound";
 
 const SLOT_NAMES = ["Left", "Middle", "Right"] as const;
 const STORE = "enigma.lessons";
@@ -48,7 +48,6 @@ function storedLessons(): string[] {
 export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?: string | null }) {
   const machine = useMachine(DEFAULT_SETTINGS);
   const { settings, configure, keyDown, keyUp, typeMessage, clear, restoreLessons } = machine;
-  const [sound, setSound] = useState(true);
   const [panel, setPanel] = useState<Panel>("lessons");
   // Until a lesson is picked, show the linked one, else the one just finished so it can say what it
   // showed, else the first unfinished
@@ -66,10 +65,10 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
 
   const down = useCallback(
     (letter: string) => {
-      if (sound && !machine.held && !blocked) playKey();
+      if (!machine.held && !blocked) playKey();
       keyDown(letter);
     },
-    [sound, machine.held, blocked, keyDown],
+    [machine.held, blocked, keyDown],
   );
   useHardwareKeys(down, keyUp);
 
@@ -98,6 +97,11 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
     const positions = [...settings.positions] as Settings["positions"];
     positions[slot] = (positions[slot] + delta + 26) % 26;
     configure({ ...settings, positions });
+  };
+  // A whole message typed at once comes in like a teleprinter
+  const typeAloud = (text: string) => {
+    playTeleprinter(text.replace(/[^a-z]/gi, "").length);
+    typeMessage(text);
   };
   const setUp = (s: Settings) => {
     configure(s);
@@ -133,14 +137,6 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
         >
           <RotateCcw className="size-5" />
         </button>
-        <button
-          type="button"
-          onClick={() => setSound((s) => !s)}
-          aria-label={sound ? "Mute" : "Unmute"}
-          className="rounded-full p-2 text-room-muted hover:text-room-ink"
-        >
-          {sound ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-        </button>
         </div>
       </div>
 
@@ -149,7 +145,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
           ciphertext={secret}
           onRead={(key) => {
             setUp(key);
-            typeMessage(secret);
+            typeAloud(secret);
             setSecret(null);
             window.history.replaceState(null, "", window.location.pathname);
           }}
@@ -216,7 +212,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
             output={machine.output}
             onRewind={machine.rewind}
             onClear={machine.clear}
-            onMessage={typeMessage}
+            onMessage={typeAloud}
             disabled={blocked}
           />
         </div>
@@ -277,7 +273,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
               <div className="flex flex-col gap-8">
                 <section aria-labelledby="transmit">
                   <h2 id="transmit" className="mb-3 font-stencil text-xl font-bold tracking-wide">Transmit in Morse</h2>
-                  <Transmitter text={machine.output} sound={sound} onTransmit={machine.markTransmitted} />
+                  <Transmitter text={machine.output} onTransmit={machine.markTransmitted} />
                 </section>
                 <section aria-labelledby="send">
                   <h2 id="send" className="mb-3 font-stencil text-xl font-bold tracking-wide">Send a secret</h2>
@@ -285,7 +281,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
                 </section>
                 <Intercepts
                   onLoad={(intercept) => setUp(intercept.settings)}
-                  onType={typeMessage}
+                  onType={typeAloud}
                 />
               </div>
             )}

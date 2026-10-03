@@ -40,7 +40,7 @@ test("the story links into the machine's lessons", async ({ page }) => {
 
 test("a message can be transmitted in Morse", async ({ page }) => {
   await open(page);
-  await page.getByRole("button", { name: "Mute" }).click();
+  await page.getByRole("button", { name: "Turn sound off" }).click();
   await typeAll(page, "SOS");
   await tab(page, "Messages");
   await page.getByRole("button", { name: "Transmit" }).click();

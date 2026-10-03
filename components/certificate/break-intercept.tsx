@@ -1,5 +1,8 @@
 "use client";
 
+import { playStamp } from "@/lib/sound";
+import { useBombeSound } from "@/hooks/use-bombe-sound";
+import { Listen } from "@/components/ui/listen";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Lightbulb, Play, RotateCcw, Timer } from "lucide-react";
 import { MenuGraph } from "@/components/crib/menu-graph";
@@ -111,6 +114,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
   const [locked, setLocked] = useState<number | null>(null);
   const [progress, setProgress] = useState<number[]>(() => ORDERS.map(() => 0));
   const [running, setRunning] = useState(false);
+  useBombeSound(running);
   const [stops, setStops] = useState<Stop[] | null>(null);
   const [cables, setCables] = useState<string[]>([]);
   const [hinted, setHinted] = useState<ReturnType<typeof hint>>(null);
@@ -213,7 +217,10 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
           key, only what Hut 6 knows, and a Bombe. Break it, read it, and warn the convoy.
         </p>
         <div className="rounded-lg bg-room p-4">
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-brass uppercase">The intercept</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[11px] font-semibold tracking-[0.25em] text-brass uppercase">The intercept</p>
+            <Listen text={CIPHERTEXT} />
+          </div>
           <p className="mt-2 font-type text-lg leading-relaxed tracking-wider break-all">{CIPHERTEXT.match(/.{1,5}/g)!.join(" ")}</p>
         </div>
         <ul className="flex max-w-2xl flex-col gap-2 text-sm leading-relaxed">
@@ -377,6 +384,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
       }
       setRunning(false);
       setStops(found);
+      if (found.length) playStamp();
     };
     const stop = stops?.[0];
     return (

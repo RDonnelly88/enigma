@@ -1,5 +1,6 @@
 "use client";
 
+import { Listen } from "@/components/ui/listen";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { TryIt } from "@/components/story/try-it";
@@ -171,6 +172,7 @@ function Procedure({ dayKey }: { dayKey: DailyKey }) {
           <span className="mt-1 block font-mono text-base font-bold tracking-[0.2em] text-brass" data-testid="morse">
             {sent.indicator.split("").map((c) => MORSE[c]).join("   ")}
           </span>
+          <Listen text={sent.indicator + sent.body} className="mt-2" />
         </>
       ),
     },
@@ -255,7 +257,7 @@ function Receiving({ dayKey, indicator, body }: { dayKey: DailyKey; indicator: s
       body: (
         <>
           The receiving radio operator writes every letter onto a message form: the indicator <Indicator value={heard} />, then{" "}
-          <Groups text={body} />
+          <Groups text={body} /> <Listen text={heard + body} />
         </>
       ),
     },

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Listen } from "@/components/ui/listen";
 import { Stamp } from "@/components/ui/stamp";
 import { DEFAULT_SETTINGS, encipher, lettersToPositions } from "@/lib/enigma";
 
@@ -11,6 +12,7 @@ export default function NotFound() {
       <div className="relative w-full rounded-sm bg-paper p-8 text-paper-ink shadow-lg">
         <p className="text-[11px] font-semibold tracking-[0.3em] text-paper-muted uppercase">Intercept · page not found</p>
         <p className="mt-4 font-type text-2xl tracking-[0.25em] break-all">{GARBLED.match(/.{1,5}/g)!.join(" ")}</p>
+        <Listen text={GARBLED} tone="paper" className="mt-3" />
         <Stamp tilt={-9} className="mt-6 text-2xl">
           No stop
         </Stamp>

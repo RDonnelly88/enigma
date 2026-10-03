@@ -1,5 +1,6 @@
 "use client";
 
+import { Listen } from "@/components/ui/listen";
 import { Gloss } from "@/components/glossary/gloss";
 import { Stamp } from "@/components/ui/stamp";
 import { useState } from "react";
@@ -120,7 +121,7 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
                 0600 = {day.weather.body.length} = {WEATHER.start} {day.weather.enciphered} =
               </p>
             </Paper>
-            <Transmitter text={day.weather.body.slice(0, 20)} sound onTransmit={() => {}} />
+            <Transmitter text={day.weather.body.slice(0, 20)} onTransmit={() => {}} />
           </div>
         </Gloss>
       );
@@ -128,7 +129,10 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
       return (
         <Gloss>
           <Paper className="border-l-4 border-signal-in">
-            <Label>RAF Chicksands · message form · 0601</Label>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label>RAF Chicksands · message form · 0601</Label>
+              <Listen text={day.weather.enciphered + day.weather.body} tone="paper" />
+            </div>
             <p className="mt-1">
               Indicator {WEATHER.start} {day.weather.enciphered} · {day.weather.body.length} letters
             </p>
@@ -197,9 +201,12 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
       return (
         <Gloss>
           <Paper>
-            <Label>
-              Indicator {ORDER.start} {day.order.enciphered}
-            </Label>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label>
+                Indicator {ORDER.start} {day.order.enciphered}
+              </Label>
+              <Listen text={day.order.enciphered + day.order.body} tone="paper" />
+            </div>
             <p className="break-all">{groups(day.order.body)}</p>
           </Paper>
         </Gloss>

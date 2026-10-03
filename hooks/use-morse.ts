@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { timeline, type Tone } from "@/lib/morse";
+import { soundOn } from "@/lib/sound";
 
 type Playing = { letter: number; on: boolean; symbol: number };
 
@@ -21,13 +22,14 @@ export function useMorse() {
   }, []);
 
   const play = useCallback(
-    (text: string, wpm: number, sound: boolean) => {
+    (text: string, wpm: number) => {
       stop();
       const { tones, duration } = timeline(text, wpm);
       if (tones.length === 0) return;
 
       let ctx: AudioContext | null = null;
-      if (sound && typeof AudioContext !== "undefined") {
+      // With sound off the lamp still flashes, so the message can be read by eye
+      if (soundOn() && typeof AudioContext !== "undefined") {
         ctx = new AudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
