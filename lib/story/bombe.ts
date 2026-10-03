@@ -76,11 +76,14 @@ export function checkStop(settings: Settings, links: Link[], letter: string, gue
   const plug = new Map<string, string>();
   const queue: string[] = [];
   const set = (x: string, y: string): { letter: string; plugs: [string, string] } | null => {
-    // A plug works both ways, so fixing one end fixes the other
+    // A plug works both ways, so fixing one end fixes the other; both ends are checked before either is set,
+    // so the plugs found stay a plugboard that could exist
     for (const [p, q] of [[x, y], [y, x]]) {
       const had = plug.get(p);
       if (had && had !== q) return { letter: p, plugs: [had, q] };
-      if (!had) {
+    }
+    for (const [p, q] of [[x, y], [y, x]]) {
+      if (!plug.has(p)) {
         plug.set(p, q);
         queue.push(p);
       }

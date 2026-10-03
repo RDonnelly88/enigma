@@ -37,6 +37,8 @@ describe("from Bombe stop to German", () => {
     for (const { check } of testStop(falseStop.right).tried) {
       expect(check.clash).not.toBeNull();
       expect(check.clash!.plugs[0]).not.toBe(check.clash!.plugs[1]);
+      // What it found before the clash is still a plugboard that could exist, so it can be read with
+      expect(new Set(check.pairs.join("")).size).toBe(check.pairs.length * 2);
     }
   });
 });

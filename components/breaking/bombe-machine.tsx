@@ -21,27 +21,33 @@ function windowsAt(settings: Settings, index: number) {
 const R = 110;
 const C = 150;
 
-/** How long a stop's test stays up before a false one is thrown out and the drums move on. */
-const TEST_MS = 1600;
-const STEP_MS = 350;
+/** How long a stop's test takes, and how long each position takes to try. */
+const TEST_MS = 900;
+const STEP_MS = 300;
 
 type Phase = "ready" | "running" | "testing" | "found";
+/** What became of each position the drums reached: no stop, a stop thrown out on test, or the stop that held. */
+type Outcome = "none" | "false" | "true";
+
+const groupsOf = (t: string) => t.slice(0, 45).match(/.{1,5}/g)!.join(" ");
 
 /**
  * The Bombe, drawn: one set of drums for each link of the loop, each standing
  * where an Enigma would be at that letter of the message, wired round in a
  * ring. Run it, and it tries the right drum at every position, stopping
  * wherever a guess survives the loop. Each stop is tested at once against the
- * whole menu, as the hut did, and the drums move on from every false one.
+ * whole menu, as the hut did, and the run goes on by itself until a stop holds.
+ * Afterwards every position can be looked at to see why it failed.
  */
 export function BombeMachine() {
   const [right, setRight] = useState(0);
   const [phase, setPhase] = useState<Phase>("ready");
   const [paused, setPaused] = useState(false);
-  const [thrownOut, setThrownOut] = useState(0);
+  const [outcomes, setOutcomes] = useState<(Outcome | null)[]>(() => SCAN.map(() => null));
+  const [inspect, setInspect] = useState<number | null>(null);
   useBombeSound(phase === "running" && !paused);
-  const test = phase === "testing" || phase === "found" ? testStop(right) : null;
   const drums = useMemo(() => LOOP.map((l) => windowsAt(candidate(right), l.step)), [right]);
+  const record = (at: number, outcome: Outcome) => setOutcomes((o) => o.map((v, i) => (i === at ? outcome : v)));
 
   // The drums turn until the loop holds somewhere, and the stop goes for testing
   useEffect(() => {
@@ -50,22 +56,23 @@ export function BombeMachine() {
       const next = (right + 1) % 26;
       setRight(next);
       if (SCAN[next].stops.length > 0) setPhase("testing");
+      else record(next, "none");
     }, STEP_MS);
     return () => clearTimeout(tick);
   }, [phase, paused, right]);
 
-  // A tested stop either holds, and the run is over, or is thrown out and the drums carry on. The verdict
-  // sounds partway through, so it is heard while the reason is on screen, before the drums move
+  // A tested stop either holds, and the run is over, or is thrown out and the drums carry on
   useEffect(() => {
     if (phase !== "testing" || paused) return;
     const holds = testStop(right).holds;
     playChecking();
-    const verdict = setTimeout(() => (holds ? playStrikes(1) : playReject()), TEST_MS * 0.45);
+    const verdict = setTimeout(() => (holds ? playStrikes(1) : playReject()), TEST_MS * 0.5);
     const done = setTimeout(() => {
+      record(right, holds ? "true" : "false");
       if (holds) {
         setPhase("found");
+        setInspect(right);
       } else {
-        setThrownOut((n) => n + 1);
         setPhase("running");
       }
     }, TEST_MS);
@@ -77,14 +84,20 @@ export function BombeMachine() {
 
   const start = () => {
     setRight(0);
-    setThrownOut(0);
+    setOutcomes(SCAN.map(() => null));
+    setInspect(null);
     setPaused(false);
     // The first position is tried before the drums move; it may be a stop itself
-    setPhase(SCAN[0].stops.length > 0 ? "testing" : "running");
+    if (SCAN[0].stops.length > 0) setPhase("testing");
+    else {
+      setOutcomes(SCAN.map((_, i) => (i === 0 ? "none" : null)));
+      setPhase("running");
+    }
   };
   const stopped = phase === "testing" || phase === "found";
   const found = phase === "found";
-  const read = found ? partialRead(FROM_STOP, right) : null;
+  const candidates = SCAN.filter((s) => s.stops.length > 0 && (outcomes[s.right] || (phase === "testing" && s.right === right)));
+  const thrownOut = outcomes.filter((o) => o === "false").length;
 
   return (
     <Gloss>
@@ -92,7 +105,7 @@ export function BombeMachine() {
         <p className="max-w-2xl font-serif text-[1.05rem] leading-relaxed text-room-ink/90">
           Each set of drums copies an Enigma&rsquo;s rotors, without a plugboard, turned to where they would be at one letter
           of the loop. Cables at the back join them in the loop&rsquo;s order, so electricity does the guessing: all 26 guesses
-          go round at once. Every time it stops, the stop is tested straight away. Run it.
+          go round at once. Every stop is tested straight away, and the run goes on until one holds. Run it.
         </p>
         <div className="grid items-center gap-6 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
           <svg
@@ -168,66 +181,74 @@ export function BombeMachine() {
                 </span>
               )}
             </div>
-            <div className="grid grid-cols-13 gap-1" aria-hidden>
-              {SCAN.map((s) => (
-                <span
-                  key={s.right}
-                  className={cn(
-                    "grid h-6 place-items-center rounded-sm font-stencil text-[10px] font-bold",
-                    s.right === right
-                      ? "bg-room-ink text-room"
-                      : s.right < right && s.stops.length
-                        ? "bg-danger/70 text-white line-through"
-                        : "bg-room text-room-muted",
-                  )}
-                >
-                  {ALPHABET[s.right]}
-                </span>
-              ))}
-            </div>
             <p className="text-sm" data-testid="bombe-status" aria-live="polite">
               {found
-                ? `Stop at ${ALPHABET[right]}, and the test holds.`
-                : stopped
-                  ? `Stop at ${ALPHABET[right]}: the loop holds if ${LOOP[0].a} is plugged to ${SCAN[right].stops.join(" or ")}. Testing it against the whole menu…`
+                ? `Stop at ${ALPHABET[right]}, and the test holds. Pick any letter below to see why the others failed.`
+                : phase === "testing"
+                  ? `Stop at ${ALPHABET[right]}. Testing it against the whole menu…`
                   : phase === "running"
-                    ? "Trying each position. Every guess contradicts itself round the loop, so it moves on."
+                    ? "Trying each position. Wherever every guess contradicts itself round the loop, it moves straight on."
                     : "Ready. The drums will turn through every position of the right rotor."}
             </p>
-            {test && (
-              <div
-                className={cn("rounded-lg border p-3 text-sm", test.holds ? "border-signal-in bg-signal-in/10" : "border-danger bg-danger/10")}
-                data-testid="stop-test"
-              >
-                <ul className="flex flex-col gap-1">
-                  {test.tried.map(({ guess, check }) => (
-                    <li key={guess} className="flex items-start gap-2">
-                      {check.clash ? <X className="mt-0.5 size-4 shrink-0 text-danger" /> : <Check className="mt-0.5 size-4 shrink-0 text-signal-in" />}
-                      <span>
-                        {LOOP[0].a}↔{guess}:{" "}
-                        {check.clash
-                          ? `then ${check.clash.letter} would need plugging to both ${check.clash.plugs[0]} and ${check.clash.plugs[1]}. Impossible.`
-                          : `every link agrees, and gives ${check.pairs.length} plugs: ${check.pairs.join(" ")}.`}
-                      </span>
-                    </li>
-                  ))}
+            <div>
+              <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-room-muted uppercase">Right drum positions</p>
+              <div className="grid grid-cols-13 gap-1">
+                {SCAN.map((s) => {
+                  const outcome = outcomes[s.right];
+                  const label = `${ALPHABET[s.right]}: ${
+                    outcome === "true" ? "the stop that held" : outcome === "false" ? "a stop, thrown out" : outcome === "none" ? "no stop" : "not reached"
+                  }`;
+                  return (
+                    <button
+                      key={s.right}
+                      type="button"
+                      disabled={!found || outcome === null}
+                      onClick={() => setInspect(s.right)}
+                      aria-label={label}
+                      aria-pressed={found ? inspect === s.right : undefined}
+                      title={label}
+                      className={cn(
+                        "grid h-7 place-items-center rounded-sm font-stencil text-[11px] font-bold disabled:cursor-default",
+                        outcome === "true"
+                          ? "bg-signal-in text-white"
+                          : outcome === "false"
+                            ? "bg-danger/75 text-white line-through"
+                            : outcome === "none"
+                              ? "bg-panel-edge text-room-muted"
+                              : "bg-room text-room-muted/60",
+                        !found && s.right === right && phase !== "ready" && "outline-2 outline-room-ink",
+                        found && inspect === s.right && "outline-2 outline-offset-1 outline-brass",
+                        found && outcome !== null && "hover:outline-2 hover:outline-brass/60",
+                      )}
+                    >
+                      {ALPHABET[s.right]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            {candidates.length > 0 && (
+              <div data-testid="candidates">
+                <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-room-muted uppercase">Candidates</p>
+                <ul className="flex flex-wrap gap-1.5">
+                  {candidates.map((s) => {
+                    const outcome = outcomes[s.right];
+                    return (
+                      <li
+                        key={s.right}
+                        className={cn(
+                          "rounded-sm border px-2 py-0.5 font-type text-xs",
+                          outcome === "true" ? "border-signal-in text-signal-in" : outcome === "false" ? "border-danger/60 text-danger line-through" : "border-brass text-brass",
+                        )}
+                      >
+                        {ALPHABET[s.right]}: {s.stops.map((g) => `${LOOP[0].a}↔${g}`).join(", ")}
+                      </li>
+                    );
+                  })}
                 </ul>
-                <p className="mt-2 font-semibold">{test.holds ? "This is the setting." : "A false stop: thrown out."}</p>
-                {read && (
-                  <>
-                    <p className="mt-1 font-type break-all">
-                      {read.text.slice(0, 48).split("").map((c, i) => (
-                        <span key={i} className={c === PRACTICE_PLAINTEXT[i] ? "" : "opacity-40"}>
-                          {c}
-                        </span>
-                      ))}
-                      …
-                    </p>
-                    <p className="mt-1 text-room-muted">Words are already showing. Go to the next step to finish the plugboard.</p>
-                  </>
-                )}
               </div>
             )}
+            {found && inspect !== null && outcomes[inspect] && <Why at={inspect} outcome={outcomes[inspect]!} />}
           </div>
         </div>
         <p className="text-xs text-room-muted">
@@ -236,6 +257,64 @@ export function BombeMachine() {
         </p>
       </div>
     </Gloss>
+  );
+}
+
+/** The message as it reads at a setting, letters that happen to be right shown full, the rest faint. */
+function Reading({ text }: { text: string }) {
+  return (
+    <p className="mt-1 font-type break-all">
+      {[...groupsOf(text)].map((c, i, all) => {
+        const at = all.slice(0, i).filter((x) => x !== " ").length;
+        return (
+          <span key={i} className={c !== " " && c === PRACTICE_PLAINTEXT[at] ? "" : "opacity-45"}>
+            {c}
+          </span>
+        );
+      })}
+      …
+    </p>
+  );
+}
+
+/** Why one position failed, or why it held, once the run is over. */
+function Why({ at, outcome }: { at: number; outcome: Outcome }) {
+  const letter = ALPHABET[at];
+  if (outcome === "none") {
+    return (
+      <div className="rounded-lg border border-panel-edge p-3 text-sm" data-testid="stop-test">
+        <p className="font-semibold">No stop at {letter}.</p>
+        <p className="mt-1 text-room-muted">
+          All 26 guesses for {LOOP[0].a}&rsquo;s plug came back round the loop as something else, so the drums never paused here. Set
+          to {letter}, the message reads:
+        </p>
+        <Reading text={partialRead([], at).text} />
+      </div>
+    );
+  }
+  const test = testStop(at);
+  return (
+    <div className={cn("rounded-lg border p-3 text-sm", test.holds ? "border-signal-in bg-signal-in/10" : "border-danger bg-danger/10")} data-testid="stop-test">
+      <p className="font-semibold">{test.holds ? `${letter}: this is the setting.` : `${letter}: a false stop, thrown out.`}</p>
+      <ul className="mt-2 flex flex-col gap-3">
+        {test.tried.map(({ guess, check }) => (
+          <li key={guess}>
+            <p className="flex items-start gap-2">
+              {check.clash ? <X className="mt-0.5 size-4 shrink-0 text-danger" /> : <Check className="mt-0.5 size-4 shrink-0 text-signal-in" />}
+              <span>
+                {LOOP[0].a}↔{guess}:{" "}
+                {check.clash
+                  ? `then ${check.clash.letter} would need plugging to both ${check.clash.plugs[0]} and ${check.clash.plugs[1]}. Impossible.`
+                  : `every link agrees, and gives ${check.pairs.length} plugs: ${check.pairs.join(" ")}.`}
+              </span>
+            </p>
+            <p className="mt-1 text-room-muted">{check.clash ? "With the plugs it had found before then, the message reads:" : "With them, the message reads:"}</p>
+            <Reading text={partialRead(check.pairs, at).text} />
+          </li>
+        ))}
+      </ul>
+      {test.holds && <p className="mt-2 text-room-muted">Words are already showing. Go to the next step to finish the plugboard.</p>}
+    </div>
   );
 }
 
