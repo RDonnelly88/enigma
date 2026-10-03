@@ -23,7 +23,7 @@ export function PlugboardDemo() {
 
   return (
     <Demo title="The plugboard" prompt="Add cables">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
         <div className="flex flex-col gap-6">
           <Slider
             label="Cables"
@@ -36,7 +36,7 @@ export function PlugboardDemo() {
           />
           <div>
             <p className="text-[11px] font-semibold tracking-widest text-room-muted uppercase">Ways to plug them</p>
-            <p className="mt-1 font-sans text-4xl font-semibold text-room-ink sm:text-5xl" data-testid="plug-ways">
+            <p className="mt-1 font-sans text-2xl font-semibold break-all text-room-ink tabular-nums sm:text-3xl" data-testid="plug-ways">
               {ways.toLocaleString("en-GB")}
             </p>
             <p className="mt-1 text-sm text-room-muted">{cables === 0 ? "Nothing plugged, nothing swapped." : roughly(ways)}</p>
@@ -65,7 +65,7 @@ export function PlugboardDemo() {
         </p>
         <p>
           The numbers grow fast, but not forever. Eleven cables give the most arrangements; with more, there are fewer
-          spare letters left to choose between, and thirteen cables give fewer than nine. The army settled on ten.
+          spare letters left to choose between, and thirteen cables give fewer arrangements than nine. The army settled on ten.
         </p>
       </div>
       <TryIt lesson="plug">Plug a cable on the machine</TryIt>

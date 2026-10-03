@@ -143,7 +143,7 @@ export default function CribsAndTheBombe() {
           <p className="mt-3 font-type text-xl">{PRACTICE_PLAINTEXT.replace(/X/g, " ")}</p>
           <p className="mt-3 font-serif text-xl italic">{PRACTICE_ENGLISH}</p>
           <p className="mt-4 text-sm text-room-muted">
-            From an intercepted jumble to a readable order, with a guessed word, a loop, a machine that threw out wrong
+            From an intercepted jumble to a readable message, with a guessed word, a loop, a machine that threw out wrong
             settings, and a checking machine. Multiply that by every network, every day, and you have Bletchley Park.
           </p>
         </div>

@@ -18,7 +18,7 @@ export const MACHINE_HISTORY: Moment[] = [
     text: "The German navy adopts its own version. The army follows in 1928.",
   },
   {
-    when: "Late 1920s",
+    when: "Mid-1920s",
     title: "The reflector",
     text: "A fixed wheel sends the current back through the rotors, so the same settings both encipher and decipher. It also means no letter can ever become itself.",
   },

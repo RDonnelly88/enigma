@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter, Source_Serif_4, Special_Elite } from "next/font/google";
+import { NextPage } from "@/components/next-page";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh antialiased">
         <SiteHeader />
         {children}
+        <NextPage />
       </body>
     </html>
   );
