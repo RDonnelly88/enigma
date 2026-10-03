@@ -92,3 +92,22 @@ test.describe("codebreaker explanations", () => {
     await expect(page.getByRole("list", { name: "Cables so far" }).getByRole("listitem")).toHaveCount(6);
   });
 });
+
+test("being the Bombe: guesses die at a wrong position, one survives at the right one, and the wires agree", async ({ page }) => {
+  await page.goto("/crib");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "Guess E is plugged to C" }).click();
+  await expect(page.getByTestId("bombe-trace")).toContainText("this guess is wrong");
+  await page.getByRole("button", { name: "Try every guess" }).click();
+  await expect(page.getByTestId("bombe-verdict")).toContainText("Every guess contradicts itself");
+  await page.getByRole("button", { name: /Switch on/ }).click();
+  await expect(page.getByTestId("wires-verdict")).toContainText("All 26 lit");
+
+  await page.getByRole("radio", { name: "A A C" }).click();
+  await page.getByRole("button", { name: "Try every guess" }).click();
+  await expect(page.getByTestId("bombe-verdict")).toContainText("E = A");
+  await page.getByRole("button", { name: /Switch on/ }).click();
+  await expect(page.getByTestId("wires-verdict")).toContainText("of 26 lit");
+  await page.getByRole("button", { name: "Feed wire A" }).click();
+  await expect(page.getByTestId("wires-verdict")).toContainText("Only A lights");
+});
