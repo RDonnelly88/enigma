@@ -19,12 +19,14 @@ test("opens with the hero and every chapter", async ({ page }) => {
 });
 
 test("a simple swap keeps the letter counts; Enigma flattens them", async ({ page }) => {
-  const plain = page.getByRole("group", { name: "Letter counts in the plaintext" }).getByRole("button").first();
-  const cipher = page.getByRole("group", { name: "Letter counts in the ciphertext" }).getByRole("button").first();
+  const plain = page.getByRole("group", { name: "Letter counts in the weather report" }).getByRole("button").first();
+  const cipher = page.getByRole("group", { name: "Letter counts in the scrambled message" }).getByRole("button").first();
   const count = async (button: typeof plain) => Number((await button.getAttribute("aria-label"))!.split(": ")[1]);
   expect(await count(cipher)).toBe(await count(plain));
+  await expect(page.getByTestId("swap-e")).toHaveText(/^Every E became [A-Z]\./);
   await page.getByRole("radio", { name: "Enigma" }).click();
   await expect.poll(() => count(cipher)).toBeLessThan(await count(plain));
+  await expect(page.getByTestId("swap-e")).toHaveText(/E came out as \d+ different letters/);
 });
 
 test("one rotor sends A to E, and pressing A gives a new letter each time", async ({ page }) => {
