@@ -139,7 +139,7 @@ const ENTRIES: Term[] = [
     says: "Breaking ciphers and codes without being given the key.",
     more: "What Rejewski, Turing and everyone at Bletchley Park did. Cribs, the Bombe and the codebreaker’s statistics are all cryptanalysis.",
     visual: "freq",
-    see: { href: "/crib", label: "Cribs & the Bombe" },
+    see: { href: "/crib", label: "Breaking Enigma" },
     related: ["cryptography", "crib", "frequency-analysis"],
   },
   {
@@ -202,7 +202,7 @@ const ENTRIES: Term[] = [
     id: "hill-climbing",
     term: "Hill climbing",
     says: "Making small changes one at a time, and keeping each one that makes things better.",
-    more: "The codebreaker page finds the plugboard this way: try a cable, keep it if the text looks more like German, and repeat until nothing helps.",
+    more: "The site’s computer codebreaker finds the plugboard this way: try a cable, keep it if the text looks more like German, and repeat until nothing helps.",
     see: { href: "/codebreaker#climb", label: "Watch a climb" },
     related: ["index-of-coincidence", "plugboard"],
   },
