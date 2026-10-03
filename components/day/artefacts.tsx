@@ -1,5 +1,7 @@
 "use client";
 
+import { TypeOut } from "./type-out";
+import { Listen } from "@/components/ui/listen";
 import { Gloss } from "@/components/glossary/gloss";
 import { Stamp } from "@/components/ui/stamp";
 import { useState } from "react";
@@ -63,7 +65,8 @@ function BombeScan({ day, solved }: { day: DayData; solved: boolean }) {
   );
 }
 
-export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; time: number }) {
+/** `typing` is set while the clock has just reached this event, for its paperwork to be typed out in front of the reader. */
+export function ArtefactView({ id, day, time, typing = false }: { id: Artefact; day: DayData; time: number; typing?: boolean }) {
   switch (id) {
     case "key-sheet":
       return (
@@ -85,7 +88,9 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
       return (
         <Gloss>
           <Paper>
-            <p>{spaced(WEATHER.plain)}</p>
+            <p>
+              <TypeOut text={spaced(WEATHER.plain)} typing={typing} />
+            </p>
             <p className="mt-2 font-serif text-[0.95rem] text-paper-muted italic">{WEATHER.english}</p>
           </Paper>
         </Gloss>
@@ -100,7 +105,9 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
               <strong>{day.weather.enciphered}</strong>
             </p>
             <Label>Message</Label>
-            <p className="break-all" data-testid="day-cipher">{groups(day.weather.body)}</p>
+            <p className="break-all" data-testid="day-cipher">
+              <TypeOut text={groups(day.weather.body)} typing={typing} />
+            </p>
             <Link
               href={machineLink(settingsFor(DAY_KEY, lettersToPositions(WEATHER.messageKey)), WEATHER.plain)}
               className="mt-3 inline-block font-sans text-xs font-semibold text-brass underline underline-offset-2"
@@ -120,7 +127,7 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
                 0600 = {day.weather.body.length} = {WEATHER.start} {day.weather.enciphered} =
               </p>
             </Paper>
-            <Transmitter text={day.weather.body.slice(0, 20)} sound onTransmit={() => {}} />
+            <Transmitter text={day.weather.body.slice(0, 20)} onTransmit={() => {}} />
           </div>
         </Gloss>
       );
@@ -128,7 +135,10 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
       return (
         <Gloss>
           <Paper className="border-l-4 border-signal-in">
-            <Label>RAF Chicksands · message form · 0601</Label>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label>RAF Chicksands · message form · 0601</Label>
+              <Listen text={day.weather.enciphered + day.weather.body} tone="paper" />
+            </div>
             <p className="mt-1">
               Indicator {WEATHER.start} {day.weather.enciphered} · {day.weather.body.length} letters
             </p>
@@ -180,7 +190,9 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
             <p>
               {WEATHER.start} {day.weather.enciphered} → message key <strong>{day.readWeather.messageKey}</strong>
             </p>
-            <p className="mt-1" data-testid="day-decrypt">{spaced(day.readWeather.text)}</p>
+            <p className="mt-1" data-testid="day-decrypt">
+              <TypeOut text={spaced(day.readWeather.text)} typing={typing} />
+            </p>
           </Paper>
         </Gloss>
       );
@@ -189,7 +201,9 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
         <Gloss>
           <Paper className="border-l-4 border-signal-in">
             <Label>Hut 3 · translation</Label>
-            <p className="font-serif">{WEATHER.english}</p>
+            <p className="font-serif">
+              <TypeOut text={WEATHER.english} typing={typing} />
+            </p>
           </Paper>
         </Gloss>
       );
@@ -197,9 +211,12 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
       return (
         <Gloss>
           <Paper>
-            <Label>
-              Indicator {ORDER.start} {day.order.enciphered}
-            </Label>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label>
+                Indicator {ORDER.start} {day.order.enciphered}
+              </Label>
+              <Listen text={day.order.enciphered + day.order.body} tone="paper" />
+            </div>
             <p className="break-all">{groups(day.order.body)}</p>
           </Paper>
         </Gloss>
@@ -208,7 +225,9 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
       return (
         <Gloss>
           <Paper className="border-l-4 border-signal-in">
-            <p>{spaced(day.readOrder.text)}</p>
+            <p>
+              <TypeOut text={spaced(day.readOrder.text)} typing={typing} />
+            </p>
             <p className="mt-2 font-serif text-[0.95rem] text-paper-muted italic">{ORDER.english}</p>
           </Paper>
         </Gloss>

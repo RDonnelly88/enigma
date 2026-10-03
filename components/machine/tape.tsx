@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, RotateCcw, Trash2 } from "lucide-react";
+import { Check, Copy, FastForward, RotateCcw, Trash2 } from "lucide-react";
 
 /** Groups of five, as operators wrote messages down. */
 function groups(text: string) {
@@ -15,9 +15,12 @@ type Props = {
   onClear: () => void;
   onMessage: (text: string) => void;
   disabled: boolean;
+  /** Letters still to go while a message types itself in. */
+  typing: number;
+  onFinish: () => void;
 };
 
-export function Tape({ input, output, onRewind, onClear, onMessage, disabled }: Props) {
+export function Tape({ input, output, onRewind, onClear, onMessage, disabled, typing, onFinish }: Props) {
   const [copied, setCopied] = useState(false);
   const [draft, setDraft] = useState("");
 
@@ -50,28 +53,40 @@ export function Tape({ input, output, onRewind, onClear, onMessage, disabled }: 
           {copied ? <Check className="size-4" /> : <Copy className="size-4" />} {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <form
-        className="mt-3 flex gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onMessage(draft);
-          setDraft("");
-        }}
-      >
-        <label className="sr-only" htmlFor="message">Type or paste a message</label>
-        <input
-          id="message"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="Paste a whole message…"
-          autoComplete="off"
-          spellCheck={false}
-          className="min-w-0 flex-1 rounded-sm border border-paper-muted/60 bg-transparent px-2 py-1.5 font-type text-base uppercase placeholder:normal-case placeholder:text-paper-muted focus:outline-2 focus:outline-paper-ink"
-        />
-        <button type="submit" disabled={disabled || !/[a-z]/i.test(draft)} className="tape-button">
-          Type it
-        </button>
-      </form>
+      {typing > 0 ? (
+        <div className="mt-3 flex items-center justify-between gap-2 text-sm">
+          <span className="font-type">
+            Typing it in… {typing} {typing === 1 ? "letter" : "letters"} to go
+          </span>
+          <button type="button" onClick={onFinish} className="tape-button">
+            <FastForward className="size-4" /> Finish now
+          </button>
+        </div>
+      ) : (
+        <form
+          className="mt-3 flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            // Operators typed X where a space fell, since the machine had no space key
+            onMessage(draft.trim().replace(/\s+/g, "X"));
+            setDraft("");
+          }}
+        >
+          <label className="sr-only" htmlFor="message">Type or paste a message</label>
+          <input
+            id="message"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Type or paste a whole message…"
+            autoComplete="off"
+            spellCheck={false}
+            className="min-w-0 flex-1 rounded-sm border border-paper-muted/60 bg-transparent px-2 py-1.5 font-type text-base uppercase placeholder:normal-case placeholder:text-paper-muted focus:outline-2 focus:outline-paper-ink"
+          />
+          <button type="submit" disabled={disabled || !/[a-z]/i.test(draft)} className="tape-button">
+            Type it
+          </button>
+        </form>
+      )}
     </section>
   );
 }

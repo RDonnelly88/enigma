@@ -36,11 +36,11 @@ test("rewinding and retyping the ciphertext gives back the message", async ({ pa
   await page.getByLabel("Type or paste a message").fill("Attack at dawn");
   await page.getByRole("button", { name: "Type it" }).click();
   const ciphertext = (await page.getByTestId("tape-output").textContent())!.replace(/\s/g, "");
-  expect(ciphertext).toHaveLength(12);
+  expect(ciphertext).toHaveLength(14);
   await page.getByRole("button", { name: "Rewind" }).click();
   await page.getByLabel("Type or paste a message").fill(ciphertext);
   await page.getByRole("button", { name: "Type it" }).click();
-  await expect(page.getByTestId("tape-output")).toHaveText("ATTAC KATDA WN");
+  await expect(page.getByTestId("tape-output")).toHaveText("ATTAC KXATX DAWN");
 });
 
 test("the plugboard changes the cipher and can be unplugged", async ({ page }) => {

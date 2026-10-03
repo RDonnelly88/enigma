@@ -44,22 +44,13 @@ test.describe("cribs and the Bombe", () => {
     for (let i = 0; i < 5; i++) await page.getByRole("button", { name: "Follow the next link" }).click();
     await expect(page.getByTestId("loop-result")).toContainText("contradiction");
 
-    // The machine: run it, test stops until one reads
+    // The machine: run it, and it tests every stop itself, throwing out the false ones until one holds
     await next.click();
-    const status = page.getByTestId("bombe-status");
     await page.getByRole("button", { name: "Run the Bombe" }).click();
-    let read = false;
-    for (let i = 0; i < 26 && !read; i++) {
-      await expect(status).toContainText("Stop at", { timeout: 15_000 });
-      await page.getByRole("button", { name: "Test this stop" }).click();
-      const result = (await page.getByTestId("stop-test").textContent()) ?? "";
-      read = result.includes("This is the setting");
-      if (!read) {
-        expect(result).toContain("A false stop");
-        await page.getByRole("button", { name: "Carry on" }).click();
-      }
-    }
-    expect(read).toBe(true);
+    await expect(page.getByTestId("stop-test")).toContainText("A false stop", { timeout: 15_000 });
+    await expect(page.getByTestId("stop-test")).toContainText("This is the setting", { timeout: 60_000 });
+    await expect(page.getByTestId("thrown-out")).not.toHaveText(/^0 /);
+    await expect(page.getByTestId("bombe-status")).toContainText("the test holds");
 
     // The checking machine finishes the plugboard and the message reads
     await next.click();

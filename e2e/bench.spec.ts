@@ -40,7 +40,7 @@ test("the story links into the machine's lessons", async ({ page }) => {
 
 test("a message can be transmitted in Morse", async ({ page }) => {
   await open(page);
-  await page.getByRole("button", { name: "Mute" }).click();
+  await page.getByRole("button", { name: "Turn sound off" }).click();
   await typeAll(page, "SOS");
   await tab(page, "Messages");
   await page.getByRole("button", { name: "Transmit" }).click();
@@ -51,27 +51,71 @@ test("a message can be transmitted in Morse", async ({ page }) => {
   await expect(page.locator('[data-lesson="transmit"]').getByTestId("lesson-learnt")).toBeVisible();
 });
 
-test("a secret travels by link and key, and reads back at the other end", async ({ page, context }) => {
+test("a secret travels by link and key card, and reads back at the other end", async ({ page, context }) => {
   await open(page);
+  await tab(page, "Messages");
+  await page.getByRole("button", { name: "Pick a secret key" }).click();
   await typeAll(page, "MEET AT DAWN");
   const sent = (await page.getByTestId("tape-output").textContent())!.replace(/\s/g, "");
-  await tab(page, "Messages");
-  const link = await page.getByLabel("1. Link to the ciphertext").inputValue();
-  const key = await page.getByLabel("2. The key, to send another way").inputValue();
+  await page.getByLabel("From", { exact: true }).fill("Ada");
+  await page.getByLabel("To", { exact: true }).fill("Alan");
+  await expect(page.getByTestId("key-card")).toContainText("For Alan · from Ada");
+  const link = await page.getByLabel("Link to send").inputValue();
+  const key = (await page.getByTestId("key-code").textContent())!;
   expect(link).toContain(`cipher=${sent}`);
   expect(link).not.toContain("key=");
+  const [reflector, rotors, rings, start, cables] = key.split(" · ");
 
   const friend = await context.newPage();
   await friend.goto(link);
   await friend.waitForLoadState("networkidle");
-  await expect(friend.getByRole("heading", { name: "A secret message has arrived" })).toBeVisible();
-  await friend.getByLabel("Key code").fill("not a key");
-  await friend.getByRole("button", { name: "Set the machine and read it" }).click();
+  await expect(friend.getByRole("heading", { name: "A secret message for Alan" })).toBeVisible();
+  await expect(friend.getByText("From Ada")).toBeVisible();
+  // Copied off the card a line at a time, the way the operator at the other end did
+  const card = friend.getByRole("form", { name: "Key card" });
+  await card.getByLabel("Reflector").selectOption(reflector);
+  for (const [i, slot] of ["left", "middle", "right"].entries()) await card.getByLabel(`Rotor ${slot}`).selectOption(rotors.split(" ")[i]);
+  await card.getByLabel("Rings").fill(rings);
+  await card.getByLabel("Start").fill(start);
+  await card.getByLabel("Cables").fill("AB AC");
+  await card.getByRole("button", { name: "Set the machine and read it" }).click();
   await expect(friend.getByText("That isn’t a key the machine can use")).toBeVisible();
-  await friend.getByLabel("Key code").fill(key);
+  await card.getByLabel("Cables").fill(cables);
+  await card.getByRole("button", { name: "Set the machine and read it" }).click();
+  // Spaces go in as X, as an operator would have typed them
+  await expect(friend.getByTestId("tape-output")).toHaveText("MEETX ATXDA WN");
+  await expect(friend.getByTestId("received")).toContainText("from Ada");
+  await expect(friend.getByTestId("received-text")).toHaveText("MEET AT DAWN");
+  await friend.getByRole("button", { name: "Reply with the same key" }).click();
+  await expect(friend.getByTestId("received")).toHaveCount(0);
+  await expect(friend.getByTestId("tape-output")).toHaveText("");
+});
+
+test("a key put in the link sets the machine itself, and says what that gives away", async ({ page, context }) => {
+  await open(page);
+  await typeAll(page, "HELLO");
+  await tab(page, "Messages");
+  const plain = await page.getByLabel("Link to send").inputValue();
+  await page.getByLabel(/Put the key in the link too/).check();
+  await expect(page.getByText("anyone who gets hold of the link can read the message")).toBeVisible();
+  const link = await page.getByLabel("Link to send").inputValue();
+  expect(plain).not.toContain("k=");
+  expect(link).toContain("k=");
+
+  const friend = await context.newPage();
+  await friend.goto(link);
+  await friend.waitForLoadState("networkidle");
+  await expect(friend.getByRole("form", { name: "Key card" })).toHaveCount(0);
   await friend.getByRole("button", { name: "Set the machine and read it" }).click();
-  // The tape drops spaces, as an operator would have
-  await expect(friend.getByTestId("tape-output")).toHaveText("MEETA TDAWN");
+  await expect(friend.getByTestId("received-text")).toHaveText("HELLO");
+});
+
+test("a key code sent as one line works on the key card too", async ({ page }) => {
+  await open(page, "/machine?cipher=QWERTY");
+  await page.getByText("Sent the key as one line instead?").click();
+  await page.getByLabel("Key code").fill("B · I II III · AAA · AAA · no cables");
+  await page.getByRole("button", { name: "Set the machine and read it" }).click();
+  await expect(page.getByTestId("received")).toBeVisible();
 });
 
 test("a secret without its key can be taken to the codebreaker", async ({ page }) => {
@@ -107,5 +151,20 @@ test("the machine resets to the default settings, and the lessons can start over
   await page.getByRole("button", { name: "Start the lessons again" }).click();
   await expect(page.getByTestId("lesson-progress")).toHaveText(/^0 of/);
   await page.reload();
+  // Until the link is read the page shows a plain bench, swapped out as it hydrates; wait for the one that stays
+  await page.waitForLoadState("networkidle");
   await expect(page.getByTestId("lesson-progress")).toHaveText(/^0 of/);
+});
+
+test("a whole message types itself in key by key, and can be finished at once", async ({ page }) => {
+  // The rest of the run forces reduced motion, which types it all in one go
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await open(page);
+  await typeAll(page, "THE WEATHER TODAY IS FINE");
+  await expect(page.getByText(/Typing it in… \d+ letters to go/)).toBeVisible();
+  await expect.poll(async () => ((await page.getByTestId("tape-input").textContent()) ?? "").replace(/\s/g, "").length).toBeGreaterThan(1);
+  expect(((await page.getByTestId("tape-input").textContent()) ?? "").replace(/\s/g, "").length).toBeLessThan(21);
+  await page.getByRole("button", { name: "Finish now" }).click();
+  await expect(page.getByTestId("tape-input")).toHaveText("THEXW EATHE RXTOD AYXIS XFINE");
+  await expect(page.getByLabel("Type or paste a message")).toBeVisible();
 });

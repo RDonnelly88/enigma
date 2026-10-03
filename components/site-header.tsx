@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { PAGES } from "@/lib/pages";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SoundToggle } from "@/components/sound-toggle";
 import { GlossaryButton } from "@/components/glossary/glossary";
 
 export function SiteHeader() {
@@ -52,6 +53,7 @@ export function SiteHeader() {
           })}
         </nav>
         <GlossaryButton />
+        <SoundToggle />
         <ThemeToggle />
       </div>
     </header>

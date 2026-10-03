@@ -1,5 +1,6 @@
 "use client";
 
+import { useBombeSound } from "@/hooks/use-bombe-sound";
 import { Gloss } from "@/components/glossary/gloss";
 import { useEffect, useRef, useState } from "react";
 import { Check, Power, X, Zap } from "lucide-react";
@@ -194,6 +195,7 @@ function Wires({ cards, right, drums }: { cards: number[][]; right: boolean; dru
   const [start, setStart] = useState(1);
   const [lit, setLit] = useState<Set<number> | null>(null);
   const [running, setRunning] = useState(false);
+  useBombeSound(running);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => () => {
     if (timer.current) clearInterval(timer.current);

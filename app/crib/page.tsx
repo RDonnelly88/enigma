@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Listen } from "@/components/ui/listen";
 import { BeTheBombe } from "@/components/breaking/be-the-bombe";
 import { BombeWalkthrough } from "@/components/breaking/bombe-walkthrough";
 import { RejewskiDemo } from "@/components/breaking/rejewski-demo";
@@ -167,7 +168,10 @@ export default function CribsAndTheBombe() {
         }
       >
         <div className="rounded-xl border-2 border-signal-in bg-panel p-6">
-          <p className="text-xs font-semibold tracking-[0.25em] text-signal-in uppercase">The practice intercept, read</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-semibold tracking-[0.25em] text-signal-in uppercase">The practice intercept, read</p>
+            <Listen text={PRACTICE_CIPHERTEXT} />
+          </div>
           <p className="mt-3 font-type text-lg break-all">{PRACTICE_CIPHERTEXT.match(/.{1,5}/g)!.slice(0, 8).join(" ")} …</p>
           <p className="mt-3 font-type text-xl">{PRACTICE_PLAINTEXT.replace(/X/g, " ")}</p>
           <p className="mt-3 font-serif text-xl italic">{PRACTICE_ENGLISH}</p>

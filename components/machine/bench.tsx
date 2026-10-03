@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowDown, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { ArrowDown, RotateCcw } from "lucide-react";
 import { Intercepts } from "@/components/intercepts";
-import { Incoming } from "@/components/machine/incoming";
+import { Incoming, Received } from "@/components/machine/incoming";
 import { Keyboard } from "@/components/machine/keyboard";
 import { Lampboard } from "@/components/machine/lampboard";
 import { LessonsPanel } from "@/components/machine/lessons-panel";
@@ -22,8 +22,9 @@ import { useMachine } from "@/hooks/use-machine";
 import { DEFAULT_SETTINGS, type Settings } from "@/lib/enigma";
 import { explain } from "@/lib/explain";
 import { LESSONS } from "@/lib/lessons";
-import { readMachineLink } from "@/lib/share";
+import { randomKey, readMachineLink } from "@/lib/share";
 import { playKey } from "@/lib/sound";
+import { useAutoType } from "@/hooks/use-auto-type";
 
 const SLOT_NAMES = ["Left", "Middle", "Right"] as const;
 const STORE = "enigma.lessons";
@@ -45,10 +46,11 @@ function storedLessons(): string[] {
  * other everything about it, tabbed: the lessons, the trace of the last key
  * press, the settings under the lid, and messages to load, send or transmit.
  */
-export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?: string | null }) {
+type Secret = { cipher: string; from: string; to: string; key: Settings | null };
+
+export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?: Secret | null }) {
   const machine = useMachine(DEFAULT_SETTINGS);
   const { settings, configure, keyDown, keyUp, typeMessage, clear, restoreLessons } = machine;
-  const [sound, setSound] = useState(true);
   const [panel, setPanel] = useState<Panel>("lessons");
   // Until a lesson is picked, show the linked one, else the one just finished so it can say what it
   // showed, else the first unfinished
@@ -62,14 +64,20 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
     restoreLessons(storedLessons());
   }, [restoreLessons]);
   const [secret, setSecret] = useState(incoming ?? null);
+  // A secret being read: the key it was read with, so a reply can use the same one
+  const [reading, setReading] = useState<{ key: Settings; from: string } | null>(null);
   const blocked = machine.errors.length > 0;
+  const auto = useAutoType({ keyDown, keyUp, typeMessage });
+  const { typing, finish, start: typeIn } = auto;
 
   const down = useCallback(
     (letter: string) => {
-      if (sound && !machine.held && !blocked) playKey();
+      // A key pressed by hand while a message is typing itself finishes the message first
+      if (typing) return finish();
+      if (!machine.held && !blocked) playKey();
       keyDown(letter);
     },
-    [sound, machine.held, blocked, keyDown],
+    [machine.held, blocked, keyDown, typing, finish],
   );
   useHardwareKeys(down, keyUp);
 
@@ -84,9 +92,9 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
     const link = readMachineLink(window.location.search);
     if (!link) return;
     configure(link.settings);
-    if (link.text) typeMessage(link.text);
+    if (link.text) typeIn(link.text);
     window.history.replaceState(null, "", window.location.pathname);
-  }, [configure, typeMessage]);
+  }, [configure, typeIn]);
 
   const steps = useMemo(() => (machine.last ? explain(settings, machine.last) : []), [settings, machine.last]);
   // A new key press starts its story from the top
@@ -99,7 +107,9 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
     positions[slot] = (positions[slot] + delta + 26) % 26;
     configure({ ...settings, positions });
   };
+  const typeAloud = auto.start;
   const setUp = (s: Settings) => {
+    auto.cancel();
     configure(s);
     clear();
   };
@@ -124,6 +134,8 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
         <button
           type="button"
           onClick={() => {
+            auto.cancel();
+            setReading(null);
             machine.reset(false);
             setActive(null);
           }}
@@ -133,27 +145,35 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
         >
           <RotateCcw className="size-5" />
         </button>
-        <button
-          type="button"
-          onClick={() => setSound((s) => !s)}
-          aria-label={sound ? "Mute" : "Unmute"}
-          className="rounded-full p-2 text-room-muted hover:text-room-ink"
-        >
-          {sound ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-        </button>
         </div>
       </div>
 
       {secret && (
         <Incoming
-          ciphertext={secret}
+          ciphertext={secret.cipher}
+          from={secret.from}
+          to={secret.to}
+          sentKey={secret.key}
           onRead={(key) => {
             setUp(key);
-            typeMessage(secret);
+            typeAloud(secret.cipher);
+            setReading({ key, from: secret.from });
             setSecret(null);
             window.history.replaceState(null, "", window.location.pathname);
           }}
           onDismiss={() => setSecret(null)}
+        />
+      )}
+      {reading && !typing && machine.output && (
+        <Received
+          text={machine.output}
+          from={reading.from}
+          onReply={() => {
+            setUp(reading.key);
+            setReading(null);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onClose={() => setReading(null)}
         />
       )}
 
@@ -214,9 +234,17 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
           <Tape
             input={machine.input}
             output={machine.output}
-            onRewind={machine.rewind}
-            onClear={machine.clear}
-            onMessage={typeMessage}
+            onRewind={() => {
+              auto.cancel();
+              machine.rewind();
+            }}
+            onClear={() => {
+              auto.cancel();
+              machine.clear();
+            }}
+            typing={auto.typing}
+            onFinish={auto.finish}
+            onMessage={typeAloud}
             disabled={blocked}
           />
         </div>
@@ -277,15 +305,23 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
               <div className="flex flex-col gap-8">
                 <section aria-labelledby="transmit">
                   <h2 id="transmit" className="mb-3 font-stencil text-xl font-bold tracking-wide">Transmit in Morse</h2>
-                  <Transmitter text={machine.output} sound={sound} onTransmit={machine.markTransmitted} />
+                  <Transmitter text={machine.output} onTransmit={machine.markTransmitted} />
                 </section>
                 <section aria-labelledby="send">
                   <h2 id="send" className="mb-3 font-stencil text-xl font-bold tracking-wide">Send a secret</h2>
-                  <ShareSecret settings={messageKey} ciphertext={machine.output} onShare={machine.markShared} />
+                  <ShareSecret
+                    settings={messageKey}
+                    ciphertext={machine.output}
+                    onShare={machine.markShared}
+                    onNewKey={() => {
+                      setReading(null);
+                      setUp(randomKey());
+                    }}
+                  />
                 </section>
                 <Intercepts
                   onLoad={(intercept) => setUp(intercept.settings)}
-                  onType={typeMessage}
+                  onType={typeAloud}
                 />
               </div>
             )}

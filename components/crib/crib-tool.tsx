@@ -1,5 +1,6 @@
 "use client";
 
+import { Listen } from "@/components/ui/listen";
 import { Gloss } from "@/components/glossary/gloss";
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, SkipForward } from "lucide-react";
@@ -27,9 +28,15 @@ export function CribTool() {
     <Gloss>
       <div className="flex flex-col gap-6">
         <section className="grid gap-4 rounded-sm bg-paper p-4 text-paper-ink shadow-md sm:grid-cols-[2fr_1fr]">
-          <label className="flex flex-col gap-1">
-            <span className="text-[11px] font-semibold tracking-widest text-paper-muted uppercase">Intercept</span>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <label htmlFor="intercept" className="text-[11px] font-semibold tracking-widest text-paper-muted uppercase">
+                Intercept
+              </label>
+              <Listen text={ciphertext} tone="paper" />
+            </div>
             <textarea
+              id="intercept"
               value={ciphertextDraft}
               onChange={(e) => {
                 setCiphertextDraft(e.target.value);
@@ -39,7 +46,7 @@ export function CribTool() {
               spellCheck={false}
               className="resize-y rounded-sm border border-paper-muted/60 bg-transparent px-2 py-1.5 font-type text-base break-all uppercase focus:outline-2 focus:outline-paper-ink"
             />
-          </label>
+          </div>
           <label className="flex flex-col gap-1">
             <span className="text-[11px] font-semibold tracking-widest text-paper-muted uppercase">Crib</span>
             <input

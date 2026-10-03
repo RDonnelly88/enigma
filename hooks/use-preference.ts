@@ -18,6 +18,7 @@ function watch(attribute: string, media?: string) {
 
 const watchTheme = watch(PREFERENCES.theme.attribute, DARK);
 const watchReading = watch(PREFERENCES.read.attribute);
+const watchSound = watch(PREFERENCES.sound.attribute);
 
 /** The theme in force: the reader's choice if they made one, else their system's. */
 export function useTheme(): Theme {
@@ -37,5 +38,14 @@ export function useReading(): Reading {
     watchReading,
     () => (document.documentElement.getAttribute(PREFERENCES.read.attribute) === "short" ? "short" : "detail"),
     () => "detail",
+  );
+}
+
+/** Sound is on unless the reader has turned it off. */
+export function useSound(): boolean {
+  return useSyncExternalStore(
+    watchSound,
+    () => document.documentElement.getAttribute(PREFERENCES.sound.attribute) !== "off",
+    () => true,
   );
 }

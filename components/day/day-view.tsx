@@ -1,5 +1,6 @@
 "use client";
 
+import { useDaySounds } from "./day-sounds";
 import { Glossed } from "@/components/glossary/glossary";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, SkipForward } from "lucide-react";
@@ -36,6 +37,7 @@ export function DayView() {
   const hold = useRef(0);
   const current = [...DAY_EVENTS].reverse().find((e) => e.time <= time);
   const next = DAY_EVENTS.find((e) => e.time > time);
+  const fresh = useDaySounds(time);
 
   // Where each event sits on the page, as the clock time it stands for, and the end of the day after the last
   const marks = useCallback(() => {
@@ -258,7 +260,7 @@ export function DayView() {
                   </p>
                   {e.artefact && (
                     <div className="mt-4">
-                      <ArtefactView id={e.artefact} day={day} time={time} />
+                      <ArtefactView id={e.artefact} day={day} time={time} typing={fresh === e.id} />
                     </div>
                   )}
                 </div>

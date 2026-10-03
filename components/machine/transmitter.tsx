@@ -4,11 +4,13 @@ import { useState } from "react";
 import { Radio, Square } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useMorse } from "@/hooks/use-morse";
+import { useSound } from "@/hooks/use-preference";
 import { MORSE } from "@/lib/morse";
 import { cn } from "@/lib/cn";
 
 /** Sends the tape's ciphertext as a radio operator would: in Morse, in groups of five. */
-export function Transmitter({ text, sound, onTransmit }: { text: string; sound: boolean; onTransmit: () => void }) {
+export function Transmitter({ text, onTransmit }: { text: string; onTransmit: () => void }) {
+  const sound = useSound();
   const [wpm, setWpm] = useState(15);
   const { playing, play, stop } = useMorse();
   const letters = text.replace(/[^A-Z]/g, "");
@@ -27,7 +29,7 @@ export function Transmitter({ text, sound, onTransmit }: { text: string; sound: 
             type="button"
             disabled={letters.length === 0}
             onClick={() => {
-              play(letters, wpm, sound);
+              play(letters, wpm);
               onTransmit();
             }}
             className="inline-flex items-center gap-2 rounded-full bg-room-ink px-4 py-2 text-sm font-semibold text-room disabled:opacity-40"

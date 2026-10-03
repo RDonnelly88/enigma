@@ -18,7 +18,7 @@ describe("machine links", () => {
 });
 
 describe("key codes", async () => {
-  const { keyCode, readKeyCode, readSecret, secretLink } = await import("@/lib/share");
+  const { keyCode, readAddress, readKeyCode, readSecret, secretLink } = await import("@/lib/share");
   const { INTERCEPTS } = await import("@/lib/messages");
 
   it("read like a key sheet and come back as the same settings", () => {
@@ -48,5 +48,36 @@ describe("key codes", async () => {
     expect(link).not.toContain("key=");
     expect(readSecret(link.split("?")[1])).toBe("QWERTZUIOP");
     expect(readSecret("")).toBeNull();
+  });
+
+  it("carry who a secret is from and for, as plain names", () => {
+    const link = secretLink("QWERT", { from: "Ada", to: "Mr <b>Turing</b>!" });
+    expect(readAddress(link.split("?")[1])).toEqual({ from: "Ada", to: "Mr bTuringb", key: null });
+    expect(secretLink("QWERT", { from: "  " })).not.toContain("from=");
+    expect(readAddress("cipher=QWERT")).toEqual({ from: "", to: "", key: null });
+  });
+
+  it("carry the key only when asked to", () => {
+    const key = INTERCEPTS[0].settings;
+    expect(secretLink("QWERT")).not.toContain("k=");
+    expect(readAddress(secretLink("QWERT", { key }).split("?")[1]).key).toEqual({ ...key });
+    expect(readAddress("cipher=QWERT&k=nonsense").key).toBeNull();
+  });
+});
+
+describe("a random key", async () => {
+  const { randomKey } = await import("@/lib/share");
+  const { validate } = await import("@/lib/enigma");
+
+  it("is always one the army's machine could be set to", () => {
+    for (let i = 0; i < 200; i++) {
+      const key = randomKey();
+      expect(validate(key)).toEqual([]);
+      expect(key.reflector).toBe("B");
+      expect(new Set(key.rotors).size).toBe(3);
+      expect(key.rotors.every((r) => ["I", "II", "III", "IV", "V"].includes(r))).toBe(true);
+      expect(key.plugboard).toHaveLength(10);
+      expect(new Set(key.plugboard.join("")).size).toBe(20);
+    }
   });
 });

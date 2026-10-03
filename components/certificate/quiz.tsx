@@ -1,5 +1,6 @@
 "use client";
 
+import { playStamp } from "@/lib/sound";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Printer, RotateCcw, X } from "lucide-react";
@@ -83,7 +84,9 @@ export function Quiz() {
             className="flex flex-col gap-3 sm:flex-row"
             onSubmit={(e) => {
               e.preventDefault();
-              if (name.trim()) store(AWARD_STORE, { name: name.trim(), score: total, date: new Date().toISOString() });
+              if (!name.trim()) return;
+              store(AWARD_STORE, { name: name.trim(), score: total, date: new Date().toISOString() });
+              playStamp();
             }}
           >
             <label className="sr-only" htmlFor="certificate-name">

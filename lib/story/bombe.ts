@@ -62,3 +62,42 @@ export function followLoop(settings: Settings, loop: Link[], guess: number): { c
 export function survivors(settings: Settings, loop: Link[]) {
   return ALPHABET.split("").filter((_, g) => followLoop(settings, loop, g).consistent);
 }
+
+export type Check = { pairs: string[]; clash: null } | { pairs: string[]; clash: { letter: string; plugs: [string, string] } };
+
+/**
+ * What the checking machine did with a stop: take the guessed plug for one
+ * letter and follow it along every link of the menu, not just the loop. Each
+ * link fixes another letter's plug. If any letter ends up needing two
+ * different plugs, the stop is false. If none does, the plugs it found are a
+ * start on the day's plugboard.
+ */
+export function checkStop(settings: Settings, links: Link[], letter: string, guess: string): Check {
+  const plug = new Map<string, string>();
+  const queue: string[] = [];
+  const set = (x: string, y: string): { letter: string; plugs: [string, string] } | null => {
+    // A plug works both ways, so fixing one end fixes the other
+    for (const [p, q] of [[x, y], [y, x]]) {
+      const had = plug.get(p);
+      if (had && had !== q) return { letter: p, plugs: [had, q] };
+      if (!had) {
+        plug.set(p, q);
+        queue.push(p);
+      }
+    }
+    return null;
+  };
+  let clash = set(letter, guess);
+  while (!clash && queue.length) {
+    const x = queue.shift()!;
+    for (const l of links) {
+      const other = l.a === x ? l.b : l.b === x ? l.a : null;
+      if (!other) continue;
+      const through = ALPHABET[scrambler(settings, l.step)(ALPHABET.indexOf(plug.get(x)!))];
+      clash = set(other, through);
+      if (clash) break;
+    }
+  }
+  const pairs = [...new Set([...plug].filter(([p, q]) => p !== q).map(([p, q]) => [p, q].sort().join("")))].sort();
+  return clash ? { pairs, clash } : { pairs, clash: null };
+}

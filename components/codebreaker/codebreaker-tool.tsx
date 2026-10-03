@@ -1,5 +1,6 @@
 "use client";
 
+import { Listen } from "@/components/ui/listen";
 import { Gloss } from "@/components/glossary/gloss";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -69,11 +70,15 @@ export function CodebreakerTool({ initialCiphertext }: { initialCiphertext?: str
               ))}
             </div>
 
-            <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold tracking-widest text-paper-muted uppercase">
-                Ciphertext · {letters.length} letters
-              </span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between gap-2">
+                <label htmlFor="ciphertext" className="text-[11px] font-semibold tracking-widest text-paper-muted uppercase">
+                  Ciphertext · {letters.length} letters
+                </label>
+                <Listen text={letters} tone="paper" />
+              </div>
               <textarea
+                id="ciphertext"
                 value={ciphertext}
                 onChange={(e) => {
                   setCiphertext(e.target.value);
@@ -84,7 +89,7 @@ export function CodebreakerTool({ initialCiphertext }: { initialCiphertext?: str
                 spellCheck={false}
                 className="resize-y rounded-sm border border-paper-muted/60 bg-transparent px-2 py-1.5 font-type text-base break-all uppercase focus:outline-2 focus:outline-paper-ink"
               />
-            </label>
+            </div>
 
             <fieldset className="flex items-center gap-3 text-sm" disabled={running}>
               <legend className="sr-only">Language of the message</legend>

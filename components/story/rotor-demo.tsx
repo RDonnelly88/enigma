@@ -1,5 +1,6 @@
 "use client";
 
+import { playKey } from "@/lib/sound";
 import { useState } from "react";
 import { TryIt } from "@/components/story/try-it";
 import { Demo } from "@/components/ui/demo";
@@ -28,6 +29,7 @@ export function RotorDemo() {
   const y = (i: number) => TOP + i * ROW + ROW / 2;
 
   const type = () => {
+    playKey();
     // A key press turns the rotor first, then the current flows
     const next = (position + 1) % 26;
     setPosition(next);

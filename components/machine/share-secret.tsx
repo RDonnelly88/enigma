@@ -1,69 +1,114 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Send, Shuffle } from "lucide-react";
+import { KeyCard, copyText } from "@/components/machine/key-card";
 import type { Settings } from "@/lib/enigma";
-import { keyCode, machineLink, secretLink } from "@/lib/share";
+import { secretLink } from "@/lib/share";
+import { cn } from "@/lib/cn";
 
-/** Copies text, and says so for a moment. */
-function CopyField({ label, value, onCopy }: { label: string; value: string; onCopy: () => void }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <div>
-      <p className="text-[11px] font-semibold tracking-widest text-room-muted uppercase">{label}</p>
-      <div className="mt-1 flex gap-2">
-        <input
-          readOnly
-          value={value}
-          aria-label={label}
-          onFocus={(e) => e.currentTarget.select()}
-          className="min-w-0 flex-1 rounded-md border border-panel-edge bg-room px-3 py-2 font-type text-sm"
-        />
-        <button
-          type="button"
-          onClick={async () => {
-            // Clipboard access can be refused; the field is still there to copy by hand
-            try {
-              await navigator.clipboard.writeText(value);
-            } catch {}
-            setCopied(true);
-            onCopy();
-            setTimeout(() => setCopied(false), 1500);
-          }}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-panel-edge px-3 text-sm font-semibold hover:border-brass"
-        >
-          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-          {copied ? "Copied" : "Copy"}
-        </button>
-      </div>
-    </div>
-  );
-}
+const input = "min-w-0 rounded-md border border-panel-edge bg-room px-3 py-2 text-sm focus:outline-2 focus:outline-brass";
+const action = "inline-flex shrink-0 items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold";
 
 /**
- * Sending a secret the proper way: the ciphertext as a link anyone may see,
- * and the key as a code to pass on separately. The key is the settings the
- * message began from, not where the rotors have got to.
+ * Sending a secret to a friend the proper way: the key on a card handed over
+ * separately, and the ciphertext as a link anyone may see. The key can go in
+ * the link instead, which is easier and gives the secret away to anyone who
+ * sees it. The key is the settings the message began from, not where the
+ * rotors have got to.
  */
-export function ShareSecret({ settings, ciphertext, onShare }: { settings: Settings; ciphertext: string; onShare: () => void }) {
+export function ShareSecret({
+  settings,
+  ciphertext,
+  onShare,
+  onNewKey,
+}: {
+  settings: Settings;
+  ciphertext: string;
+  onShare: () => void;
+  onNewKey: () => void;
+}) {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [withKey, setWithKey] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [canShare] = useState(() => typeof navigator !== "undefined" && typeof navigator.share === "function");
   if (!ciphertext) {
-    return <p className="text-sm text-room-muted">Type a message on the machine and it will appear here, ready to send.</p>;
+    return (
+      <div className="flex flex-col gap-3 text-sm leading-relaxed">
+        <p>
+          Send a friend a message only they can read. Pick a secret key, type your message on the machine, then give them the key card
+          one way and the message another.
+        </p>
+        <button type="button" onClick={onNewKey} className={cn(action, "w-fit bg-room-ink text-room")}>
+          <Shuffle className="size-4" /> Pick a secret key
+        </button>
+        <p className="text-room-muted">Or set the rotors and cables yourself; whatever the machine is set to is the key.</p>
+      </div>
+    );
   }
   const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const link = origin + secretLink(ciphertext, { from, to, key: withKey ? settings : undefined });
+  const send = async () => {
+    if (canShare) {
+      try {
+        await navigator.share({ title: "A secret message", text: from ? `A secret message from ${from}` : "A secret message", url: link });
+        onShare();
+      } catch {}
+      return;
+    }
+    await copyText(link);
+    onShare();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
   return (
-    <div className="flex flex-col gap-4">
-      <CopyField label="1. Link to the ciphertext" value={origin + secretLink(ciphertext)} onCopy={onShare} />
-      <CopyField label="2. The key, to send another way" value={keyCode(settings)} onCopy={onShare} />
-      <p className="text-sm leading-relaxed text-room-muted">
-        Send the link however you like; it&rsquo;s gibberish without the key. Send the key some other way, a text or a word
-        in person. The link opens the machine and asks for it.
-      </p>
-      <details className="text-sm">
-        <summary className="cursor-pointer text-room-muted hover:text-room-ink">Or send it with the key built in</summary>
-        <div className="mt-3">
-          <CopyField label="Opens already deciphered" value={origin + machineLink(settings, ciphertext)} onCopy={onShare} />
+    <div className="flex flex-col gap-5">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="flex flex-col gap-1">
+          <span className="text-[11px] font-semibold tracking-widest text-room-muted uppercase">From</span>
+          <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="Your name" maxLength={24} autoComplete="off" className={input} />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-[11px] font-semibold tracking-widest text-room-muted uppercase">To</span>
+          <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="Your friend" maxLength={24} autoComplete="off" className={input} />
+        </label>
+      </div>
+      <div className={cn("transition-opacity", withKey && "opacity-50")}>
+        <p className="mb-2 text-sm font-semibold">1. Give them the key card</p>
+        <KeyCard settings={settings} from={from} to={to} onUse={onShare} />
+        <p className="mt-2 text-sm text-room-muted">
+          {withKey ? "Not needed: the key is going in the link." : "Hand it over, print it or read it out. Never in the same message as the link."}
+        </p>
+      </div>
+      <div className="flex flex-col gap-3">
+        <p className="text-sm font-semibold">2. Send the message</p>
+        <label className="flex items-start gap-2.5 text-sm">
+          <input type="checkbox" checked={withKey} onChange={(e) => setWithKey(e.target.checked)} className="mt-0.5 size-4 accent-brass" />
+          <span>
+            Put the key in the link too
+            <span className="block text-room-muted">
+              {withKey ? "Easier, but anyone who gets hold of the link can read the message." : "Off: the link is gibberish without the key card."}
+            </span>
+          </span>
+        </label>
+        <div className="flex gap-2">
+          <input
+            readOnly
+            value={link}
+            aria-label="Link to send"
+            onFocus={(e) => e.currentTarget.select()}
+            className="min-w-0 flex-1 rounded-md border border-panel-edge bg-room px-3 py-2 font-type text-sm"
+          />
+          <button type="button" onClick={send} className={cn(action, "bg-room-ink text-room")}>
+            {canShare ? <Send className="size-4" /> : copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+            {canShare ? "Send" : copied ? "Copied" : "Copy link"}
+          </button>
         </div>
-      </details>
+      </div>
+      <button type="button" onClick={onNewKey} className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-brass underline underline-offset-2">
+        <Shuffle className="size-4" /> Start a new message with a new key
+      </button>
     </div>
   );
 }
