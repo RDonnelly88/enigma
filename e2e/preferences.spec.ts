@@ -46,6 +46,9 @@ test("an intercept can be played in Morse, with the lamp for when the sound is o
   const listen = page.getByRole("button", { name: "Listen to it in Morse" }).first();
   await listen.click();
   await expect(page.getByTestId("listen-now").first()).toBeVisible();
+  // Turning sound off mid-message silences it but leaves the lamp to read by
+  await page.getByRole("button", { name: "Turn sound off" }).click();
+  await expect(page.getByTestId("listen-now").first()).toBeVisible();
   await page.getByRole("button", { name: "Stop the Morse" }).first().click();
   await expect(page.getByTestId("listen-now")).toHaveCount(0);
 });

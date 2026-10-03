@@ -1,5 +1,6 @@
 "use client";
 
+import { useSound } from "@/hooks/use-preference";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { timeline, type Tone } from "@/lib/morse";
 import { soundOn } from "@/lib/sound";
@@ -14,6 +15,15 @@ type Playing = { letter: number; on: boolean; symbol: number };
 export function useMorse() {
   const [now, setNow] = useState<Playing | null>(null);
   const stopper = useRef<() => void>(() => {});
+  const audio = useRef<AudioContext | null>(null);
+  const sound = useSound();
+
+  // Turning sound off silences a message already playing; the lamp carries on
+  useEffect(() => {
+    if (sound || !audio.current) return;
+    void audio.current.close();
+    audio.current = null;
+  }, [sound]);
 
   const stop = useCallback(() => {
     stopper.current();
@@ -48,6 +58,7 @@ export function useMorse() {
         }
         osc.start(t0);
         osc.stop(t0 + duration / 1000 + 0.1);
+        audio.current = ctx;
       }
 
       const began = performance.now() + 50;
@@ -78,7 +89,8 @@ export function useMorse() {
       frame = requestAnimationFrame(tick);
       stopper.current = () => {
         cancelAnimationFrame(frame);
-        void ctx?.close();
+        if (ctx && ctx.state !== "closed") void ctx.close();
+        if (audio.current === ctx) audio.current = null;
       };
     },
     [stop],
