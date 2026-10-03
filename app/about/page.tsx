@@ -48,8 +48,9 @@ export default function About() {
               .
             </p>
             <p>
-              It was built with the help of Claude Code, an AI coding tool, which also helped research and write the history.
-              It hasn&rsquo;t been checked line by line against the books below, so if you spot a mistake, please say.
+              It was built with the help of Claude Code, an AI coding tool, which also helped research and write the text. The
+              historical detail hasn&rsquo;t been checked line by line against the books below, so if you spot a mistake, please
+              say.
             </p>
           </div>
         </Section>
