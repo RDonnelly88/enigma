@@ -24,6 +24,6 @@ export const PAGES = [
   {
     href: "/certificate",
     label: "Certificate",
-    lead: "A few questions on everything you’ve seen. Pass, and earn a codebreaker's certificate with your name enciphered on it.",
+    lead: "Two tests: a quiz on everything you’ve seen, and an intercept to break yourself with a crib and a Bombe, against the clock.",
   },
 ] as const;

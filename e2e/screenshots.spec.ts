@@ -80,3 +80,44 @@ test("in short, in the dark", async ({ page }, { project }) => {
   await page.goto("/crib");
   await page.screenshot({ path: `e2e/screenshots/${project.name}-short-dark.png`, fullPage: true });
 });
+
+test("break an intercept", async ({ page }, { project }) => {
+  test.setTimeout(120_000);
+  const { CHALLENGE, menuAt } = await import("../lib/story/challenge");
+  const { testLetter } = await import("../lib/story/bombe-run");
+  const { QUESTIONS } = await import("../lib/quiz");
+  const shot = (name: string) => page.screenshot({ path: `e2e/screenshots/${project.name}-break-${name}.png`, fullPage: true });
+  await page.goto("/certificate");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("tab", { name: /Break an intercept/ }).click();
+  await shot("brief");
+  await page.getByRole("button", { name: "Start the clock" }).click();
+  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Move the crib right" }).click();
+  await shot("crib");
+  for (let i = 3; i < CHALLENGE.cribAt; i++) await page.getByRole("button", { name: "Move the crib right" }).click();
+  await page.getByRole("button", { name: "Lock it in" }).click();
+  await shot("menu");
+  await page.getByRole("button", { name: `Letter ${testLetter(menuAt(CHALLENGE.cribAt))}` }).click();
+  await page.getByRole("button", { name: "Start the Bombes" }).click();
+  await page.getByTestId("bombe-stop").waitFor({ timeout: 60_000 });
+  await shot("stop");
+  await page.getByRole("button", { name: "Take it to the checking machine" }).click();
+  await page.getByRole("button", { name: /A hint/ }).click();
+  await shot("check");
+  for (const pair of ["VB", "RU", "TY"]) {
+    await page.getByRole("button", { name: `Plug ${pair[0]}`, exact: true }).click();
+    await page.getByRole("button", { name: `Plug ${pair[1]}`, exact: true }).click();
+  }
+  await page.getByRole("button", { name: "Read the order" }).click();
+  await shot("act");
+  await page.getByRole("radio", { name: "The convoy in square 83, at 17:00" }).click();
+  await shot("result");
+  await page.getByRole("button", { name: "See your certificate" }).click();
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    await page.getByTestId("quiz").getByRole("radio", { name: QUESTIONS[i].options[QUESTIONS[i].answer], exact: true }).click();
+    await page.getByRole("button", { name: /Next question|See my score/ }).click();
+  }
+  await page.getByLabel("Your name").fill("Mavis Batey");
+  await page.getByRole("button", { name: "Make my certificate" }).click();
+  await shot("certificate");
+});
