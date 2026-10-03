@@ -23,9 +23,25 @@ export function readMachineLink(search: string): { settings: Settings; text: str
   }
 }
 
-/** A link carrying only the ciphertext: the key has to reach its recipient some other way. */
-export function secretLink(ciphertext: string) {
-  return `/machine?${new URLSearchParams({ cipher: ciphertext })}`;
+/** A name as it may appear on a message: short, and only words. */
+const name = (raw: string | null) => (raw ?? "").replace(/[^\p{L}\p{N} '-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 24);
+
+/**
+ * A link carrying only the ciphertext: the key has to reach its recipient some
+ * other way. Who it's from and for travel in the clear, as the address on a
+ * real signal did.
+ */
+export function secretLink(ciphertext: string, { from = "", to = "" }: { from?: string; to?: string } = {}) {
+  const params = new URLSearchParams({ cipher: ciphertext });
+  if (name(from)) params.set("from", name(from));
+  if (name(to)) params.set("to", name(to));
+  return `/machine?${params}`;
+}
+
+/** Who a secret is from and for, where the link says. */
+export function readAddress(search: string) {
+  const params = new URLSearchParams(search);
+  return { from: name(params.get("from")), to: name(params.get("to")) };
 }
 
 export function readSecret(search: string) {
@@ -82,4 +98,23 @@ export function readKeyCode(code: string): Settings | null {
     plugboard: /^no cables$/i.test(cables) ? [] : cables.toUpperCase().split(/\s+/).filter(Boolean),
   };
   return validate(settings).length === 0 ? settings : null;
+}
+
+/**
+ * A fresh key of the kind the army used: reflector B, three different rotors
+ * of the five, any rings and start, and ten cables.
+ */
+export function randomKey(random: () => number = Math.random): Settings {
+  const pick = <T>(from: T[]) => from.splice(Math.floor(random() * from.length), 1)[0];
+  const wheels: RotorName[] = ["I", "II", "III", "IV", "V"];
+  const letters = [...ALPHABET];
+  const cables = Array.from({ length: 10 }, () => [pick(letters), pick(letters)].sort().join(""));
+  const any = () => Math.floor(random() * 26);
+  return {
+    ...DEFAULT_SETTINGS,
+    rotors: [pick(wheels), pick(wheels), pick(wheels)],
+    rings: [any(), any(), any()],
+    positions: [any(), any(), any()],
+    plugboard: cables.sort(),
+  };
 }

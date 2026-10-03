@@ -1,6 +1,6 @@
 /**
  * The site's noises, synthesised so there are no audio files to load: the
- * machine's keys and rotors, a Bombe's drums, a teleprinter, a rubber stamp.
+ * machine's keys and rotors, a Bombe's drums, a rubber stamp.
  * Every one plays only in answer to something the reader did, and none plays
  * once they have turned sound off.
  */
@@ -36,11 +36,20 @@ function burst(ctx: AudioContext, { at, length, frequency, gain, q = 1.4 }: { at
   source.start(at);
 }
 
+/**
+ * A key going down, which on an Enigma struck like a typewriter's: the click of
+ * the key, the clack of the bar hitting home and the rotor ratchet under it.
+ * Each strike varies a little, so a run of them doesn't sound like a loop.
+ */
 export function playKey() {
   const ctx = audio();
   if (!ctx) return;
-  burst(ctx, { at: ctx.currentTime, length: 0.03, frequency: 2600, gain: 0.5 });
-  burst(ctx, { at: ctx.currentTime + 0.018, length: 0.06, frequency: 420, gain: 0.9 });
+  const t = ctx.currentTime;
+  const vary = (n: number) => n * (0.9 + Math.random() * 0.2);
+  burst(ctx, { at: t, length: 0.012, frequency: vary(4200), gain: 0.45, q: 3 });
+  burst(ctx, { at: t + vary(0.022), length: 0.05, frequency: vary(1500), gain: 0.9, q: 2.2 });
+  burst(ctx, { at: t + 0.026, length: 0.09, frequency: vary(220), gain: 1.1, q: 0.9 });
+  burst(ctx, { at: t + 0.06, length: 0.015, frequency: vary(3400), gain: 0.25, q: 4 });
 }
 
 export function playRotor() {

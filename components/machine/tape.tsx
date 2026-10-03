@@ -67,7 +67,8 @@ export function Tape({ input, output, onRewind, onClear, onMessage, disabled, ty
           className="mt-3 flex gap-2"
           onSubmit={(e) => {
             e.preventDefault();
-            onMessage(draft);
+            // Operators typed X where a space fell, since the machine had no space key
+            onMessage(draft.trim().replace(/\s+/g, "X"));
             setDraft("");
           }}
         >
@@ -76,7 +77,7 @@ export function Tape({ input, output, onRewind, onClear, onMessage, disabled, ty
             id="message"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Paste a whole message…"
+            placeholder="Type or paste a whole message…"
             autoComplete="off"
             spellCheck={false}
             className="min-w-0 flex-1 rounded-sm border border-paper-muted/60 bg-transparent px-2 py-1.5 font-type text-base uppercase placeholder:normal-case placeholder:text-paper-muted focus:outline-2 focus:outline-paper-ink"

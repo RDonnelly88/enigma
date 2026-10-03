@@ -139,7 +139,7 @@ export const LESSONS: Lesson[] = [
   {
     id: "share",
     title: "Send a secret",
-    task: "Encipher a message and, in Messages, copy a link to the ciphertext and its key code to send to a friend.",
+    task: "Encipher a message and, in Messages, send it to a friend: share the link, copy the key or print the key card.",
     lesson: () =>
       "Your friend needs both: the ciphertext, which anyone may see, and the key, which only they should have. That split, a public message and a private key sent another way, is what all of cryptography still rests on.",
     done: (s) => s.shared,
