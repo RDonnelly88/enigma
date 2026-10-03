@@ -17,6 +17,11 @@ export const PAGES = [
     lead: "How did Bletchley do it? Guess a word, build a menu and run the Bombe until a message reads.",
   },
   {
+    href: "/atlantic",
+    label: "The U-boat war",
+    lead: "Where it mattered most: the Battle of the Atlantic, the codebooks taken at sea, and the four-rotor machine that went dark for ten months.",
+  },
+  {
     href: "/codebreaker",
     label: "Codebreaker",
     lead: "Break a message with no key and no crib at all, the way a computer does it today.",

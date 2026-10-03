@@ -49,6 +49,22 @@ test("breaking pages", async ({ page }, { project }) => {
   await page.screenshot({ path: `e2e/screenshots/${project.name}-codebreaker-story.png`, fullPage: true });
 });
 
+test("the U-boat war", async ({ page }, { project }) => {
+  await page.goto("/atlantic");
+  await page.waitForLoadState("networkidle");
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-atlantic.png`, fullPage: true });
+  const router = page.getByRole("figure").filter({ hasText: "Route the convoy" });
+  await router.getByRole("radio", { name: "1942" }).click();
+  await router.getByRole("button", { name: "Central route" }).click();
+  await router.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-atlantic-convoy.png` });
+  const wheel = page.getByLabel("Fourth wheel at");
+  await wheel.focus();
+  await wheel.press("Home");
+  await page.getByRole("figure").filter({ hasText: "The fourth wheel" }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-atlantic-wheel.png` });
+});
+
 test("day", async ({ page }, { project }) => {
   await page.goto("/day");
   await page.waitForLoadState("networkidle");
