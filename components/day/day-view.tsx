@@ -37,7 +37,7 @@ export function DayView() {
   const hold = useRef(0);
   const current = [...DAY_EVENTS].reverse().find((e) => e.time <= time);
   const next = DAY_EVENTS.find((e) => e.time > time);
-  const fresh = useDaySounds(time, day);
+  const fresh = useDaySounds(time);
 
   // Where each event sits on the page, as the clock time it stands for, and the end of the day after the last
   const marks = useCallback(() => {

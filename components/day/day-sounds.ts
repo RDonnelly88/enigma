@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSound } from "@/hooks/use-preference";
-import { playAircraft, playMorse, playStamp, playStrikes, playTeleprinter, startBombe } from "@/lib/sound";
-import { ORDER, WEATHER, type DayData } from "@/lib/story/day";
+import { playAircraft, playStamp, playStrikes, playTeleprinter, startBombe } from "@/lib/sound";
 import { DAY_EVENTS } from "@/lib/story/day-events";
 
-/** What each moment of the day sounds like as the clock reaches it, using the day's real traffic. Each returns how to cut it short. */
-const soundsFor = (day: DayData): Record<string, () => () => void> => ({
-  // The opening midnight is where the day starts, so it is never reached; the closing one strikes
-  transmit: () => playMorse(WEATHER.start + day.weather.enciphered + day.weather.body.slice(0, 15), 18).stop,
-  intercept: () => playMorse(day.weather.body.slice(0, 15), 18).stop,
+/** What each moment of the day sounds like as the clock reaches it. Each returns how to cut it short. */
+const SOUNDS: Record<string, () => () => void> = {
+  // The opening midnight is where the day starts, so it is never reached; the closing one strikes. Morse plays
+  // only when asked for, from the Listen and Transmit buttons on each message
   registry: () => playTeleprinter(45),
   bombe: () => {
     const stop = startBombe();
@@ -27,14 +25,13 @@ const soundsFor = (day: DayData): Record<string, () => () => void> => ({
     playStamp();
     return () => {};
   },
-  order: () => playMorse(ORDER.start + day.order.enciphered + day.order.body.slice(0, 15), 18).stop,
   ultra: () => {
     playStamp();
     return () => {};
   },
   attack: () => playAircraft(),
   night: () => playStrikes(12),
-});
+};
 
 /**
  * Plays the sound of the event the clock has just reached, moving forward
@@ -42,12 +39,11 @@ const soundsFor = (day: DayData): Record<string, () => () => void> => ({
  * doesn't play all of it at once, and each cuts off the one before. Returns
  * the event just reached, for its paperwork to be typed out.
  */
-export function useDaySounds(time: number, day: DayData) {
+export function useDaySounds(time: number) {
   const sound = useSound();
   const last = useRef(time);
   const playing = useRef<() => void>(() => {});
   const [fresh, setFresh] = useState<string | null>(null);
-  const sounds = useMemo(() => soundsFor(day), [day]);
 
   useEffect(() => {
     const before = last.current;
@@ -60,8 +56,8 @@ export function useDaySounds(time: number, day: DayData) {
     if (!reached) return;
     setFresh(reached.id);
     playing.current();
-    playing.current = sounds[reached.id]?.() ?? (() => {});
-  }, [time, sounds]);
+    playing.current = SOUNDS[reached.id]?.() ?? (() => {});
+  }, [time]);
 
   // Turning sound off cuts whatever is playing; leaving the page does too
   useEffect(() => {

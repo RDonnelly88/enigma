@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { playKey } from "@/lib/sound";
 
 /** Fast enough not to keep the reader waiting, slow enough to watch someone type. */
 const PACE = 55;
@@ -9,11 +8,12 @@ const LONGEST = 5000;
 
 /**
  * Text typed out a key at a time, as an operator or typist at the time would
- * have produced it, with each key striking. The rest of the text holds its
+ * have produced it. Silent: a key strike for every letter of a page is too much
+ * to sit through, and the machine's own keys still sound. The rest of the text holds its
  * place unseen, so nothing on the page moves while it types. With reduced
  * motion, or once it has typed, it is simply there.
  */
-export function TypeOut({ text, typing, keys = true }: { text: string; typing: boolean; keys?: boolean }) {
+export function TypeOut({ text, typing }: { text: string; typing: boolean }) {
   const [shown, setShown] = useState<number | null>(null);
 
   useEffect(() => {
@@ -24,7 +24,6 @@ export function TypeOut({ text, typing, keys = true }: { text: string; typing: b
     const blank = requestAnimationFrame(() => setShown(0));
     const tick = setInterval(() => {
       n++;
-      if (keys && /[A-Za-zÄÖÜäöü]/.test(text[n - 1] ?? "")) playKey();
       setShown(n);
       if (n >= text.length) clearInterval(tick);
     }, pace);
@@ -33,7 +32,7 @@ export function TypeOut({ text, typing, keys = true }: { text: string; typing: b
       clearInterval(tick);
       setShown(null);
     };
-  }, [typing, text, keys]);
+  }, [typing, text]);
 
   if (shown === null || shown >= text.length) return <>{text}</>;
   return (
