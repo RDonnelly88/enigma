@@ -41,12 +41,15 @@ export default function About() {
         <Section title="Who made it">
           <div className="space-y-4 font-serif text-[1.075rem] leading-relaxed text-room-ink/90">
             <p>
-              Made by Ross Donnelly, out of curiosity about how a machine could be so strong and still be broken. The code is
-              open on{" "}
+              Made by Ross Donnelly. The code is open on{" "}
               <a href="https://github.com/RDonnelly88/enigma" className="text-brass underline underline-offset-2">
                 GitHub
               </a>
               .
+            </p>
+            <p>
+              It was built with the help of Claude Code, an AI coding tool, which also helped research and write the history.
+              It hasn&rsquo;t been checked line by line against the books below, so if you spot a mistake, please say.
             </p>
           </div>
         </Section>
@@ -115,6 +118,7 @@ export default function About() {
         </Section>
 
         <Section title="Further reading">
+          <p className="text-sm text-room-muted">Good places to go further. They are suggestions for reading, not sources this site has been checked against.</p>
           <ul className="flex flex-col gap-4">
             {READING.map((b) => (
               <li key={b.title} className="rounded-lg border border-panel-edge bg-panel p-4">
