@@ -5,6 +5,7 @@ import { CodebreakerFromLink } from "@/components/codebreaker/from-link";
 import { Timeline } from "@/components/story/timeline";
 import { Chapter, Prose } from "@/components/ui/chapter";
 import { ChapterRail } from "@/components/ui/chapter-rail";
+import { Term } from "@/components/glossary/glossary";
 import { PageHero } from "@/components/ui/page-hero";
 import { COMPUTER_HISTORY } from "@/lib/story/history";
 
@@ -22,7 +23,7 @@ export default function Codebreaker() {
       <PageHero eyebrow="Breaking it by computer" title="Codebreaker">
         <p>
           Bletchley needed a crib, a building full of Bombes and thousands of people. Half a century later, a home computer
-          could break an Enigma message with nothing to go on but the ciphertext. Here is how, and a chance to do it
+          could break an Enigma message with nothing to go on but the <Term id="ciphertext">ciphertext</Term>. Here is how, and a chance to do it
           yourself.
         </p>
       </PageHero>
@@ -39,7 +40,7 @@ export default function Codebreaker() {
         }}
         intro={
           <p>
-            A crib is a guess about what a message says. Statistics need no guess at all, only enough text, and enough
+            A <Term id="crib">crib</Term> is a guess about what a message says. Statistics need no guess at all, only enough text, and enough
             computing power to try millions of settings. Bletchley had neither in the quantity required. Modern computers
             have both.
           </p>
@@ -50,7 +51,7 @@ export default function Codebreaker() {
           <p>
             The method runs in two halves. First, find the rotors while ignoring the plugboard altogether, by spotting the
             settings that make the output slightly less random than it should be. Then, from each of the best, find the
-            plugboard by climbing: one cable at a time, keeping whichever makes the text look most like the language.
+            plugboard by <Term id="hill-climbing">climbing</Term>: one cable at a time, keeping whichever makes the text look most like the language.
           </p>
         </Prose>
       </Chapter>
@@ -67,7 +68,7 @@ export default function Codebreaker() {
         intro={
           <p>
             A wrong rotor setting turns a message into random letters. A nearly right one leaves some of it German, and
-            German has a fingerprint: some letters far commoner than others. One number captures it.
+            German has a fingerprint: some letters far commoner than others. <Term id="index-of-coincidence">One number</Term> captures it.
           </p>
         }
       >

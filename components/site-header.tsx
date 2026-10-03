@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { PAGES } from "@/lib/pages";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GlossaryButton } from "@/components/glossary/glossary";
 
 export function SiteHeader() {
   const path = usePathname();
@@ -50,6 +51,7 @@ export function SiteHeader() {
             );
           })}
         </nav>
+        <GlossaryButton />
         <ThemeToggle />
       </div>
     </header>

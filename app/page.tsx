@@ -11,6 +11,7 @@ import { SwapDemo } from "@/components/story/swap-demo";
 import { Timeline } from "@/components/story/timeline";
 import { Aside, Chapter, Prose } from "@/components/ui/chapter";
 import { ChapterRail } from "@/components/ui/chapter-rail";
+import { Term } from "@/components/glossary/glossary";
 import { MACHINE_HISTORY, WEAKNESSES } from "@/lib/story/history";
 
 const CHAPTERS = [
@@ -48,7 +49,7 @@ export default function Story() {
           <p>
             Radio changed war. Orders could reach a tank, an aircraft or a submarine in seconds, wherever it was. But a
             radio message is heard by anyone listening on that frequency, enemy included. Everything sent had to be
-            enciphered, quickly, by tired signallers in the field, without a codebook that could be captured and read.
+            <Term id="encryption">enciphered</Term>, quickly, by tired signallers in the field, without a <Term id="code">codebook</Term> that could be captured and read.
           </p>
           <p>
             Enigma was the answer Germany chose. Invented as a commercial product to keep business secrets, it was taken
@@ -79,7 +80,7 @@ export default function Story() {
         <SwapDemo />
         <Prose>
           <p>
-            Enigma&rsquo;s answer to letter counting was to keep changing the swap. The scrambling is done by rotors:
+            Enigma&rsquo;s answer to <Term id="frequency-analysis">letter counting</Term> was to keep changing the swap. The scrambling is done by <Term id="rotor">rotors</Term>:
             wheels with 26 brass contacts on each face and a tangle of wires inside, so current entering on one letter
             leaves on another.
           </p>
@@ -96,7 +97,7 @@ export default function Story() {
         <PlugboardDemo />
         <Prose>
           <p>
-            That is the whole machine: keyboard, plugboard, three rotors, reflector, back through the rotors and the
+            That is the whole machine: keyboard, <Term id="plugboard">plugboard</Term>, three rotors, <Term id="reflector">reflector</Term>, back through the rotors and the
             plugboard, to a lamp. Every press turns the rotors and the whole route changes.
           </p>
           <p>
@@ -128,7 +129,7 @@ export default function Story() {
         <Prose>
           <p>
             Operators usually worked in pairs. One read the message and typed; the other watched the lamps and wrote down
-            each letter as it lit. The result went to a radio operator, who sent it in Morse, usually in groups of five
+            each letter as it lit. The result went to a radio operator, who sent it in <Term id="morse">Morse</Term>, usually in groups of five
             letters. At the other end the same routine ran backwards: copy down the Morse, type it into an identically set
             machine, and read the message off the lamps.
           </p>
@@ -154,7 +155,7 @@ export default function Story() {
         intro={
           <p>
             Enigma&rsquo;s designers were right about the mathematics. Even with a captured machine in front of you, its
-            wiring known, you still had to find the day&rsquo;s key among more possibilities than there are grains of sand
+            wiring known, you still had to find the day&rsquo;s <Term id="key">key</Term> among more possibilities than there are grains of sand
             on every beach on Earth, and tomorrow there would be a new one.
           </p>
         }
