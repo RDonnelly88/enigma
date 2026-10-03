@@ -3,7 +3,7 @@
 import { useSound } from "@/hooks/use-preference";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { timeline, type Tone } from "@/lib/morse";
-import { soundOn } from "@/lib/sound";
+import { playMorse } from "@/lib/sound";
 
 type Playing = { letter: number; on: boolean; symbol: number };
 
@@ -15,14 +15,14 @@ type Playing = { letter: number; on: boolean; symbol: number };
 export function useMorse() {
   const [now, setNow] = useState<Playing | null>(null);
   const stopper = useRef<() => void>(() => {});
-  const audio = useRef<AudioContext | null>(null);
+  const cut = useRef<() => void>(() => {});
   const sound = useSound();
 
   // Turning sound off silences a message already playing; the lamp carries on
   useEffect(() => {
-    if (sound || !audio.current) return;
-    void audio.current.close();
-    audio.current = null;
+    if (sound) return;
+    cut.current();
+    cut.current = () => {};
   }, [sound]);
 
   const stop = useCallback(() => {
@@ -37,29 +37,9 @@ export function useMorse() {
       const { tones, duration } = timeline(text, wpm);
       if (tones.length === 0) return;
 
-      let ctx: AudioContext | null = null;
       // With sound off the lamp still flashes, so the message can be read by eye
-      if (soundOn() && typeof AudioContext !== "undefined") {
-        ctx = new AudioContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.frequency.value = 650;
-        gain.gain.value = 0;
-        osc.connect(gain).connect(ctx.destination);
-        const t0 = ctx.currentTime + 0.05;
-        // Short ramps at each edge, or every tone clicks
-        for (const tone of tones) {
-          const a = t0 + tone.start / 1000;
-          const b = a + tone.duration / 1000;
-          gain.gain.setValueAtTime(0, a);
-          gain.gain.linearRampToValueAtTime(0.25, a + 0.005);
-          gain.gain.setValueAtTime(0.25, b - 0.005);
-          gain.gain.linearRampToValueAtTime(0, b);
-        }
-        osc.start(t0);
-        osc.stop(t0 + duration / 1000 + 0.1);
-        audio.current = ctx;
-      }
+      const sounding = playMorse(text, wpm);
+      cut.current = sounding.stop;
 
       const began = performance.now() + 50;
       let frame = 0;
@@ -89,8 +69,8 @@ export function useMorse() {
       frame = requestAnimationFrame(tick);
       stopper.current = () => {
         cancelAnimationFrame(frame);
-        if (ctx && ctx.state !== "closed") void ctx.close();
-        if (audio.current === ctx) audio.current = null;
+        sounding.stop();
+        cut.current = () => {};
       };
     },
     [stop],

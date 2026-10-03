@@ -55,3 +55,17 @@ test("scrolling down the page runs the clock and opens the events", async ({ pag
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(page.getByTestId("day-clock")).toHaveText("00:00");
 });
+
+test("the paperwork of the moment just reached types itself out", async ({ page }) => {
+  const next = page.getByRole("button", { name: "Next event" });
+  for (let i = 0; i < 8; i++) await next.click();
+  await expect(page.getByTestId("day-clock")).toHaveText("10:00");
+  // The rest of the run forces reduced motion, which shows it all at once
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await next.click();
+  await expect(page.getByTestId("day-clock")).toHaveText("11:20");
+  const decrypt = page.getByTestId("day-decrypt");
+  await expect.poll(async () => (await decrypt.evaluate((el) => el.querySelector(".invisible")?.textContent ?? "")).length).toBeGreaterThan(0);
+  await expect(decrypt.locator(".invisible")).toHaveCount(0, { timeout: 10_000 });
+  await expect(decrypt).toContainText("WETTERVORHERSAGE FUER DEN KANAL");
+});

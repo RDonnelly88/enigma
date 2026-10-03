@@ -151,6 +151,8 @@ test("the machine resets to the default settings, and the lessons can start over
   await page.getByRole("button", { name: "Start the lessons again" }).click();
   await expect(page.getByTestId("lesson-progress")).toHaveText(/^0 of/);
   await page.reload();
+  // Until the link is read the page shows a plain bench, swapped out as it hydrates; wait for the one that stays
+  await page.waitForLoadState("networkidle");
   await expect(page.getByTestId("lesson-progress")).toHaveText(/^0 of/);
 });
 
