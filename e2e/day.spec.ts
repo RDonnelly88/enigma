@@ -40,3 +40,18 @@ test("playing the day moves the clock", async ({ page }) => {
   await expect(page.getByTestId("day-clock")).not.toHaveText("00:00");
   await page.getByRole("button", { name: "Pause" }).click();
 });
+
+test("scrolling down the page runs the clock and opens the events", async ({ page }) => {
+  const clockAt = async () => (await page.getByTestId("day-clock").textContent()) ?? "";
+  await expect(page.getByTestId("day-clock")).toHaveText("00:00");
+  const cribTop = await page.locator('[data-event="crib"]').evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  await page.evaluate((y) => window.scrollTo(0, y - window.innerHeight * 0.55 + 4), cribTop);
+  await expect(page.locator('[data-event="crib"]')).toHaveAttribute("data-reached", "true");
+  await expect(page.locator('[data-event="menu"]')).not.toHaveAttribute("data-reached");
+  const atCrib = await clockAt();
+  expect(atCrib >= "08:30" && atCrib < "09:15").toBe(true);
+  await page.mouse.wheel(0, 1500);
+  await expect.poll(async () => (await clockAt()) > atCrib).toBe(true);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(page.getByTestId("day-clock")).toHaveText("00:00");
+});

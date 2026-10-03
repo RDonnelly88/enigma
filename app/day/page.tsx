@@ -16,8 +16,8 @@ export default function ADayIn1941() {
       <PageHero eyebrow="A reconstruction" title="A day in 1941">
         <p>
           One day, two sides. A Luftwaffe signals unit in France sends its morning weather report and an afternoon order,
-          sure that no one can read them. Across the Channel, Bletchley Park is already listening. Play the day, or drag the
-          clock, and watch both.
+          sure that no one can read them. Across the Channel, Bletchley Park is already listening. Scroll down
+          and the clock runs with you, or press play and watch both.
         </p>
       </PageHero>
       <Prose className="-mt-8 mb-6">

@@ -1,7 +1,7 @@
 "use client";
 
 import { Glossed } from "@/components/glossary/glossary";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, SkipForward } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -11,6 +11,8 @@ import { cn } from "@/lib/cn";
 import { ArtefactView } from "./artefacts";
 
 const END = 24 * 60 - 1;
+/** How far down the window the day is read: an event's card reaching this line is the clock reaching its time. */
+const readingLine = () => window.innerHeight * 0.55;
 const clock = (m: number) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
 const LANES: Record<Lane, { name: string; dot: string; text: string }> = {
   german: { name: "German signals", dot: "bg-signal-out", text: "text-signal-out" },
@@ -29,35 +31,106 @@ export function DayView() {
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
   const cards = useRef(new Map<string, HTMLElement>());
+  const end = useRef<HTMLDivElement>(null);
+  // After the slider moves the page, its own value stands until the reader scrolls
+  const hold = useRef(0);
   const current = [...DAY_EVENTS].reverse().find((e) => e.time <= time);
   const next = DAY_EVENTS.find((e) => e.time > time);
 
+  // Where each event sits on the page, as the clock time it stands for, and the end of the day after the last
+  const marks = useCallback(() => {
+    const top = (el: Element) => el.getBoundingClientRect().top + window.scrollY;
+    const list = DAY_EVENTS.flatMap((e) => {
+      const el = cards.current.get(e.id);
+      return el ? [{ t: e.time, y: top(el) }] : [];
+    });
+    if (end.current) list.push({ t: END, y: top(end.current) });
+    return list;
+  }, []);
+
+  // Scrolling is the clock: the time is wherever the reading line falls between one event and the next
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (performance.now() < hold.current) return;
+      const line = window.scrollY + readingLine();
+      const m = marks();
+      if (!m.length || line <= m[0].y) return setTime(0);
+      const i = m.findLastIndex((k) => k.y <= line);
+      if (i === m.length - 1) return setTime(END);
+      const f = (line - m[i].y) / Math.max(1, m[i + 1].y - m[i].y);
+      setTime(Math.min(END, Math.round(m[i].t + f * (m[i + 1].t - m[i].t))));
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    frame = requestAnimationFrame(update);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, [marks]);
+
+  // Playing scrolls the page gently; any scroll of the reader's own stops it
   useEffect(() => {
     if (!playing) return;
-    const tick = setInterval(() => setTime((t) => Math.min(END, t + 5)), 120);
-    return () => clearInterval(tick);
+    let frame = requestAnimationFrame(function glide() {
+      const bottom = document.documentElement.scrollHeight - window.innerHeight;
+      if (window.scrollY >= bottom - 1) return setPlaying(false);
+      window.scrollBy(0, 2);
+      frame = requestAnimationFrame(glide);
+    });
+    const stop = () => setPlaying(false);
+    window.addEventListener("wheel", stop, { passive: true });
+    window.addEventListener("touchstart", stop, { passive: true });
+    window.addEventListener("keydown", stop);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("wheel", stop);
+      window.removeEventListener("touchstart", stop);
+      window.removeEventListener("keydown", stop);
+    };
   }, [playing]);
 
-  // Bring the newest event into view as the clock reaches it while playing
-  useEffect(() => {
-    if (!playing || !current) return;
-    cards.current.get(current.id)?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
-  }, [playing, current, reduced]);
-
-  const stopAtEnd = playing && time >= END;
-  if (stopAtEnd) setPlaying(false);
+  /** Scrolls so the reading line sits at a time of day. */
+  const scrollToTime = (t: number, smooth: boolean) => {
+    const m = marks();
+    if (!m.length) return;
+    const i = Math.max(0, m.findLastIndex((k) => k.t <= t));
+    const j = Math.min(m.length - 1, i + 1);
+    const span = m[j].t - m[i].t;
+    const y = span > 0 ? m[i].y + ((t - m[i].t) / span) * (m[j].y - m[i].y) : m[i].y;
+    window.scrollTo({ top: y - readingLine(), behavior: smooth && !reduced ? "smooth" : "auto" });
+  };
 
   return (
     <div>
       <div className="sticky top-14 z-20 -mx-4 border-b border-panel-edge bg-room/90 px-4 py-3 backdrop-blur">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <output className="font-stencil text-4xl font-bold tabular-nums" aria-label={`The time is ${clock(time)}`} data-testid="day-clock">
-            {clock(time)}
-          </output>
+          <div className="flex items-center gap-3">
+            <StationClock minutes={time} />
+            <div>
+              <output className="block font-type text-3xl leading-none tabular-nums" aria-label={`The time is ${clock(time)}`} data-testid="day-clock">
+                {clock(time)}
+              </output>
+              <span className="mt-1 block font-type text-xs text-room-muted" aria-hidden>
+                {clock(time).replace(":", "")} hrs
+              </span>
+            </div>
+          </div>
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => (time >= END ? (setTime(0), setPlaying(true)) : setPlaying((p) => !p))}
+              onClick={() => {
+                if (playing) return setPlaying(false);
+                // From the top of the page, or the end of the day, start the glide at midnight
+                if (time >= END || window.scrollY + readingLine() < (marks()[0]?.y ?? 0)) scrollToTime(0, false);
+                setPlaying(true);
+              }}
               className="inline-flex items-center gap-1.5 rounded-full bg-room-ink px-4 py-1.5 text-sm font-semibold text-room"
             >
               {playing ? <Pause className="size-4" /> : <Play className="size-4" />} {playing ? "Pause" : "Play the day"}
@@ -68,8 +141,7 @@ export function DayView() {
               onClick={() => {
                 if (!next) return;
                 setPlaying(false);
-                setTime(next.time);
-                cards.current.get(next.id)?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+                scrollToTime(next.time, true);
               }}
               className="inline-flex items-center gap-1.5 rounded-full border border-panel-edge px-4 py-1.5 text-sm font-semibold disabled:opacity-40"
             >
@@ -79,7 +151,20 @@ export function DayView() {
           <p className="min-w-0 flex-1 truncate text-sm text-room-muted">{current ? current.title : ""}</p>
         </div>
         <div className="mt-2">
-          <Slider label="Time of day" value={time} min={0} max={END} step={5} onChange={(v) => (setPlaying(false), setTime(v))} format={clock} />
+          <Slider
+            label="Time of day"
+            value={time}
+            min={0}
+            max={END}
+            step={5}
+            onChange={(v) => {
+              setPlaying(false);
+              setTime(v);
+              hold.current = performance.now() + 400;
+              scrollToTime(v, false);
+            }}
+            format={clock}
+          />
         </div>
         {/* The whole day at a glance: every event a dot on its side's row */}
         <div className="relative mt-1 h-10" aria-hidden>
@@ -90,7 +175,10 @@ export function DayView() {
                   key={e.id}
                   type="button"
                   tabIndex={-1}
-                  onClick={() => (setPlaying(false), setTime(e.time))}
+                  onClick={() => {
+                    setPlaying(false);
+                    scrollToTime(e.time, true);
+                  }}
                   title={`${clock(e.time)} ${e.title}`}
                   aria-label={`${clock(e.time)} ${e.title}`}
                   className={cn("absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full", LANES[lane].dot, e.time > time && "opacity-30")}
@@ -144,24 +232,69 @@ export function DayView() {
                   <span className={LANES[e.lane].text}>{LANES[e.lane].name}</span>
                 </p>
                 <h3 className="mt-1 font-stencil text-2xl font-bold tracking-wide">{e.title}</h3>
-                {reached ? (
-                  <>
-                    <p className="mt-2 font-serif text-[1.02rem] leading-relaxed text-room-ink/90"><Glossed text={e.text} />
-                    </p>
-                    {e.artefact && (
-                      <div className="mt-4">
-                        <ArtefactView id={e.artefact} day={day} time={time} />
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="mt-2 text-sm text-room-muted">Later today, at {clock(e.time)}.</p>
-                )}
+                {!reached && <p className="mt-2 text-sm font-semibold text-room-muted">Later today, at {clock(e.time)}.</p>}
+                {/* Every event takes its full space from the start, so the page doesn't shift under the reader as the
+                    clock runs; one not yet reached is blurred and can't be used */}
+                <div
+                  inert={!reached}
+                  aria-hidden={!reached || undefined}
+                  className={cn(
+                    "transition-[opacity,filter] duration-500 motion-reduce:transition-none",
+                    !reached && "pointer-events-none opacity-25 blur-[3px] select-none",
+                  )}
+                >
+                  <p className="mt-2 font-serif text-[1.02rem] leading-relaxed text-room-ink/90">
+                    <Glossed text={e.text} />
+                  </p>
+                  {e.artefact && (
+                    <div className="mt-4">
+                      <ArtefactView id={e.artefact} day={day} time={time} />
+                    </div>
+                  )}
+                </div>
               </article>
             </li>
           );
         })}
       </ol>
+      {/* Room to scroll the last event up to the reading line, and on to midnight */}
+      <div ref={end} className="h-[60vh]" aria-hidden />
     </div>
+  );
+}
+
+/** A wall clock of the period: cream dial, brass rim, black hands, the kind on a signals office wall. */
+function StationClock({ minutes }: { minutes: number }) {
+  const hour = ((minutes / 60) % 12) * 30;
+  const minute = (minutes % 60) * 6;
+  const hand = (angle: number, length: number, width: number) => {
+    // Rounded so the server's markup matches the browser's to the last digit
+    const r = (n: number) => Math.round(n * 100) / 100;
+    const rad = ((angle - 90) * Math.PI) / 180;
+    return <line x1={32} y1={32} x2={r(32 + length * Math.cos(rad))} y2={r(32 + length * Math.sin(rad))} stroke="var(--paper-ink)" strokeWidth={width} strokeLinecap="round" />;
+  };
+  return (
+    <svg viewBox="0 0 64 64" className="size-14 shrink-0 drop-shadow" aria-hidden>
+      <circle cx={32} cy={32} r={30} fill="var(--paper)" stroke="var(--brass)" strokeWidth={3} />
+      {Array.from({ length: 12 }, (_, i) => {
+        const rad = (i * 30 * Math.PI) / 180;
+        const long = i % 3 === 0;
+        const r = (n: number) => Math.round(n * 100) / 100;
+        return (
+          <line
+            key={i}
+            x1={r(32 + (long ? 21 : 24) * Math.sin(rad))}
+            y1={r(32 - (long ? 21 : 24) * Math.cos(rad))}
+            x2={r(32 + 27 * Math.sin(rad))}
+            y2={r(32 - 27 * Math.cos(rad))}
+            stroke="var(--paper-ink)"
+            strokeWidth={long ? 2.5 : 1.2}
+          />
+        );
+      })}
+      {hand(hour, 14, 3.5)}
+      {hand(minute, 21, 2)}
+      <circle cx={32} cy={32} r={2.5} fill="var(--signal-turn)" />
+    </svg>
   );
 }
