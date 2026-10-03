@@ -5,6 +5,7 @@ import { CribTool } from "@/components/crib/crib-tool";
 import { Timeline } from "@/components/story/timeline";
 import { Aside, Chapter, Prose } from "@/components/ui/chapter";
 import { ChapterRail } from "@/components/ui/chapter-rail";
+import { Term } from "@/components/glossary/glossary";
 import { PageHero } from "@/components/ui/page-hero";
 import { PRACTICE_CIPHERTEXT, PRACTICE_ENGLISH, PRACTICE_PLAINTEXT } from "@/lib/messages";
 import { BREAKING_HISTORY } from "@/lib/story/history";
@@ -54,7 +55,7 @@ export default function CribsAndTheBombe() {
             solving equations, one of the great feats of applied mathematics.
           </p>
           <p>
-            Then he found a way to read the daily keys. The doubled message key at the head of every message was the opening.
+            Then he found a way to read the daily keys. The doubled <Term id="message-key">message key</Term> at the head of every message was the opening.
           </p>
         </Prose>
         <RejewskiDemo />
@@ -91,7 +92,7 @@ export default function CribsAndTheBombe() {
             machines, and women who indexed, translated, analysed and broke codes themselves.
           </p>
           <p>
-            The work ran in huts: Hut 6 broke army and air force Enigma, Hut 8 the navy&rsquo;s, and Huts 3 and 4 turned the
+            The work ran in huts: <Term id="hut-6">Hut 6</Term> broke army and air force Enigma, Hut 8 the navy&rsquo;s, and Huts 3 and 4 turned the
             results into intelligence. Nobody outside was to know. Most of them kept the secret for thirty years.
           </p>
         </Prose>
@@ -110,7 +111,7 @@ export default function CribsAndTheBombe() {
         intro={
           <p>
             Every attack on Enigma at Bletchley started with a guess. Weather reports said <em>WETTERVORHERSAGE</em>,
-            routine reports said there was nothing to report, and a guessed word is called a crib. The reflector&rsquo;s
+            routine reports said there was nothing to report, and a guessed word is called a <Term id="crib">crib</Term>. The <Term id="reflector">reflector&rsquo;s</Term>
             flaw tells you where a crib can&rsquo;t be: anywhere one of its letters would land on itself.
           </p>
         }
@@ -129,7 +130,7 @@ export default function CribsAndTheBombe() {
         }}
         intro={
           <p>
-            Knowing where a crib sits still leaves millions of rotor settings and an unknown plugboard. Alan Turing saw that
+            Knowing where a crib sits still leaves millions of rotor settings and an unknown <Term id="plugboard">plugboard</Term>. Alan Turing saw that
             the crib itself could test a setting without knowing the plugboard at all, and designed a machine to run the
             test at speed.
           </p>
@@ -152,7 +153,7 @@ export default function CribsAndTheBombe() {
         }}
         intro={
           <p>
-            The intelligence from Enigma was called Ultra, and it reached commanders throughout the war: the positions of
+            The intelligence from Enigma was called <Term id="ultra">Ultra</Term>, and it reached commanders throughout the war: the positions of
             U-boat packs in the Atlantic, the plans of armies in North Africa, the German order of battle before D-Day.
           </p>
         }

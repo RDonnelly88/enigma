@@ -121,3 +121,19 @@ test("break an intercept", async ({ page }, { project }) => {
   await page.getByRole("button", { name: "Make my certificate" }).click();
   await shot("certificate");
 });
+
+test("glossary", async ({ page }, { project }) => {
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: "rotors", exact: true }).first().click();
+  const open = page.getByTestId("glossary-open");
+  for (let i = 0; i < 3; i++) await open.getByRole("button", { name: "Press a key" }).click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-glossary.png` });
+  await page.keyboard.press("Escape");
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
+  await page.getByRole("button", { name: "Open the glossary" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: /^Plugboard/ }).click();
+  await page.getByRole("button", { name: "Socket A" }).click();
+  await page.getByRole("button", { name: "Socket E" }).click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-glossary-dark.png` });
+});

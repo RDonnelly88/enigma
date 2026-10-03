@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter, Source_Serif_4, Special_Elite } from "next/font/google";
+import { GlossaryProvider } from "@/components/glossary/glossary";
 import { NextPage } from "@/components/next-page";
 import { SiteHeader } from "@/components/site-header";
 import { PREPAINT } from "@/lib/preferences";
@@ -34,9 +35,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: PREPAINT }} />
       </head>
       <body className="min-h-dvh antialiased">
-        <SiteHeader />
-        {children}
-        <NextPage />
+        <GlossaryProvider>
+          <SiteHeader />
+          {children}
+          <NextPage />
+        </GlossaryProvider>
       </body>
     </html>
   );
