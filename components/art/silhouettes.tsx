@@ -137,3 +137,89 @@ export function ListeningHut({ className = "text-room-ink", transform }: Art) {
     </g>
   );
 }
+
+/** Someone seated at a table, facing right, arms forward to whatever is on it; origin at the floor under the chair. */
+export function Seated({ className = "text-room-ink", transform, cap = false }: Art & { cap?: boolean }) {
+  return (
+    <g className={cn("fill-current", className)} transform={transform}>
+      <rect x={-6} y={-24} width={3} height={24} />
+      <rect x={-6} y={-26} width={22} height={4} />
+      <path d="M-2 -26 L2 -54 Q8 -60 14 -54 L18 -40 L34 -36 L34 -31 L14 -33 L12 -26 Z" />
+      <path d="M12 -26 L32 -26 L32 0 L27 0 L27 -21 L12 -21 Z" />
+      <circle cx={9} cy={-63} r={7} />
+      {cap && <path d="M1 -66 L18 -66 L20 -63 L1 -63 Z" />}
+    </g>
+  );
+}
+
+/** Someone standing, facing right; origin at the feet. */
+export function Standing({ className = "text-room-ink", transform, cap = false }: Art & { cap?: boolean }) {
+  return (
+    <g className={cn("fill-current", className)} transform={transform}>
+      <path d="M-6 0 L-4 -32 L-7 -60 Q0 -68 7 -60 L4 -32 L6 0 L2 0 L0 -28 L-2 0 Z" />
+      <path d="M5 -58 L16 -44 L14 -42 L4 -52 Z" />
+      <circle cx={0} cy={-72} r={7} />
+      {cap && <path d="M-8 -75 L9 -75 L12 -72 L-8 -72 Z" />}
+    </g>
+  );
+}
+
+/** A field Enigma in its open wooden box, lid up, one lamp lit; origin at the bottom left. */
+export function FieldEnigma({ className = "text-room-ink", transform, lit = true }: Art & { lit?: boolean }) {
+  return (
+    <g className={cn("fill-current", className)} transform={transform}>
+      <path d="M0 0 L0 -12 L40 -12 L40 0 Z" />
+      <path d="M2 -12 L-4 -34 L36 -34 L38 -12 Z" opacity={0.7} />
+      {[6, 14, 22, 30].map((x) => (
+        <circle key={x} cx={x + 2} cy={-6} r={2} className="fill-paper/50" />
+      ))}
+      {lit && <circle cx={20} cy={-9} r={2.6} className="fill-lamp-on" />}
+    </g>
+  );
+}
+
+/** A signals truck with its box body and a whip aerial; origin at the road under the rear wheel. */
+export function SignalsTruck({ className = "text-room-ink", transform }: Art) {
+  return (
+    <g className={cn("fill-current", className)} transform={transform}>
+      <path d="M-30 -12 L-30 -58 L60 -58 L60 -12 Z" />
+      <path d="M60 -12 L60 -42 L82 -42 L92 -26 L96 -26 L96 -12 Z" />
+      <rect x={66} y={-38} width={14} height={10} className="fill-lamp-on/70" />
+      <circle cx={0} cy={-8} r={9} />
+      <circle cx={74} cy={-8} r={9} />
+      <circle cx={0} cy={-8} r={3.5} className="fill-paper/60" />
+      <circle cx={74} cy={-8} r={3.5} className="fill-paper/60" />
+      <rect x={-22} y={-50} width={30} height={14} className="fill-lamp-on/80" />
+      <path d="M50 -58 L44 -128" fill="none" className="stroke-current" strokeWidth={1.6} />
+    </g>
+  );
+}
+
+/** A Bombe from the front: a cabinet faced with three banks of coloured drums; origin at the bottom left. */
+export function BombeCabinet({ className = "text-room-ink", transform, spin = false }: Art & { spin?: boolean }) {
+  // Twelve columns of three, each column of three drums standing in for one Enigma's rotors: 36 Enigmas in all
+  const rows = [0, 1, 2];
+  const cols = Array.from({ length: 12 }, (_, i) => i);
+  return (
+    <g className={cn("fill-current", className)} transform={transform}>
+      <rect x={0} y={-110} width={150} height={110} rx={3} />
+      {rows.map((r) =>
+        cols.map((c) =>
+          [0, 1, 2].map((d) => (
+            <g key={`${r}-${c}-${d}`} transform={`translate(${10.5 + c * 11.7} ${-92 + r * 34 + d * 9})`}>
+              <circle r={4.2} className={d === 0 ? "fill-cable" : d === 1 ? "fill-paper/80" : "fill-brass"} />
+              <rect
+                x={-0.6}
+                y={-3.6}
+                width={1.2}
+                height={7.2}
+                className={cn("fill-current", spin && "art-circle")}
+                style={spin ? { transformBox: "fill-box", transformOrigin: "center", animationDuration: `${1 + ((r + c + d) % 3) * 0.4}s` } : undefined}
+              />
+            </g>
+          )),
+        ),
+      )}
+    </g>
+  );
+}

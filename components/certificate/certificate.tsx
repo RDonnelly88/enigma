@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Crest } from "@/components/art/small-scenes";
 import { Stamp } from "@/components/ui/stamp";
 import { enciphered, QUESTIONS, rank } from "@/lib/quiz";
 import { rating } from "@/lib/story/challenge";
@@ -26,6 +27,7 @@ export function Certificate({ award, broke }: { award: Award; broke?: BreakResul
             Broken
           </Stamp>
         )}
+        <Crest className="mx-auto mb-3 h-20 w-auto sm:h-24" />
         <p className="font-stencil text-sm font-bold tracking-[0.5em] text-paper-muted">ENIGMA</p>
         <h2 className="mt-4 font-stencil text-4xl leading-none font-bold tracking-wide sm:text-6xl">Codebreaker&rsquo;s certificate</h2>
         <p className="mt-8 font-serif text-lg italic">This is to certify that</p>

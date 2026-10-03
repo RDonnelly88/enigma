@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BletchleyNight, WarsawScene, WrenAtBombe } from "@/components/art/breaking-scenes";
 import { Listen } from "@/components/ui/listen";
 import { BeTheBombe } from "@/components/breaking/be-the-bombe";
 import { BombeWalkthrough } from "@/components/breaking/bombe-walkthrough";
@@ -60,6 +61,7 @@ export default function CribsAndTheBombe() {
             Then he found a way to read each day&rsquo;s key. The doubled <Term id="message-key">message key</Term> at the head of every message was the opening.
           </p>
         </Prose>
+        <WarsawScene />
         <RejewskiDemo />
         <Prose>
           <p>
@@ -98,6 +100,7 @@ export default function CribsAndTheBombe() {
             results into intelligence. Nobody outside was to know. Most of them kept the secret for thirty years.
           </p>
         </Prose>
+        <BletchleyNight />
         <Timeline label="How Enigma was broken" moments={BREAKING_HISTORY} />
       </Chapter>
 
@@ -138,6 +141,7 @@ export default function CribsAndTheBombe() {
           </p>
         }
       >
+        <WrenAtBombe />
         <BeTheBombe />
         <Prose>
           <p>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LostRider } from "@/components/art/small-scenes";
 import { Listen } from "@/components/ui/listen";
 import { Stamp } from "@/components/ui/stamp";
 import { DEFAULT_SETTINGS, encipher, lettersToPositions } from "@/lib/enigma";
@@ -9,6 +10,7 @@ const GARBLED = encipher({ ...DEFAULT_SETTINGS, positions: lettersToPositions("X
 export default function NotFound() {
   return (
     <main className="mx-auto flex max-w-2xl flex-col items-center gap-8 px-4 py-24 text-center">
+      <LostRider />
       <div className="relative w-full rounded-sm bg-paper p-8 text-paper-ink shadow-lg">
         <p className="text-[11px] font-semibold tracking-[0.3em] text-paper-muted uppercase">Intercept · page not found</p>
         <p className="mt-4 font-type text-2xl tracking-[0.25em] break-all">{GARBLED.match(/.{1,5}/g)!.join(" ")}</p>
@@ -21,6 +23,9 @@ export default function NotFound() {
         <h1 className="font-stencil text-4xl font-bold tracking-wide">This page wouldn&rsquo;t decipher</h1>
         <p className="mt-3 font-serif text-lg leading-relaxed text-room-ink/85">
           Every setting was tried and none of them reads. Perhaps the address was garbled on the way.
+        </p>
+        <p className="mt-3 text-sm text-room-muted">
+          In 1940 Britain took down its signposts, so that invaders couldn&rsquo;t find their way. Everyone else got lost too.
         </p>
       </div>
       <div className="flex flex-wrap justify-center gap-3">
