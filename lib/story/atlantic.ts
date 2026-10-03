@@ -6,46 +6,55 @@ export const ATLANTIC_HISTORY: Moment[] = [
   {
     when: "1939",
     title: "Hut 8",
+    art: "hut",
     text: "Alan Turing takes on the German navy’s [[cipher]], the hardest of them all. Hardly anyone else at Bletchley thinks it can be broken.",
   },
   {
     when: "Mar 1941",
     title: "The Lofoten raid",
+    art: "raid",
     text: "Commandos raiding the Lofoten Islands in Norway seize the armed trawler Krebs. Aboard are spare [[rotor|rotors]] and the February keys.",
   },
   {
     when: "May 1941",
     title: "München and U-110",
+    art: "uboat",
     text: "A weather ship is captured on purpose for its June keys. Two days later HMS Bulldog boards U-110 and takes its machine and codebooks.",
   },
   {
     when: "Jun 1941",
     title: "Reading the U-boats",
+    art: "convoy",
     text: "With another weather ship’s July keys, Hut 8 is reading U-boat signals, often within hours. [[convoy|Convoys]] are steered round the packs.",
   },
   {
     when: "1 Feb 1942",
     title: "Shark",
+    art: "fourth",
     text: "The Atlantic U-boats change to a new key on the four-rotor M4. Bletchley calls it Shark, and can read none of it.",
   },
   {
     when: "30 Oct 1942",
     title: "U-559",
+    art: "uboat",
     text: "Off Egypt, two sailors from HMS Petard swim to a sinking U-boat and pass up its codebooks. Both drown when it goes down.",
   },
   {
     when: "13 Dec 1942",
     title: "Shark broken",
+    art: "book",
     text: "With the captured weather book, Hut 8 reads Shark again after ten months, in time to reroute convoys within days.",
   },
   {
     when: "Summer 1943",
     title: "American Bombes",
+    art: "bombe",
     text: "Fast four-rotor [[bombe|Bombes]], built in Dayton, Ohio, and run by the US Navy’s WAVES, take on more and more of the Shark work.",
   },
   {
     when: "May 1943",
     title: "Black May",
+    art: "plane",
     text: "More than forty U-boats are lost in a month. On 24 May Admiral Dönitz pulls his boats out of the North Atlantic.",
   },
 ];

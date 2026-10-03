@@ -49,3 +49,20 @@ export function Waves({ rows, from = -40, to = 1280, className = "stroke-room-in
     </g>
   );
 }
+
+/** A fixed scatter: the same stars in the same places on every visit, with no pattern to the eye. */
+const scatter = (i: number, salt: number) => {
+  const v = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+/** Stars in a night sky. */
+export function Stars({ count, width, height }: { count: number; width: number; height: number }) {
+  return (
+    <g className="fill-case-ink/70">
+      {Array.from({ length: count }, (_, i) => (
+        <circle key={i} cx={Math.round(scatter(i, 1) * width)} cy={Math.round(scatter(i, 2) * height) + 4} r={scatter(i, 3) > 0.7 ? 1.4 : 0.9} />
+      ))}
+    </g>
+  );
+}

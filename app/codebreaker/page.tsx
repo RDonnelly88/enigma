@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThenAndNow } from "@/components/art/small-scenes";
 import { ClimbDemo } from "@/components/breaking/climb-demo";
 import { IocDemo } from "@/components/breaking/ioc-demo";
 import { CodebreakerFromLink } from "@/components/codebreaker/from-link";
@@ -27,6 +28,7 @@ export default function Codebreaker() {
           yourself.
         </p>
       </PageHero>
+      <ThenAndNow />
       <ChapterRail chapters={CHAPTERS} />
 
       <Chapter

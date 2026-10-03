@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FieldStation, JourneyStrip } from "@/components/art/story-scenes";
 import { Hero } from "@/components/story/hero";
 import { KeyspaceDemo } from "@/components/story/keyspace-demo";
 import { Onward } from "@/components/story/onward";
@@ -57,6 +58,7 @@ export default function Story() {
             built. The Germans believed, with good mathematical reason, that messages sent on it could not be read.
           </p>
         </Prose>
+        <FieldStation />
         <Timeline label="The machine's history" moments={MACHINE_HISTORY} />
         <Aside>Its users thought it unbreakable. They were wrong for reasons that had little to do with the machine itself.</Aside>
       </Chapter>
@@ -134,6 +136,7 @@ export default function Story() {
             machine, and read the message off the lamps.
           </p>
         </Prose>
+        <JourneyStrip />
         <OperatorDemos />
         <Prose>
           <p>
