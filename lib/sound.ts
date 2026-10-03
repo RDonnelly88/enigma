@@ -57,19 +57,6 @@ export function playStamp() {
   burst(ctx, { at: ctx.currentTime + 0.005, length: 0.04, frequency: 1800, gain: 0.4 });
 }
 
-/** A teleprinter hammering out `letters` characters, a little irregular, as the real ones were. */
-export function playTeleprinter(letters: number) {
-  const ctx = audio();
-  if (!ctx) return;
-  let at = ctx.currentTime;
-  // Capped, so pasting a long message doesn't chatter for a minute
-  for (let i = 0; i < Math.min(letters, 60); i++) {
-    burst(ctx, { at, length: 0.025, frequency: 1900 + Math.random() * 600, gain: 0.35 });
-    burst(ctx, { at: at + 0.01, length: 0.03, frequency: 300, gain: 0.5 });
-    at += 0.06 + Math.random() * 0.025;
-  }
-}
-
 /**
  * A Bombe running: a low motor hum under the rattle of drums stepping, until
  * stopped. Returns the function that stops it.

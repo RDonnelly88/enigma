@@ -109,3 +109,16 @@ test("the machine resets to the default settings, and the lessons can start over
   await page.reload();
   await expect(page.getByTestId("lesson-progress")).toHaveText(/^0 of/);
 });
+
+test("a whole message types itself in key by key, and can be finished at once", async ({ page }) => {
+  // The rest of the run forces reduced motion, which types it all in one go
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await open(page);
+  await typeAll(page, "THE WEATHER TODAY IS FINE");
+  await expect(page.getByText(/Typing it in… \d+ letters to go/)).toBeVisible();
+  await expect.poll(async () => ((await page.getByTestId("tape-input").textContent()) ?? "").replace(/\s/g, "").length).toBeGreaterThan(1);
+  expect(((await page.getByTestId("tape-input").textContent()) ?? "").replace(/\s/g, "").length).toBeLessThan(21);
+  await page.getByRole("button", { name: "Finish now" }).click();
+  await expect(page.getByTestId("tape-input")).toHaveText("THEWE ATHER TODAY ISFIN E");
+  await expect(page.getByLabel("Type or paste a message")).toBeVisible();
+});

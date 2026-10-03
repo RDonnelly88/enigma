@@ -23,7 +23,8 @@ import { DEFAULT_SETTINGS, type Settings } from "@/lib/enigma";
 import { explain } from "@/lib/explain";
 import { LESSONS } from "@/lib/lessons";
 import { readMachineLink } from "@/lib/share";
-import { playKey, playTeleprinter } from "@/lib/sound";
+import { playKey } from "@/lib/sound";
+import { useAutoType } from "@/hooks/use-auto-type";
 
 const SLOT_NAMES = ["Left", "Middle", "Right"] as const;
 const STORE = "enigma.lessons";
@@ -62,13 +63,17 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
   }, [restoreLessons]);
   const [secret, setSecret] = useState(incoming ?? null);
   const blocked = machine.errors.length > 0;
+  const auto = useAutoType({ keyDown, keyUp, typeMessage });
+  const { typing, finish, start: typeIn } = auto;
 
   const down = useCallback(
     (letter: string) => {
+      // A key pressed by hand while a message is typing itself finishes the message first
+      if (typing) return finish();
       if (!machine.held && !blocked) playKey();
       keyDown(letter);
     },
-    [machine.held, blocked, keyDown],
+    [machine.held, blocked, keyDown, typing, finish],
   );
   useHardwareKeys(down, keyUp);
 
@@ -83,9 +88,9 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
     const link = readMachineLink(window.location.search);
     if (!link) return;
     configure(link.settings);
-    if (link.text) typeMessage(link.text);
+    if (link.text) typeIn(link.text);
     window.history.replaceState(null, "", window.location.pathname);
-  }, [configure, typeMessage]);
+  }, [configure, typeIn]);
 
   const steps = useMemo(() => (machine.last ? explain(settings, machine.last) : []), [settings, machine.last]);
   // A new key press starts its story from the top
@@ -98,12 +103,9 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
     positions[slot] = (positions[slot] + delta + 26) % 26;
     configure({ ...settings, positions });
   };
-  // A whole message typed at once comes in like a teleprinter
-  const typeAloud = (text: string) => {
-    playTeleprinter(text.replace(/[^a-z]/gi, "").length);
-    typeMessage(text);
-  };
+  const typeAloud = auto.start;
   const setUp = (s: Settings) => {
+    auto.cancel();
     configure(s);
     clear();
   };
@@ -128,6 +130,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
         <button
           type="button"
           onClick={() => {
+            auto.cancel();
             machine.reset(false);
             setActive(null);
           }}
@@ -210,8 +213,16 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
           <Tape
             input={machine.input}
             output={machine.output}
-            onRewind={machine.rewind}
-            onClear={machine.clear}
+            onRewind={() => {
+              auto.cancel();
+              machine.rewind();
+            }}
+            onClear={() => {
+              auto.cancel();
+              machine.clear();
+            }}
+            typing={auto.typing}
+            onFinish={auto.finish}
             onMessage={typeAloud}
             disabled={blocked}
           />
