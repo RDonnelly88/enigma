@@ -62,10 +62,18 @@ test("the plugboard peaks at eleven cables", async ({ page }) => {
 test("a day on the key sheet sets up the procedure and opens on the machine", async ({ page }) => {
   await page.getByRole("button", { name: "Day 3", exact: true }).click();
   await expect(page.getByText("day 3 from the sheet")).toBeVisible();
-  await expect(page.getByTestId("indicator")).toHaveText(/^[A-Z]{6}$/);
+  await expect(page.getByTestId("indicator").first()).toHaveText(/^[A-Z]{6}$/);
   await page.getByRole("link", { name: "Set the machine to day 3" }).click();
   await expect(page).toHaveURL("/machine");
   await expect(page.getByRole("heading", { name: "The machine" })).toBeAttached();
+});
+
+test("the message sent is read back at the other end, and static on the line is caught", async ({ page }) => {
+  await expect(page.getByTestId("received-text")).toHaveText("ANGRIFF IM MORGENGRAUEN");
+  await expect(page.getByTestId("received-doubled")).toHaveText(/^(WXR)WXR$/);
+  await page.getByRole("radio", { name: "Static" }).click();
+  await expect(page.getByText("The halves disagree")).toBeVisible();
+  await expect(page.getByTestId("received-text")).toHaveCount(0);
 });
 
 test("the key-space calculator multiplies its parts", async ({ page }) => {

@@ -114,7 +114,7 @@ export default function Story() {
         eyebrow="How it was used"
         title="Midnight, a key sheet, and two operators"
         short={{
-          says: "Every day, operators set up their machines from a secret sheet of settings. Each message then got its own starting position, called the message key. For years they typed that key twice at the start of every message, and that turned out to be a big mistake.",
+          says: "Every day, operators set up their machines from a secret sheet of settings. Each message then got its own starting position, called the message key, typed twice at the start of the message. At the other end, an operator with the same sheet did it all in reverse and read the message off the lamps. Typing the key twice turned out to be a big mistake.",
           bigIdea: "Typing the key twice gave the codebreakers a way in.",
         }}
         intro={
