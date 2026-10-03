@@ -22,8 +22,8 @@ test("the header book opens the glossary, and search narrows it", async ({ page 
   await page.getByRole("button", { name: "Open the glossary" }).click();
   const drawer = page.getByRole("dialog", { name: "Glossary" });
   await drawer.getByLabel("Search the glossary").fill("decipher");
-  await drawer.getByRole("button", { name: /^Decryption/ }).click();
-  await expect(drawer.getByTestId("glossary-open")).toContainText("same as encrypting");
+  await drawer.getByRole("button", { name: /^Deciphering/ }).click();
+  await expect(drawer.getByTestId("glossary-open")).toContainText("same as enciphering");
   await drawer.getByRole("link", { name: "Receiving a message" }).click();
   await expect(drawer).toBeHidden();
   await expect(page).toHaveURL(/\/#used$/);

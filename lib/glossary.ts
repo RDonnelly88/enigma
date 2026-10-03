@@ -18,7 +18,16 @@ export type Term = {
   related: string[];
 };
 
-export const TERMS: Term[] = [
+const ENTRIES: Term[] = [
+  {
+    id: "basic-setting",
+    term: "Basic setting",
+    aka: ["Grundstellung"],
+    says: "Where everyone on a network turned their rotors before typing a message key, printed on the key sheet for each day.",
+    more: "Because every operator started the day’s message keys from the same place, the indicators of a whole day could be compared, which is what the Polish codebreakers did.",
+    see: { href: "/#used", label: "A month of keys" },
+    related: ["indicator", "message-key", "key-sheet"],
+  },
   {
     id: "bombe",
     term: "Bombe",
@@ -26,7 +35,15 @@ export const TERMS: Term[] = [
     more: "Designed by Alan Turing and improved by Gordon Welchman, it never read a message. It ruled out wrong settings so fast that the few left could be tried by hand. Hundreds were built, most of them run by Wrens.",
     visual: "bombe",
     see: { href: "/crib#bombe", label: "Step through the Bombe" },
-    related: ["crib", "menu", "cryptanalysis"],
+    related: ["drum", "menu", "stop", "crib"],
+  },
+  {
+    id: "checking-machine",
+    term: "Checking machine",
+    says: "A machine set up like an Enigma, used at Bletchley to test each Bombe stop on the real message.",
+    more: "Most stops were false. On the checking machine a false stop gave gibberish, and the true one began to give German, which let the rest of the plugboard be worked out by hand. Many were British Typex machines adapted to work like an Enigma.",
+    see: { href: "/crib#bombe", label: "Read the message" },
+    related: ["stop", "bombe"],
   },
   {
     id: "cipher",
@@ -84,13 +101,22 @@ export const TERMS: Term[] = [
   },
   {
     id: "decryption",
-    term: "Decryption",
-    aka: ["Deciphering"],
-    says: "Turning ciphertext back into the real message, using the key.",
-    more: "On Enigma, decrypting is the same as encrypting: set the same key, type the ciphertext, and the message lights up on the lamps. The reflector makes that work.",
+    term: "Deciphering",
+    aka: ["Decryption", "Decrypting"],
+    says: "Turning ciphertext back into the real message, using the key. Also called decryption.",
+    more: "On Enigma, deciphering is the same as enciphering: set the same key, type the ciphertext, and the message lights up on the lamps. The reflector makes that work. At Bletchley a broken message was called a decrypt.",
     visual: "lamp",
     see: { href: "/#used", label: "Receiving a message" },
     related: ["encryption", "key", "reflector"],
+  },
+  {
+    id: "drum",
+    term: "Drum",
+    says: "One of the Bombe’s spinning wheels. Each drum was wired like an Enigma rotor, so three drums together copied one Enigma’s rotors.",
+    more: "A Bombe carried dozens of drums in rows, one set of three for each link of the menu. They turned together like rotors stepping, so the machine could test every rotor position in turn.",
+    visual: "bombe",
+    see: { href: "/crib#bombe", label: "Be the Bombe" },
+    related: ["bombe", "rotor", "menu"],
   },
   {
     id: "double-step",
@@ -103,10 +129,10 @@ export const TERMS: Term[] = [
   },
   {
     id: "encryption",
-    term: "Encryption",
-    aka: ["Enciphering"],
-    says: "Turning a message into ciphertext so it can’t be read on the way.",
-    more: "The sending operator typed the message and a second operator wrote down each lamp as it lit. That was encryption, done one letter at a time by hand.",
+    term: "Enciphering",
+    aka: ["Encryption", "Encrypting"],
+    says: "Turning a message into ciphertext so it can’t be read on the way. Also called encryption.",
+    more: "The sending operator typed the message and a second operator wrote down each lamp as it lit. That was enciphering, done one letter at a time by hand.",
     visual: "shift",
     see: { href: "/#used", label: "Sending a message" },
     related: ["decryption", "plaintext", "ciphertext"],
@@ -170,6 +196,14 @@ export const TERMS: Term[] = [
     more: "The most closely guarded paper in the system. A captured machine showed how Enigma worked; a captured key sheet let an enemy read a network for a month.",
     see: { href: "/#used", label: "A month of keys" },
     related: ["key", "indicator"],
+  },
+  {
+    id: "loop",
+    term: "Loop",
+    says: "A circle in a crib’s menu: letters that lead from one to the next and back to the start, like E to Q, Q to T, T to E.",
+    more: "A loop is what lets the Bombe test a guess against itself. Follow a guessed plug all the way round, and at a wrong rotor position it comes back as a different letter.",
+    see: { href: "/crib#bombe", label: "Be the Bombe" },
+    related: ["menu", "crib", "bombe"],
   },
   {
     id: "menu",
@@ -246,6 +280,14 @@ export const TERMS: Term[] = [
     related: ["double-step", "ring-setting", "reflector"],
   },
   {
+    id: "stop",
+    term: "Stop",
+    says: "A rotor position where the Bombe couldn’t rule out every guess, so it halted to have it checked.",
+    more: "A stop gave the rotor positions and at least one plugboard cable. Many were false and were thrown out on the checking machine; the true one gave the day’s key.",
+    see: { href: "/crib#bombe", label: "Be the Bombe" },
+    related: ["bombe", "checking-machine", "drum"],
+  },
+  {
     id: "ultra",
     term: "Ultra",
     says: "The codename for intelligence from broken Enigma messages, and the secret around it.",
@@ -254,6 +296,9 @@ export const TERMS: Term[] = [
     related: ["hut-6", "cryptanalysis"],
   },
 ];
+
+/** In alphabetical order, as the panel lists them. */
+export const TERMS = ENTRIES.sort((a, b) => a.term.localeCompare(b.term));
 
 export const findTerm = (id: string) => TERMS.find((t) => t.id === id);
 
@@ -264,4 +309,86 @@ export function searchTerms(query: string) {
   const score = (t: Term) =>
     t.term.toLowerCase().startsWith(q) ? 0 : (t.aka ?? []).some((a) => a.toLowerCase().includes(q)) || t.term.toLowerCase().includes(q) ? 1 : t.says.toLowerCase().includes(q) ? 2 : 3;
   return TERMS.filter((t) => score(t) < 3).sort((a, b) => score(a) - score(b) || a.term.localeCompare(b.term));
+}
+
+/**
+ * Text kept outside a component, like a lesson or a day's event, marks its
+ * glossary words as [[id|shown words]], or [[id]] to show the term itself.
+ */
+const GLOSS = /\[\[([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g;
+
+
+/**
+ * The words that mark each term in running text, for underlining the first
+ * mention in a block automatically. Words with an everyday meaning too (key,
+ * code, stop) are left out and marked by hand where they mean the term.
+ */
+const FORMS: [string, RegExp][] = [
+  ["index-of-coincidence", /\bindex of coincidence\b/i],
+  ["frequency-analysis", /\b(frequency analysis|letter counting|counting letters)\b/i],
+  ["hill-climbing", /\bhill climbing\b/i],
+  ["checking-machine", /\bchecking machines?\b/i],
+  ["basic-setting", /\b(basic setting|Grundstellung)\b/i],
+  ["message-key", /\bmessage keys?\b/i],
+  ["key-sheet", /\bkey sheets?\b/i],
+  ["double-step", /\bdouble step\b/i],
+  ["ring-setting", /\b(ring settings?|Ringstellung)\b/i],
+  ["ciphertext", /\bciphertexts?\b/i],
+  ["plaintext", /\bplaintext\b/i],
+  ["cryptanalysis", /\b(cryptanalysis|codebreaking)\b/i],
+  ["cryptography", /\bcryptography\b/i],
+  ["encryption", /\b(encipher(s|ed|ing)?|encrypt(s|ed|ing|ion)?)\b/i],
+  ["decryption", /\b(decipher(s|ed|ing)?|decrypt(ed|ing|ion)?)\b/i],
+  ["cipher", /\bciphers?\b/i],
+  ["code", /\bcodebooks?\b/i],
+  ["plugboard", /\b(plugboard|Steckerbrett)\b/i],
+  ["reflector", /\breflector\b/i],
+  ["rotor", /\brotors?\b/i],
+  ["indicator", /\bindicators?\b/i],
+  ["crib", /\bcribs?\b/i],
+  ["menu", /\bmenus?\b/i],
+  ["loop", /\bloops?\b/i],
+  ["drum", /\bdrums?\b/i],
+  ["bombe", /\bBombes?\b/],
+  ["hut-6", /\bHut [368]\b/],
+  ["ultra", /\bUltra\b/],
+  ["morse", /\bMorse\b/],
+];
+
+export type Piece = string | { id: string; text: string };
+
+/**
+ * Splits running text into plain pieces and glossary terms: anything marked
+ * [[id|words]], and the first mention of each other term not yet in `seen`.
+ * `seen` carries over between pieces of the same block, so a term is
+ * underlined once per block however the text is split.
+ */
+export function gloss(text: string, seen: Set<string>): Piece[] {
+  const spans: { start: number; end: number; id: string; text: string }[] = [];
+  for (const m of text.matchAll(GLOSS)) {
+    spans.push({ start: m.index, end: m.index + m[0].length, id: m[1], text: m[2] ?? findTerm(m[1])?.term.toLowerCase() ?? m[1] });
+  }
+  const free = (start: number, end: number) => spans.every((s) => end <= s.start || start >= s.end);
+  for (const [id, form] of FORMS) {
+    if (seen.has(id) || spans.some((s) => s.id === id)) continue;
+    const re = new RegExp(form.source, form.flags.includes("g") ? form.flags : form.flags + "g");
+    for (const m of text.matchAll(re)) {
+      if (free(m.index, m.index + m[0].length)) {
+        spans.push({ start: m.index, end: m.index + m[0].length, id, text: m[0] });
+        break;
+      }
+    }
+  }
+  spans.sort((a, b) => a.start - b.start);
+  const pieces: Piece[] = [];
+  let at = 0;
+  for (const s of spans) {
+    if (s.start > at) pieces.push(text.slice(at, s.start));
+    // A marked term already shown in this block is shown as plain words
+    pieces.push(seen.has(s.id) ? s.text : { id: s.id, text: s.text });
+    seen.add(s.id);
+    at = s.end;
+  }
+  if (at < text.length) pieces.push(text.slice(at));
+  return pieces;
 }

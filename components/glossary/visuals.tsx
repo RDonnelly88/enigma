@@ -67,7 +67,7 @@ function Lamp() {
       </div>
       <div className="flex items-center gap-3">
         <button type="button" className={button} onClick={() => setSealed((s) => !s)}>
-          {sealed ? "Decrypt it" : "Encrypt it"}
+          {sealed ? "Decipher it" : "Encipher it"}
         </button>
         <span className="text-xs text-room-muted">{sealed ? "Ciphertext, as sent" : "Plaintext, as written"}</span>
       </div>
@@ -303,7 +303,7 @@ function Freq() {
       </div>
       <div className="flex items-center gap-3">
         <button type="button" className={button} onClick={() => setScrambled((s) => !s)}>
-          {scrambled ? "Show the German" : "Encrypt it on Enigma"}
+          {scrambled ? "Show the German" : "Encipher it on Enigma"}
         </button>
         <span className="text-xs text-room-muted">{scrambled ? "Flatter: the fingerprint is smeared." : "Lumpy: E towers over the rest."}</span>
       </div>

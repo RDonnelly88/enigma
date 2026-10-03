@@ -15,6 +15,7 @@ async function placeCrib(page: import("@playwright/test").Page, at: number) {
 async function runToMenu(page: import("@playwright/test").Page, at: number) {
   await placeCrib(page, at);
   await page.getByRole("button", { name: `Letter ${testLetter(menuAt(at))}` }).click();
+  await page.getByRole("button", { name: /^Wire the Bombe/ }).click();
   await page.getByRole("button", { name: "Start the Bombes" }).click();
 }
 
@@ -32,7 +33,7 @@ test("breaking the intercept: a decoy crib position, the stop, the last cables, 
 
   // A place that doesn't clash but is wrong: the Bombes find nothing
   await runToMenu(page, decoy);
-  await expect(page.getByText("Not one stop on any wheel order")).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByText("Not one stop on any rotor order")).toBeVisible({ timeout: 60_000 });
   await page.getByRole("button", { name: "Back to the crib" }).click();
 
   // The right place stops on the key
@@ -56,4 +57,21 @@ test("breaking the intercept: a decoy crib position, the stop, the last cables, 
   // The certificate carries it once the quiz is passed
   await page.reload();
   await expect(page.getByRole("tab", { name: /Broken in/ })).toBeVisible();
+});
+
+test("any menu letter can start the test, and the busiest is explained as the best", async ({ page }) => {
+  await page.goto("/certificate");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("tab", { name: /Break an intercept/ }).click();
+  await page.getByRole("button", { name: "Start the clock" }).click();
+  await placeCrib(page, CHALLENGE.cribAt);
+  const links = menuAt(CHALLENGE.cribAt);
+  const degree = (l: string) => links.filter((k) => k.a === l || k.b === l).length;
+  const quiet = [...new Set(links.flatMap((l) => [l.a, l.b]))].find((l) => degree(l) === 1)!;
+  await page.getByRole("button", { name: `Letter ${quiet}` }).click();
+  await expect(page.getByTestId("break-say")).toContainText("That would work");
+  await page.getByRole("button", { name: `Letter ${testLetter(links)}` }).click();
+  await expect(page.getByTestId("break-say")).toContainText("Good choice");
+  await page.getByRole("button", { name: "Start again" }).click();
+  await expect(page.getByRole("button", { name: "Start the clock" })).toBeVisible();
 });

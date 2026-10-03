@@ -129,7 +129,7 @@ export function explain(settings: Settings, press: Keypress): Step[] {
   const last = press.path.at(-1)!;
   steps.push({
     title: `Lamp ${press.output} lights`,
-    body: `The current reaches the lampboard on the ${toLetter(last.to)} wire. Press ${press.output} with the rotors set the same way and the current runs this exact route backwards to light ${press.input}: that is why the same settings both encrypt and decrypt.`,
+    body: `The current reaches the lampboard on the ${toLetter(last.to)} wire. Press ${press.output} with the rotors set the same way and the current runs this exact route backwards to light ${press.input}: that is why the same settings both encipher and decipher.`,
   });
   return steps;
 }

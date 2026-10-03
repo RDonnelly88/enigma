@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, Wand2 } from "lucide-react";
+import { ArrowRight, Check, RotateCcw, Wand2 } from "lucide-react";
 import { LESSONS, type Snapshot } from "@/lib/lessons";
 import { cn } from "@/lib/cn";
+import { Glossed } from "@/components/glossary/glossary";
 
 type Props = {
   snapshot: Snapshot;
@@ -11,10 +12,11 @@ type Props = {
   active: string;
   onActive: (id: string) => void;
   onSetup: (id: string) => void;
+  onRestart: () => void;
 };
 
 /** Signals school: the lessons in order, the open one checked live against the machine. */
-export function LessonsPanel({ snapshot, completed, active, onActive, onSetup }: Props) {
+export function LessonsPanel({ snapshot, completed, active, onActive, onSetup, onRestart }: Props) {
   const done = new Set(completed);
   const next = LESSONS.find((l) => !done.has(l.id));
   return (
@@ -55,7 +57,9 @@ export function LessonsPanel({ snapshot, completed, active, onActive, onSetup }:
               </button>
               {open && (
                 <div className="mt-1 mb-3 ml-12 flex flex-col gap-3 pr-2 text-sm leading-relaxed">
-                  <p>{l.task}</p>
+                  <p>
+                    <Glossed text={l.task} />
+                  </p>
                   {l.setup && !finished && (
                     <button
                       type="button"
@@ -67,7 +71,9 @@ export function LessonsPanel({ snapshot, completed, active, onActive, onSetup }:
                   )}
                   {finished ? (
                     <div className="rounded-lg border border-signal-in/40 bg-signal-in/10 p-3" data-testid="lesson-learnt">
-                      <p className="font-serif text-[0.95rem]">{l.lesson(snapshot)}</p>
+                      <p className="font-serif text-[0.95rem]">
+                        <Glossed text={l.lesson(snapshot)} />
+                      </p>
                       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                         <Link href={l.learnMore.href} className="text-xs font-semibold text-brass underline underline-offset-2">
                           {l.learnMore.label}
@@ -88,6 +94,11 @@ export function LessonsPanel({ snapshot, completed, active, onActive, onSetup }:
           );
         })}
       </ol>
+      {done.size > 0 && (
+        <button type="button" onClick={onRestart} className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-room-muted hover:text-room-ink">
+          <RotateCcw className="size-3.5" /> Start the lessons again
+        </button>
+      )}
     </div>
   );
 }

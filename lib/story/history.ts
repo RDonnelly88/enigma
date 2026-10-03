@@ -79,12 +79,12 @@ export const WEAKNESSES: Moment[] = [
   {
     when: "1941 – 1942",
     title: "Captured papers",
-    text: "Key lists and codebooks taken from captured ships and U-boats, among them U-110 in May 1941 and U-559 in October 1942, opened up naval traffic that statistics alone could not.",
+    text: "Key sheets and codebooks taken from captured ships and U-boats, among them U-110 in May 1941 and U-559 in October 1942, opened up naval traffic that statistics alone could not.",
   },
   {
     when: "The rules",
     title: "Rules that narrowed the search",
-    text: "Some key lists followed rules meant to look random: no rotor in the same place two days running, no cable joining neighbouring letters. Each rule shrank the number of keys left to try.",
+    text: "Some key sheets followed rules meant to look random: no rotor in the same place two days running, no cable joining neighbouring letters. Each rule shrank the number of keys left to try.",
   },
 ];
 

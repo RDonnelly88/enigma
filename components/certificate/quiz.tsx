@@ -146,9 +146,16 @@ export function Quiz() {
         ))}
       </div>
       <div>
-        <p className="text-xs font-semibold tracking-[0.25em] text-brass uppercase">
-          Question {at + 1} of {QUESTIONS.length}
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs font-semibold tracking-[0.25em] text-brass uppercase">
+            Question {at + 1} of {QUESTIONS.length}
+          </p>
+          {(at > 0 || answered) && (
+            <button type="button" onClick={restart} className="inline-flex items-center gap-1.5 text-xs font-semibold text-room-muted hover:text-room-ink">
+              <RotateCcw className="size-3.5" /> Start again
+            </button>
+          )}
+        </div>
         <h2 className="mt-2 font-stencil text-3xl leading-tight font-bold tracking-wide">{q.question}</h2>
       </div>
       <div role="radiogroup" aria-label={q.question} className="flex flex-col gap-2">

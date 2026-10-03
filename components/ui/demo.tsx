@@ -1,3 +1,4 @@
+import { Gloss } from "@/components/glossary/gloss";
 import { cn } from "@/lib/cn";
 
 /** A frame around an interactive diagram, with a title and a line telling you what to do with it. */
@@ -18,7 +19,8 @@ export function Demo({
         <span className="font-stencil text-lg font-bold tracking-wide">{title}</span>
         {prompt && <span className="text-xs font-medium tracking-wide text-brass uppercase">{prompt}</span>}
       </figcaption>
-      {children}
+      {/* The demo's explanation is one block: each glossary term underlined at its first mention */}
+      <Gloss>{children}</Gloss>
     </figure>
   );
 }

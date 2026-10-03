@@ -109,7 +109,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "barbarossa",
-    title: "Decrypt a real message",
+    title: "Decipher a real message",
     task: "Set the machine to the key from 7 July 1941, then type in the intercepted message, or paste it into the tape.",
     setup: barbarossa.settings,
     lesson: () =>

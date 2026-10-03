@@ -1,5 +1,6 @@
 "use client";
 
+import { Gloss } from "@/components/glossary/gloss";
 import { useState } from "react";
 import Link from "next/link";
 import { MenuGraph } from "@/components/crib/menu-graph";
@@ -29,33 +30,35 @@ function BombeScan({ day, solved }: { day: DayData; solved: boolean }) {
   const [at, setAt] = useState(0);
   const here = day.scan[at];
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-13 gap-1" aria-hidden>
-        {day.scan.map((s) => (
-          <span
-            key={s.position}
-            className={cn(
-              "grid h-7 place-items-center rounded-sm font-stencil text-[11px] font-bold",
-              s.stops.length ? "bg-chart-accent text-white" : "bg-room text-room-muted",
-              s.position === at && "outline-2 outline-room-ink",
-              solved && s.position === day.truePosition && "ring-2 ring-signal-in ring-offset-1 ring-offset-panel",
-            )}
-          >
-            {ALPHABET[s.position]}
-          </span>
-        ))}
+    <Gloss>
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-13 gap-1" aria-hidden>
+          {day.scan.map((s) => (
+            <span
+              key={s.position}
+              className={cn(
+                "grid h-7 place-items-center rounded-sm font-stencil text-[11px] font-bold",
+                s.stops.length ? "bg-chart-accent text-white" : "bg-room text-room-muted",
+                s.position === at && "outline-2 outline-room-ink",
+                solved && s.position === day.truePosition && "ring-2 ring-signal-in ring-offset-1 ring-offset-panel",
+              )}
+            >
+              {ALPHABET[s.position]}
+            </span>
+          ))}
+        </div>
+        <Slider label="Right drum at" value={at} min={0} max={25} onChange={setAt} format={(v) => ALPHABET[v]} />
+        <p className="text-sm" data-testid="bombe-at" aria-live="polite">
+          {here.stops.length
+            ? `Stop. The loop holds if ${day.loop![0].a} is plugged to ${here.stops.join(" or ")}.`
+            : "No stop: every guess contradicts itself round the loop."}
+          {solved && here.position === day.truePosition && " This is the stop that reads."}
+        </p>
+        <p className="text-xs text-room-muted">
+          Shown here for the right rotor alone. A real run covered all 17,576 positions of a rotor order in about twenty minutes, on menus with several loops, so far fewer false stops came out.
+        </p>
       </div>
-      <Slider label="Right drum at" value={at} min={0} max={25} onChange={setAt} format={(v) => ALPHABET[v]} />
-      <p className="text-sm" data-testid="bombe-at" aria-live="polite">
-        {here.stops.length
-          ? `Stop. The loop holds if ${day.loop![0].a} is plugged to ${here.stops.join(" or ")}.`
-          : "No stop: every guess contradicts itself round the loop."}
-        {solved && here.position === day.truePosition && " This is the stop that reads."}
-      </p>
-      <p className="text-xs text-room-muted">
-        Shown here for the right rotor alone. A real run covered all 17,576 positions of a rotor order in about twenty minutes, on menus with several loops, so far fewer false stops came out.
-      </p>
-    </div>
+    </Gloss>
   );
 }
 
@@ -63,134 +66,160 @@ export function ArtefactView({ id, day, time }: { id: Artefact; day: DayData; ti
   switch (id) {
     case "key-sheet":
       return (
-        <Paper>
-          <Label>Geheime Kommandosache · day 08</Label>
-          <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
-            <dt className="text-paper-muted">Walzenlage</dt>
-            <dd>{DAY_KEY.rotors.join(" ")}</dd>
-            <dt className="text-paper-muted">Ringstellung</dt>
-            <dd>{DAY_KEY.rings.map(two).join(" ")}</dd>
-            <dt className="text-paper-muted">Stecker</dt>
-            <dd className="break-words">{DAY_KEY.plugboard.join(" ")}</dd>
-          </dl>
-        </Paper>
+        <Gloss>
+          <Paper>
+            <Label>Geheime Kommandosache · day 08</Label>
+            <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+              <dt className="text-paper-muted">Walzenlage</dt>
+              <dd>{DAY_KEY.rotors.join(" ")}</dd>
+              <dt className="text-paper-muted">Ringstellung</dt>
+              <dd>{DAY_KEY.rings.map(two).join(" ")}</dd>
+              <dt className="text-paper-muted">Stecker</dt>
+              <dd className="break-words">{DAY_KEY.plugboard.join(" ")}</dd>
+            </dl>
+          </Paper>
+        </Gloss>
       );
     case "weather-plain":
       return (
-        <Paper>
-          <p>{spaced(WEATHER.plain)}</p>
-          <p className="mt-2 font-serif text-[0.95rem] text-paper-muted italic">{WEATHER.english}</p>
-        </Paper>
+        <Gloss>
+          <Paper>
+            <p>{spaced(WEATHER.plain)}</p>
+            <p className="mt-2 font-serif text-[0.95rem] text-paper-muted italic">{WEATHER.english}</p>
+          </Paper>
+        </Gloss>
       );
     case "encipher":
       return (
-        <Paper>
-          <Label>Indicator</Label>
-          <p>
-            Start <strong>{WEATHER.start}</strong>, sent in the clear · message key {WEATHER.messageKey} enciphers as{" "}
-            <strong>{day.weather.enciphered}</strong>
-          </p>
-          <Label>Message</Label>
-          <p className="break-all" data-testid="day-cipher">{groups(day.weather.body)}</p>
-          <Link
-            href={machineLink(settingsFor(DAY_KEY, lettersToPositions(WEATHER.messageKey)), WEATHER.plain)}
-            className="mt-3 inline-block font-sans text-xs font-semibold text-brass underline underline-offset-2"
-          >
-            Encipher it yourself on the machine
-          </Link>
-        </Paper>
+        <Gloss>
+          <Paper>
+            <Label>Indicator</Label>
+            <p>
+              Start <strong>{WEATHER.start}</strong>, sent in the clear · message key {WEATHER.messageKey} enciphers as{" "}
+              <strong>{day.weather.enciphered}</strong>
+            </p>
+            <Label>Message</Label>
+            <p className="break-all" data-testid="day-cipher">{groups(day.weather.body)}</p>
+            <Link
+              href={machineLink(settingsFor(DAY_KEY, lettersToPositions(WEATHER.messageKey)), WEATHER.plain)}
+              className="mt-3 inline-block font-sans text-xs font-semibold text-brass underline underline-offset-2"
+            >
+              Encipher it yourself on the machine
+            </Link>
+          </Paper>
+        </Gloss>
       );
     case "transmit":
       return (
-        <div className="flex flex-col gap-3">
-          <Paper>
-            <Label>Preamble (illustrative)</Label>
-            <p>
-              0600 = {day.weather.body.length} = {WEATHER.start} {day.weather.enciphered} =
-            </p>
-          </Paper>
-          <Transmitter text={day.weather.body.slice(0, 20)} sound onTransmit={() => {}} />
-        </div>
+        <Gloss>
+          <div className="flex flex-col gap-3">
+            <Paper>
+              <Label>Preamble (illustrative)</Label>
+              <p>
+                0600 = {day.weather.body.length} = {WEATHER.start} {day.weather.enciphered} =
+              </p>
+            </Paper>
+            <Transmitter text={day.weather.body.slice(0, 20)} sound onTransmit={() => {}} />
+          </div>
+        </Gloss>
       );
     case "intercept":
       return (
-        <Paper className="border-l-4 border-signal-in">
-          <Label>RAF Chicksands · message form · 0601</Label>
-          <p className="mt-1">
-            Indicator {WEATHER.start} {day.weather.enciphered} · {day.weather.body.length} letters
-          </p>
-          <p className="mt-1 break-all">{groups(day.weather.body)}</p>
-        </Paper>
+        <Gloss>
+          <Paper className="border-l-4 border-signal-in">
+            <Label>RAF Chicksands · message form · 0601</Label>
+            <p className="mt-1">
+              Indicator {WEATHER.start} {day.weather.enciphered} · {day.weather.body.length} letters
+            </p>
+            <p className="mt-1 break-all">{groups(day.weather.body)}</p>
+          </Paper>
+        </Gloss>
       );
     case "registry":
       return (
-        <Paper className="border-l-4 border-signal-in">
-          <Label>Hut 6 registration</Label>
-          <dl className="mt-1 grid grid-cols-2 gap-x-4">
-            <dt className="text-paper-muted">Network</dt>
-            <dd>Red (Luftwaffe general)</dd>
-            <dt className="text-paper-muted">Key today</dt>
-            <dd>{time >= 11 * 60 + 45 ? "broken" : "not yet broken"}</dd>
-          </dl>
-        </Paper>
+        <Gloss>
+          <Paper className="border-l-4 border-signal-in">
+            <Label>Hut 6 registration</Label>
+            <dl className="mt-1 grid grid-cols-2 gap-x-4">
+              <dt className="text-paper-muted">Network</dt>
+              <dd>Red (Luftwaffe general)</dd>
+              <dt className="text-paper-muted">Key today</dt>
+              <dd>{time >= 11 * 60 + 45 ? "broken" : "not yet broken"}</dd>
+            </dl>
+          </Paper>
+        </Gloss>
       );
     case "crib":
       return (
-        <Paper className="border-l-4 border-signal-in">
-          <p className="tracking-[0.2em] break-all">{day.weather.body.slice(0, CRIB.length)}</p>
-          <p className="tracking-[0.2em] break-all text-signal-in">{CRIB}</p>
-          <p className="mt-2 font-sans text-xs text-paper-muted">
-            No letter lands on itself, so the crib can sit at the start. {day.cribSurvivors} of {day.crib.length} positions survive the rule; Hut 6&rsquo;s knowledge of this station picks the first.
-          </p>
-        </Paper>
+        <Gloss>
+          <Paper className="border-l-4 border-signal-in">
+            <p className="tracking-[0.2em] break-all">{day.weather.body.slice(0, CRIB.length)}</p>
+            <p className="tracking-[0.2em] break-all text-signal-in">{CRIB}</p>
+            <p className="mt-2 font-sans text-xs text-paper-muted">
+              No letter lands on itself, so the crib can sit at the start. {day.cribSurvivors} of {day.crib.length} positions survive the rule; Hut 6&rsquo;s knowledge of this station picks the first.
+            </p>
+          </Paper>
+        </Gloss>
       );
     case "menu":
       return (
-        <div className="rounded-lg bg-paper p-3 text-paper-ink">
-          <MenuGraph links={day.links} />
-        </div>
+        <Gloss>
+          <div className="rounded-lg bg-paper p-3 text-paper-ink">
+            <MenuGraph links={day.links} />
+          </div>
+        </Gloss>
       );
     case "bombe":
       return <BombeScan day={day} solved={time >= 11 * 60 + 20} />;
     case "decrypt":
       return (
-        <Paper className="border-l-4 border-signal-in">
-          <Label>Checking machine</Label>
-          <p>
-            {WEATHER.start} {day.weather.enciphered} → message key <strong>{day.readWeather.messageKey}</strong>
-          </p>
-          <p className="mt-1" data-testid="day-decrypt">{spaced(day.readWeather.text)}</p>
-        </Paper>
+        <Gloss>
+          <Paper className="border-l-4 border-signal-in">
+            <Label>Checking machine</Label>
+            <p>
+              {WEATHER.start} {day.weather.enciphered} → message key <strong>{day.readWeather.messageKey}</strong>
+            </p>
+            <p className="mt-1" data-testid="day-decrypt">{spaced(day.readWeather.text)}</p>
+          </Paper>
+        </Gloss>
       );
     case "hut3":
       return (
-        <Paper className="border-l-4 border-signal-in">
-          <Label>Hut 3 · translation</Label>
-          <p className="font-serif">{WEATHER.english}</p>
-        </Paper>
+        <Gloss>
+          <Paper className="border-l-4 border-signal-in">
+            <Label>Hut 3 · translation</Label>
+            <p className="font-serif">{WEATHER.english}</p>
+          </Paper>
+        </Gloss>
       );
     case "order":
       return (
-        <Paper>
-          <Label>
-            Indicator {ORDER.start} {day.order.enciphered}
-          </Label>
-          <p className="break-all">{groups(day.order.body)}</p>
-        </Paper>
+        <Gloss>
+          <Paper>
+            <Label>
+              Indicator {ORDER.start} {day.order.enciphered}
+            </Label>
+            <p className="break-all">{groups(day.order.body)}</p>
+          </Paper>
+        </Gloss>
       );
     case "order-read":
       return (
-        <Paper className="border-l-4 border-signal-in">
-          <p>{spaced(day.readOrder.text)}</p>
-          <p className="mt-2 font-serif text-[0.95rem] text-paper-muted italic">{ORDER.english}</p>
-        </Paper>
+        <Gloss>
+          <Paper className="border-l-4 border-signal-in">
+            <p>{spaced(day.readOrder.text)}</p>
+            <p className="mt-2 font-serif text-[0.95rem] text-paper-muted italic">{ORDER.english}</p>
+          </Paper>
+        </Gloss>
       );
     case "ultra":
       return (
-        <Paper className="border-l-4 border-signal-in uppercase">
-          <Label>Most secret · Ultra</Label>
-          <p>To Fighter Command. Bomber wing ordered to attack convoy, grid square 74, at 1600 hours. Source to be protected.</p>
-        </Paper>
+        <Gloss>
+          <Paper className="border-l-4 border-signal-in uppercase">
+            <Label>Most secret · Ultra</Label>
+            <p>To Fighter Command. Bomber wing ordered to attack convoy, grid square 74, at 1600 hours. Source to be protected.</p>
+          </Paper>
+        </Gloss>
       );
     default:
       return null;

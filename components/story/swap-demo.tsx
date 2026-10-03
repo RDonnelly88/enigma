@@ -5,6 +5,7 @@ import { ColumnChart } from "@/components/ui/column-chart";
 import { Demo } from "@/components/ui/demo";
 import { Segmented } from "@/components/ui/segmented";
 import { cn } from "@/lib/cn";
+import { readable } from "@/components/glossary/gloss";
 import { ALPHABET, DEFAULT_SETTINGS, ROTORS, encipher, lettersToPositions, type Settings } from "@/lib/enigma";
 import { profile, substitute } from "@/lib/story/frequency";
 
@@ -20,7 +21,7 @@ const SHOWN = 40;
 
 type Mode = "swap" | "enigma";
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+const Step = readable(function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-3">
       <h4 className="flex items-center gap-2 text-sm font-semibold">
@@ -30,7 +31,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
       {children}
     </section>
   );
-}
+});
 
 /**
  * Why a fixed swap of the alphabet is no good. Every E becomes the same

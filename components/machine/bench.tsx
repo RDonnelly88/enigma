@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowDown, Volume2, VolumeX } from "lucide-react";
+import { ArrowDown, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { Intercepts } from "@/components/intercepts";
 import { Incoming } from "@/components/machine/incoming";
 import { Keyboard } from "@/components/machine/keyboard";
 import { Lampboard } from "@/components/machine/lampboard";
 import { LessonsPanel } from "@/components/machine/lessons-panel";
+import { Gloss } from "@/components/glossary/gloss";
 import { Lid } from "@/components/machine/lid";
 import { Plugboard } from "@/components/machine/plugboard";
 import { RotorWindow } from "@/components/machine/rotor-window";
@@ -111,12 +112,27 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
         <div>
           <p className="text-xs font-semibold tracking-[0.25em] text-brass uppercase">Enigma I · M3 · M4</p>
           <h1 className="mt-2 font-stencil text-4xl leading-none font-bold tracking-wide sm:text-5xl">The machine</h1>
+<Gloss>
           <p className="mt-3 max-w-2xl font-serif text-lg leading-relaxed text-room-ink/90">
             Press a key, on screen or on your own keyboard. Signals school walks you through what it&rsquo;s doing; the
             trace shows the current&rsquo;s route through every part, and the same settings turn the ciphertext back
             into the message.
           </p>
+</Gloss>
         </div>
+        <div className="flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          onClick={() => {
+            machine.reset(false);
+            setActive(null);
+          }}
+          aria-label="Reset the machine"
+          title="Reset the machine: default settings, empty tape"
+          className="rounded-full p-2 text-room-muted hover:text-room-ink"
+        >
+          <RotateCcw className="size-5" />
+        </button>
         <button
           type="button"
           onClick={() => setSound((s) => !s)}
@@ -125,6 +141,7 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
         >
           {sound ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
         </button>
+        </div>
       </div>
 
       {secret && (
@@ -218,6 +235,10 @@ export function Bench({ lesson, incoming }: { lesson?: string | null; incoming?:
           >
             {panel === "lessons" && (
               <LessonsPanel
+                onRestart={() => {
+                  machine.reset(true);
+                  setActive(null);
+                }}
                 snapshot={machine}
                 completed={machine.completed}
                 active={active}

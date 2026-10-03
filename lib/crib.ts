@@ -1,6 +1,6 @@
 /**
  * Crib dragging: sliding a guessed piece of plaintext along a ciphertext to
- * find where it could sit. Enigma never encrypts a letter as itself, so any
+ * find where it could sit. Enigma never enciphers a letter as itself, so any
  * position where a crib letter lines up with the same ciphertext letter is
  * ruled out without touching a machine.
  */

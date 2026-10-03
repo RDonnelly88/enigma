@@ -1,5 +1,6 @@
 "use client";
 
+import { Glossed } from "@/components/glossary/glossary";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, SkipForward } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
@@ -145,7 +146,8 @@ export function DayView() {
                 <h3 className="mt-1 font-stencil text-2xl font-bold tracking-wide">{e.title}</h3>
                 {reached ? (
                   <>
-                    <p className="mt-2 font-serif text-[1.02rem] leading-relaxed text-room-ink/90">{e.text}</p>
+                    <p className="mt-2 font-serif text-[1.02rem] leading-relaxed text-room-ink/90"><Glossed text={e.text} />
+                    </p>
                     {e.artefact && (
                       <div className="mt-4">
                         <ArtefactView id={e.artefact} day={day} time={time} />

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Lightbulb, Play, RotateCcw, Timer } from "lucide-react";
 import { MenuGraph } from "@/components/crib/menu-graph";
+import { Gloss, readable } from "@/components/glossary/gloss";
 import { Plugboard } from "@/components/machine/plugboard";
 import { store, useStored } from "@/hooks/use-stored";
 import { cn } from "@/lib/cn";
@@ -65,12 +66,13 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   return (
     <section className="flex flex-col gap-5 rounded-xl border border-panel-edge bg-panel p-5 sm:p-8">
       <h2 className="font-stencil text-3xl leading-tight font-bold tracking-wide">{title}</h2>
-      {children}
+      {/* Each stage is one block of reading for the glossary */}
+      <Gloss>{children}</Gloss>
     </section>
   );
 }
 
-function Say({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "bad" | "good" }) {
+const Say = readable(function Say({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "bad" | "good" }) {
   return (
     <p
       aria-live="polite"
@@ -85,7 +87,7 @@ function Say({ children, tone = "neutral" }: { children: React.ReactNode; tone?:
       {children}
     </p>
   );
-}
+});
 
 const button = "inline-flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold";
 const primary = cn(button, "bg-room-ink text-room disabled:opacity-40");
@@ -93,7 +95,7 @@ const secondary = cn(button, "border border-panel-edge hover:border-brass");
 
 /**
  * Break an intercept the way Hut 6 did: place the crib, read the menu, run a
- * Bombe for every wheel order, then find the last cables on the checking
+ * Bombe for every rotor order, then find the last cables on the checking
  * machine until the German reads, and act on it. Timed, with hints that cost.
  */
 export function BreakIntercept({ onCertificate }: { onCertificate: () => void }) {
@@ -111,6 +113,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
   const [stops, setStops] = useState<Stop[] | null>(null);
   const [cables, setCables] = useState<string[]>([]);
   const [hinted, setHinted] = useState<ReturnType<typeof hint>>(null);
+  const [picked, setPicked] = useState<string | null>(null);
   const alive = useRef(true);
 
   useEffect(() => {
@@ -149,6 +152,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
     setStops(null);
     setCables([]);
     setHinted(null);
+    setPicked(null);
   };
 
   if (saved && stage === "brief") {
@@ -188,10 +192,15 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
           );
         })}
       </ol>
-      <p className="inline-flex items-center gap-2 font-stencil text-2xl font-bold tabular-nums" aria-label={`Time ${clock(shown)}`}>
-        <Timer className="size-5 text-brass" aria-hidden />
-        {clock(shown)}
-      </p>
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={restart} className="inline-flex items-center gap-1.5 text-xs font-semibold text-room-muted hover:text-room-ink">
+          <RotateCcw className="size-3.5" /> Start again
+        </button>
+        <p className="inline-flex items-center gap-2 font-stencil text-2xl font-bold tabular-nums" aria-label={`Time ${clock(shown)}`}>
+          <Timer className="size-5 text-brass" aria-hidden />
+          {clock(shown)}
+        </p>
+      </div>
     </div>
   );
 
@@ -320,27 +329,33 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
         {header}
         <p className="max-w-2xl leading-relaxed">
           This is the Bombe&rsquo;s menu for your crib. Each line joins a crib letter to the cipher letter it became, numbered
-          by its place in the message. The Bombe guesses the plug of one letter and follows the lines to see if the guess holds
-          up, so it starts where the lines reach furthest.{" "}
-          <strong>Tap the letter with the most lines.</strong>
+          by its place in the message. The Bombe guesses the plug of one letter and follows the lines to see whether the guess
+          holds up. <strong>Which letter would you start from?</strong>
         </p>
         <div className="rounded-lg bg-paper p-3 text-paper-ink">
-          <MenuGraph
-            links={links}
-            onPick={(letter) => {
-              if (letter === test || degree(letter) === degree(test)) {
-                go("bombe");
-                return;
-              }
-              wrong(
-                <>
-                  {letter} has {degree(letter)} {degree(letter) === 1 ? "line" : "lines"}. One letter has more.
-                </>,
-              );
-            }}
-          />
+          <MenuGraph links={links} picked={picked ?? undefined} onPick={setPicked} />
         </div>
-        {say && <Say tone={say.tone}>{say.text}</Say>}
+        {picked && (
+          <>
+            <Say tone="good">
+              {degree(picked) === degree(test) ? (
+                <>
+                  Good choice. {picked} has {degree(picked)} lines, more than any other letter, so a guess for its plug sets off the
+                  most checks at once and a wrong guess hits a contradiction fastest. Bletchley called it the central letter.
+                </>
+              ) : (
+                <>
+                  That would work, but {picked} has only {degree(picked)} {degree(picked) === 1 ? "line" : "lines"}, so a guess for its
+                  plug sets off fewer checks and a wrong one survives longer. The Bombe starts from the busiest letter, {test}, with{" "}
+                  {degree(test)} lines.
+                </>
+              )}
+            </Say>
+            <button type="button" className={primary} onClick={() => go("bombe")}>
+              Wire the Bombe to {test} <ArrowRight className="size-4" />
+            </button>
+          </>
+        )}
       </Panel>
     );
   }
@@ -367,7 +382,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
       <Panel title="Run the Bombes">
         {header}
         <p className="max-w-2xl leading-relaxed">
-          Nobody knows today&rsquo;s wheel order, so Hut 6 runs one Bombe for each of the six. Each tries all 17,576 starting
+          Nobody knows today&rsquo;s rotor order, so Hut 6 runs one Bombe for each of the six. Each tries all 17,576 starting
           positions, testing a guess for <strong className="font-type">{test}</strong> against the whole menu, and stops
           wherever a guess survives.
         </p>
@@ -404,7 +419,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
         {stops && !stop && (
           <>
             <Say tone="bad">
-              Not one stop on any wheel order: every setting contradicted itself. So the crib can&rsquo;t sit at letter{" "}
+              Not one stop on any rotor order: every setting contradicted itself. So the crib can&rsquo;t sit at letter{" "}
               {(locked ?? 0) + 1}. It didn&rsquo;t clash, but it&rsquo;s still in the wrong place. Try another.
             </Say>
             <button
@@ -413,6 +428,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
               onClick={() => {
                 setStops(null);
                 setProgress(ORDERS.map(() => 0));
+                setPicked(null);
                 go("crib");
               }}
             >
@@ -425,7 +441,7 @@ export function BreakIntercept({ onCertificate }: { onCertificate: () => void })
             <div className="rounded-lg border-2 border-signal-in bg-room p-4" data-testid="bombe-stop">
               <p className="font-stencil text-2xl font-bold tracking-widest text-signal-in">STOP</p>
               <p className="mt-1">
-                Wheel order <strong>{stop.order.join(" ")}</strong>, rotors at <strong className="font-type">{letters(stop.start)}</strong>.
+                Rotor order <strong>{stop.order.join(" ")}</strong>, rotors at <strong className="font-type">{letters(stop.start)}</strong>.
               </p>
               <p className="mt-2 text-sm leading-relaxed">
                 The guess that survived also settles every other letter in the menu. It gives {stop.pairs.length} cables:{" "}

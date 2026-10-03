@@ -1,7 +1,7 @@
 import { ALPHABET, DEFAULT_SETTINGS, type RotorName, type Settings } from "../enigma";
 
 /**
- * A month of daily keys, of the kind printed on an army key sheet: which
+ * A month of keys, one for each day, of the kind printed on an army key sheet: which
  * rotors in which order, their ring settings, the plugboard cables, and the
  * basic setting the 1930s procedure started each message key from. Made from
  * a fixed seed, so every visitor sees the same sheet.
