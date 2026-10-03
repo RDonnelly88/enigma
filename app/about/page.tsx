@@ -41,7 +41,9 @@ export default function About() {
         <Section title="Who made it">
           <div className="space-y-4 font-serif text-[1.075rem] leading-relaxed text-room-ink/90">
             <p>
-              Made by Ross Donnelly. The code is open on{" "}
+              Made by Ross Donnelly. It started in 2022 as a small Python program, written out of curiosity about how the
+              machine worked. Recently the curiosity came back: how was it used, day to day, and how was it broken? This site
+              is the answer. The code is open on{" "}
               <a href="https://github.com/RDonnelly88/enigma" className="text-brass underline underline-offset-2">
                 GitHub
               </a>
