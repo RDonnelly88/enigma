@@ -13,6 +13,11 @@ const PAGES = [
     text: "How Polish mathematicians first broke Enigma in 1932, how Bletchley Park turned their work into an industry, and a turn at being the Bombe yourself.",
   },
   {
+    href: "/atlantic",
+    title: "The U-boat war",
+    text: "The Battle of the Atlantic: codebooks taken from sinking U-boats, a ten-month blackout, and the flaw in the navy’s four-rotor machine.",
+  },
+  {
     href: "/codebreaker",
     title: "Codebreaker",
     text: "Break a message yourself, with no key and no guesses, the way a computer does it today.",

@@ -313,3 +313,92 @@ body {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E");
   mask-size: 120px 120px;
 }
+
+/* Illustrations. Every movement is decoration, so all of it stops for anyone who asks for less motion */
+.art-bob {
+  animation: art-bob 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes art-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(1.5px) rotate(0.7deg);
+  }
+}
+.art-waves {
+  animation: art-waves 6s linear infinite;
+}
+@keyframes art-waves {
+  to {
+    transform: translateX(-40px);
+  }
+}
+.art-steam {
+  animation: art-steam 70s linear infinite;
+}
+@keyframes art-steam {
+  from {
+    transform: translateX(-560px);
+  }
+  to {
+    transform: translateX(1240px);
+  }
+}
+.art-periscope {
+  animation: art-periscope 9s ease-in-out infinite;
+}
+@keyframes art-periscope {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(60px);
+  }
+}
+.art-rise {
+  animation: art-rise 3s ease-in infinite;
+  transform-box: fill-box;
+}
+@keyframes art-rise {
+  from {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+}
+.art-pulse {
+  animation: art-pulse 2.4s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes art-pulse {
+  from {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+.art-circle {
+  animation: art-circle 6s linear infinite;
+}
+@keyframes art-circle {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="art-"] {
+    animation: none !important;
+  }
+}

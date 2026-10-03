@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["/", "/certificate", "/day", "/machine", "/machine?lesson=plug", "/machine?cipher=ABCDE", "/crib", "/codebreaker", "/codebreaker?cipher=ABCDE"];
+const PAGES = ["/", "/certificate", "/day", "/machine", "/machine?lesson=plug", "/machine?cipher=ABCDE", "/crib", "/atlantic", "/codebreaker", "/codebreaker?cipher=ABCDE"];
 
 for (const path of PAGES) {
   test(`${path} renders the same on the server and in the browser`, async ({ page }) => {
@@ -41,7 +41,7 @@ test("the chapter rail stays clear of the text on a laptop", async ({ page }) =>
 
 test("each page leads on to the next, and the last back to the machine", async ({ page }) => {
   await page.goto("/machine");
-  for (const next of ["A day in 1941", "Cribs & the Bombe", "Codebreaker", "Certificate"]) {
+  for (const next of ["A day in 1941", "Cribs & the Bombe", "The U-boat war", "Codebreaker", "Certificate"]) {
     await page.getByRole("navigation", { name: "Next page" }).getByRole("link").click();
     await expect(page.getByRole("link", { name: next, exact: true }).first()).toHaveAttribute("aria-current", "page");
   }
