@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 /** Wartime security slogans, from the posters that told everyone a secret was everyone's business. */
@@ -31,10 +32,15 @@ export function SiteFooter() {
           <blockquote className="font-stencil text-3xl font-bold tracking-wide uppercase sm:text-4xl">&ldquo;{slogan.line}&rdquo;</blockquote>
           <figcaption className="mt-1 text-xs text-room-muted">{slogan.from}</figcaption>
         </figure>
-        <p className="max-w-sm text-xs leading-relaxed text-room-muted">
-          The machine, its wiring, the procedures and the history are real. The practice messages, their keys and the people
-          of <em>A day in 1941</em> are invented, so every one of them can be broken on this site.
-        </p>
+        <div className="flex max-w-sm flex-col gap-2">
+          <p className="text-xs leading-relaxed text-room-muted">
+            The machine, its wiring, the procedures and the history are real. The practice messages, their keys and the people
+            of <em>A day in 1941</em> are invented, so every one of them can be broken on this site.
+          </p>
+          <Link href="/about" className="w-fit text-xs font-semibold text-brass underline underline-offset-2">
+            About this site, privacy and further reading
+          </Link>
+        </div>
       </div>
     </footer>
   );
