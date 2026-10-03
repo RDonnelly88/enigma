@@ -26,14 +26,46 @@ test.describe("cribs and the Bombe", () => {
     await expect(page.getByTestId("pairing-0")).toContainText(/\d+ of 26 letters known/);
   });
 
-  test("Turing's loop holds at the true setting and breaks at a wrong one", async ({ page }) => {
-    const verdict = page.getByTestId("loop-verdict");
-    // The practice key has the right rotor at Z, and E plugged to A
-    await slideTo(page.getByLabel("Right rotor starts at"), 25);
+  test("the Bombe walkthrough goes from crib to a read message", async ({ page }) => {
+    test.setTimeout(90_000);
+    const walk = page.getByTestId("bombe-step");
+    const next = page.getByRole("button", { name: "Next", exact: true });
+    await expect(walk).toContainText("The Bombe did not decode messages");
+    await next.click();
+    await expect(walk).toContainText("Five of those columns");
+    await next.click();
+    await next.click();
+
+    // A guess round the loop: the true plug survives at the right setting, and fails at a wrong one
     await slideTo(page.getByLabel("Guess: E is plugged to"), 0);
-    await expect(verdict).toContainText("the guess holds");
-    await slideTo(page.getByLabel("Right rotor starts at"), 5);
-    await expect(verdict).toContainText("a contradiction");
+    for (let i = 0; i < 5; i++) await page.getByRole("button", { name: "Follow the next link" }).click();
+    await expect(page.getByTestId("loop-result")).toContainText("They agree");
+    await page.getByRole("radio", { name: "A wrong setting" }).click();
+    for (let i = 0; i < 5; i++) await page.getByRole("button", { name: "Follow the next link" }).click();
+    await expect(page.getByTestId("loop-result")).toContainText("contradiction");
+
+    // The machine: run it, test stops until one reads
+    await next.click();
+    const status = page.getByTestId("bombe-status");
+    await page.getByRole("button", { name: "Run the Bombe" }).click();
+    let read = false;
+    for (let i = 0; i < 26 && !read; i++) {
+      await expect(status).toContainText("Stop at", { timeout: 15_000 });
+      await page.getByRole("button", { name: "Test this stop" }).click();
+      const result = (await page.getByTestId("stop-test").textContent()) ?? "";
+      read = result.includes("This is the setting");
+      if (!read) {
+        expect(result).toContain("A false stop");
+        await page.getByRole("button", { name: "Carry on" }).click();
+      }
+    }
+    expect(read).toBe(true);
+
+    // The checking machine finishes the plugboard and the message reads
+    await next.click();
+    await page.getByLabel("Plugboard pairs found").focus();
+    await page.getByLabel("Plugboard pairs found").press("End");
+    await expect(page.getByTestId("message-read")).toContainText("WETTERVORHERSAGE BISKAYA");
   });
 });
 

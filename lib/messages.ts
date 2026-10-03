@@ -52,10 +52,14 @@ export const INTERCEPTS: Intercept[] = [
  * guess for words somewhere in the message. The key here is the exercise's
  * secret; the page only ever shows the ciphertext.
  */
-const PRACTICE_PLAINTEXT =
+export const PRACTICE_PLAINTEXT =
   "ANXBEFEHLSHABERXUBOOTEXWETTERVORHERSAGEXBISKAYAXREGENXWINDAUSSUEDWESTXSTAERKEFUENFXSICHTMITTEL";
 
 export const PRACTICE_CRIB = "WETTERVORHERSAGE";
+
+/** What the practice intercept says, in English. */
+export const PRACTICE_ENGLISH =
+  "To the Commander of U-boats: weather forecast, Bay of Biscay. Rain. Wind from the south-west, force five. Visibility moderate.";
 
 /** The practice intercept's secret key, used only to demonstrate how the Bombe tests a setting. */
 export const PRACTICE_KEY: Settings = {
