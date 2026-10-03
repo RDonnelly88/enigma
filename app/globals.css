@@ -272,3 +272,32 @@ body {
     inset 0 1px 0 rgb(255 255 255 / 0.6),
     0 1px 2px rgb(0 0 0 / 0.6);
 }
+
+/* Reading mode. The detail is the default; "in short" swaps each chapter's
+   opening for a summary and drops the long reading, keeping the things to play with */
+:root[data-read="short"] .detail-only,
+:root:not([data-read="short"]) .short-only {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Printing the certificate prints the certificate, not the page around it */
+@media print {
+  body:has(.print-me) * {
+    visibility: hidden;
+  }
+  .print-me,
+  .print-me * {
+    visibility: visible;
+  }
+  .print-me {
+    position: absolute;
+    inset: 0 0 auto;
+    box-shadow: none;
+  }
+}

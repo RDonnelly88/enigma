@@ -21,4 +21,9 @@ export const PAGES = [
     label: "Codebreaker",
     lead: "Break a message with no key and no crib at all, the way a computer does it today.",
   },
+  {
+    href: "/certificate",
+    label: "Certificate",
+    lead: "A few questions on everything you’ve seen. Pass, and earn a codebreaker's certificate with your name enciphered on it.",
+  },
 ] as const;

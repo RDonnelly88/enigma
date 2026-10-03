@@ -55,3 +55,28 @@ test("day", async ({ page }, { project }) => {
   for (let i = 0; i < 9; i++) await page.getByRole("button", { name: "Next event" }).click();
   await page.screenshot({ path: `e2e/screenshots/${project.name}-day.png`, fullPage: true });
 });
+
+test("certificate", async ({ page }, { project }) => {
+  const { QUESTIONS } = await import("../lib/quiz");
+  await page.goto("/certificate");
+  await page.waitForLoadState("networkidle");
+  await page.getByTestId("quiz").getByRole("radio", { name: QUESTIONS[0].options[0], exact: true }).click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-quiz.png`, fullPage: true });
+  await page.getByRole("button", { name: "Next question" }).click();
+  for (let i = 1; i < QUESTIONS.length; i++) {
+    await page.getByTestId("quiz").getByRole("radio", { name: QUESTIONS[i].options[QUESTIONS[i].answer], exact: true }).click();
+    await page.getByRole("button", { name: /Next question|See my score/ }).click();
+  }
+  await page.getByLabel("Your name").fill("Joan Clarke");
+  await page.getByRole("button", { name: "Make my certificate" }).click();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-certificate.png`, fullPage: true });
+});
+
+test("in short, in the dark", async ({ page }, { project }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("enigma.theme", "dark");
+    localStorage.setItem("enigma.read", "short");
+  });
+  await page.goto("/crib");
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-short-dark.png`, fullPage: true });
+});

@@ -33,6 +33,10 @@ export default function Codebreaker() {
         number={1}
         eyebrow="After the war"
         title="Statistics instead of guesses"
+        short={{
+          says: "Long after the war, computers became fast enough to break Enigma messages without any guessed word at all, just by measuring the letters and trying millions of settings.",
+          bigIdea: "Computers can break it with statistics instead of guesses.",
+        }}
         intro={
           <p>
             A crib is a guess about what a message says. Statistics need no guess at all, only enough text, and enough
@@ -56,6 +60,10 @@ export default function Codebreaker() {
         number={2}
         eyebrow="Nearly right"
         title="Telling nearly right from wrong"
+        short={{
+          says: "Real German has favourite letters, like E. A random jumble doesn’t. A computer can measure how much the letters bunch up, so it can tell when a setting is nearly right.",
+          bigIdea: "Nearly right text looks a little like a real language.",
+        }}
         intro={
           <p>
             A wrong rotor setting turns a message into random letters. A nearly right one leaves some of it German, and
@@ -71,6 +79,10 @@ export default function Codebreaker() {
         number={3}
         eyebrow="Climbing"
         title="Finding the plugboard one cable at a time"
+        short={{
+          says: "Once the rotors are right, the computer tries plugboard cables one at a time and keeps each one that makes the text look more like German. Bit by bit, words appear.",
+          bigIdea: "Keep whatever makes it look better, and climb.",
+        }}
         intro={
           <p>
             Once the rotors are right, there are 150 trillion ways to plug ten cables, far too many to try. But they
@@ -87,6 +99,10 @@ export default function Codebreaker() {
         number={4}
         eyebrow="Break one yourself"
         title="No key, no crib, just the ciphertext"
+        short={{
+          says: "Your turn. Pick a practice message, press Break it, and watch the computer work through 27 million rotor settings right here in your browser.",
+          bigIdea: "No key and no crib, just the jumbled letters.",
+        }}
         intro={
           <p>
             Here is the whole attack, running in your browser. Pick a practice intercept, or paste in a message you
@@ -106,6 +122,10 @@ export default function Codebreaker() {
         number={5}
         eyebrow="Where it stops"
         title="Where statistics run out"
+        short={{
+          says: "With ten plugboard cables and short messages, this trick stops working because the clues are too faint. That is why wartime codebreakers needed cribs and the Bombe.",
+          bigIdea: "Sometimes a good guess beats raw computing power.",
+        }}
         intro={
           <p>
             Try the ten-cable intercept and the codebreaker fails. That is not a bug. With ten cables, only six letters pass

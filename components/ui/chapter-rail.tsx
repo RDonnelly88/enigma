@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "motion/react";
 import { cn } from "@/lib/cn";
+import { ReadingSwitch } from "./reading-switch";
 
 type Item = { id: string; title: string };
 
@@ -38,6 +39,7 @@ export function ChapterRail({ chapters }: { chapters: Item[] }) {
 
   return (
     <>
+      <ReadingSwitch current={active} />
       <div className="sticky top-14 z-30 -mx-4 border-b border-panel-edge bg-room/90 px-4 py-2 backdrop-blur xl:hidden">
         <p className="truncate text-xs font-semibold tracking-widest text-room-muted uppercase" aria-live="polite">
           {current?.title}

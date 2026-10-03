@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { PAGES } from "@/lib/pages";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader() {
   const path = usePathname();
@@ -22,7 +23,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-panel-edge bg-room/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-4">
         <Link href="/" className="shrink-0 font-stencil text-xl font-bold tracking-[0.35em]">
           ENIGMA
         </Link>
@@ -30,7 +31,7 @@ export function SiteHeader() {
         <nav
           ref={nav}
           aria-label="Main"
-          className="rail -mr-4 ml-auto flex min-w-0 gap-1 overflow-x-auto pr-8 [mask-image:linear-gradient(to_right,black_88%,transparent)] md:pr-4 md:[mask-image:none]"
+          className="rail ml-auto flex min-w-0 gap-1 overflow-x-auto pr-6 [mask-image:linear-gradient(to_right,black_85%,transparent)] md:pr-0 md:[mask-image:none]"
         >
           {PAGES.map((link) => {
             const here = link.href === "/" ? path === "/" : path.startsWith(link.href);
@@ -49,6 +50,7 @@ export function SiteHeader() {
             );
           })}
         </nav>
+        <ThemeToggle />
       </div>
     </header>
   );

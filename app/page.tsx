@@ -32,6 +32,10 @@ export default function Story() {
         number={1}
         eyebrow="What it was"
         title="A typewriter that lied"
+        short={{
+          says: "Enigma was a machine that turned messages into jumbled letters. Germany used it in the Second World War to send orders by radio, where anyone could listen in. Without a machine set up exactly the same way, the jumble couldn’t be read.",
+          bigIdea: "Radio let anyone listen, so every message had to be scrambled.",
+        }}
         intro={
           <p>
             Enigma looked like a typewriter in a wooden box. Press a key and, instead of printing it, the machine lit a
@@ -61,6 +65,10 @@ export default function Story() {
         number={2}
         eyebrow="How it works"
         title="Built up, one part at a time"
+        short={{
+          says: "Press a key and electricity takes a twisty path through wired wheels called rotors, bounces off a reflector and comes back to light up a different letter. The rotors turn with every key press, so the path keeps changing.",
+          bigIdea: "Press the same key twice and you get two different letters.",
+        }}
         intro={
           <p>
             Enigma is a chain of simple parts, each easy to understand on its own. The strength comes from putting them
@@ -105,6 +113,10 @@ export default function Story() {
         number={3}
         eyebrow="How it was used"
         title="Midnight, a key sheet, and two operators"
+        short={{
+          says: "Every day, operators set up their machines from a secret sheet of settings. Each message then got its own starting position, called the message key. For years they typed that key twice at the start of every message, and that turned out to be a big mistake.",
+          bigIdea: "Typing the key twice gave the codebreakers a way in.",
+        }}
         intro={
           <p>
             A machine is only as secret as its settings. Every Enigma on a network had to be set exactly alike, every day,
@@ -135,6 +147,10 @@ export default function Story() {
         number={4}
         eyebrow="Why it was strong"
         title="Numbers too big to search"
+        short={{
+          says: "There were about 159 million million million ways to set the machine up. Even trying a million every second, you would need millions of years to try them all. That is why the Germans thought nobody could ever break it.",
+          bigIdea: "Far too many settings to try them all.",
+        }}
         intro={
           <p>
             Enigma&rsquo;s designers were right about the mathematics. Even with a captured machine in front of you, its
@@ -158,6 +174,10 @@ export default function Story() {
         number={5}
         eyebrow="How it fell"
         title="Cracks in the system"
+        short={{
+          says: "Enigma wasn’t broken by trying every setting. It was broken by clever people who spotted small weaknesses: no letter ever turned into itself, operators got lazy, and lots of messages started with the same words.",
+          bigIdea: "Small mistakes added up to a big crack.",
+        }}
         intro={
           <p>
             Enigma was not broken by trying every key. It was broken by people who found that each part of the system,
