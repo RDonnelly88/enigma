@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PRACTICE_PLAINTEXT } from "@/lib/messages";
-import { DISCOVERY, FIRST_PAIR, LOOP, SCAN, TRUE_RIGHT, partialRead } from "@/lib/story/checking";
+import { DISCOVERY, FIRST_PAIR, FROM_STOP, LOOP, SCAN, TRUE_RIGHT, partialRead, testStop } from "@/lib/story/checking";
+import { PRACTICE_KEY } from "@/lib/messages";
 
 describe("from Bombe stop to German", () => {
   it("stops at the true setting with the true pair among the survivors", () => {
@@ -22,5 +23,20 @@ describe("from Bombe stop to German", () => {
     const falseStop = SCAN.find((s) => s.right !== TRUE_RIGHT && s.stops.length > 0)!;
     const read = partialRead([FIRST_PAIR], falseStop.right);
     expect(read.correct / read.total).toBeLessThan(0.25);
+  });
+
+  it("throws out every false stop on test, and the true one hands over real plugs", () => {
+    for (const s of SCAN.filter((s) => s.stops.length > 0)) expect(testStop(s.right).holds).toBe(s.right === TRUE_RIGHT);
+    expect(FROM_STOP.length).toBeGreaterThan(1);
+    for (const pair of FROM_STOP) expect(PRACTICE_KEY.plugboard).toContain(pair);
+    expect(partialRead(FROM_STOP).correct / partialRead([]).total).toBeGreaterThan(0.5);
+  });
+
+  it("names the clash that sinks a false stop", () => {
+    const falseStop = SCAN.find((s) => s.right !== TRUE_RIGHT && s.stops.length > 0)!;
+    for (const { check } of testStop(falseStop.right).tried) {
+      expect(check.clash).not.toBeNull();
+      expect(check.clash!.plugs[0]).not.toBe(check.clash!.plugs[1]);
+    }
   });
 });

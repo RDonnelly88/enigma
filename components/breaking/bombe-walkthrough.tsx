@@ -87,7 +87,7 @@ const Prose = readable(function Prose({ children }: { children: React.ReactNode 
 });
 
 function Purpose() {
-  const flow = ["Ciphertext + a guessed word", "The Bombe", "Rotor settings + one plug pair", "Checking machine", "The message, in German"];
+  const flow = ["Ciphertext + a guessed word", "The Bombe", "Rotor settings + some plugs", "Checking machine", "The message, in German"];
   return (
     <Gloss>
       <div className="flex flex-col gap-6">
