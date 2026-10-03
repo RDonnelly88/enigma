@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cribs & the Bombe",
+  title: "Breaking Enigma",
   description: "How Enigma was broken by hand: guessed words, the flaw that ruled positions out, and the menus Turing's Bombe was wired from.",
 };
 

@@ -7,8 +7,8 @@ test.beforeEach(async ({ page }) => {
 
 test("is reachable from the machine", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Cribs & the Bombe" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Cribs & the Bombe" })).toBeVisible();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Breaking Enigma" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Breaking Enigma" })).toBeVisible();
 });
 
 test("the true position of the practice crib survives and gives a menu", async ({ page }) => {

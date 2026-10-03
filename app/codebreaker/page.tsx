@@ -21,7 +21,7 @@ const CHAPTERS = [
 export default function Codebreaker() {
   return (
     <main className="mx-auto max-w-6xl px-4 pb-24">
-      <PageHero eyebrow="Breaking it by computer" title="Codebreaker">
+      <PageHero eyebrow="Codebreaker" title="By computer">
         <p>
           Bletchley needed a crib, a building full of Bombes and thousands of people. Half a century later, a home computer
           could break an Enigma message with nothing to go on but the <Term id="ciphertext">ciphertext</Term>. Here is how, and a chance to do it

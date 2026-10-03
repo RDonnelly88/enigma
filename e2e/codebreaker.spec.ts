@@ -11,8 +11,8 @@ test.beforeEach(async ({ page }) => {
 
 test("is reachable from the header", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Codebreaker" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Codebreaker" })).toBeVisible();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "By computer" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "By computer" })).toBeVisible();
 });
 
 test("needs enough ciphertext to try", async ({ page }) => {

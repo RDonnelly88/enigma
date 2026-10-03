@@ -41,7 +41,7 @@ test("the chapter rail stays clear of the text on a laptop", async ({ page }) =>
 
 test("each page leads on to the next, and the last back to the machine", async ({ page }) => {
   await page.goto("/machine");
-  for (const next of ["A day in 1941", "Cribs & the Bombe", "The U-boat war", "Codebreaker", "Certificate"]) {
+  for (const next of ["Breaking Enigma", "A day in 1941", "The U-boat war", "By computer", "Test yourself"]) {
     await page.getByRole("navigation", { name: "Next page" }).getByRole("link").click();
     await expect(page.getByRole("link", { name: next, exact: true }).first()).toHaveAttribute("aria-current", "page");
   }

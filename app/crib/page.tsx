@@ -24,7 +24,7 @@ const CHAPTERS = [
 export default function CribsAndTheBombe() {
   return (
     <main className="mx-auto max-w-6xl px-4 pb-24">
-      <PageHero eyebrow="Breaking it by hand" title="Cribs & the Bombe">
+      <PageHero eyebrow="Cribs & the Bombe" title="Breaking Enigma">
         <p>
           Enigma was first broken in 1932, by three young mathematicians in Warsaw, seven years before the war began. What
           they started, Bletchley Park turned into an industry: thousands of people and hundreds of machines reading the

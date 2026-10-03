@@ -3,14 +3,14 @@ import { ArrowRight } from "lucide-react";
 
 const PAGES = [
   {
-    href: "/day",
-    title: "A day in 1941",
-    text: "Follow one day of messages from both sides: the German operator’s midnight key change, and Bletchley reading his orders within the hour.",
+    href: "/crib",
+    title: "Breaking Enigma",
+    text: "How Polish mathematicians first broke Enigma in 1932, how Bletchley Park turned their work into an industry, and a turn at being the Bombe yourself.",
   },
   {
-    href: "/crib",
-    title: "Cribs & the Bombe",
-    text: "How Polish mathematicians first broke Enigma in 1932, how Bletchley Park turned their work into an industry, and a turn at being the Bombe yourself.",
+    href: "/day",
+    title: "A day in 1941",
+    text: "Then watch both sides at once: the German operator’s midnight key change, and Bletchley reading his orders within the hour.",
   },
   {
     href: "/atlantic",
@@ -19,12 +19,12 @@ const PAGES = [
   },
   {
     href: "/codebreaker",
-    title: "Codebreaker",
+    title: "By computer",
     text: "Break a message yourself, with no key and no guesses, the way a computer does it today.",
   },
   {
     href: "/certificate",
-    title: "Your certificate",
+    title: "Test yourself",
     text: "Two tests: a quiz, and an intercept to break against the clock with a crib and a Bombe. Pass, and earn a certificate with your name enciphered on Enigma.",
   },
 ];
