@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AirCoverScene, AtlanticHero, BoardingScene, SinkingScene } from "@/components/art/atlantic-scenes";
+import { AsdicHunt } from "@/components/atlantic/asdic-hunt";
 import { ConvoyRouter } from "@/components/atlantic/convoy-router";
 import { M4Twin } from "@/components/atlantic/m4-twin";
 import { Timeline } from "@/components/story/timeline";
@@ -281,7 +282,8 @@ export default function TheUBoatWar() {
             Shark was not read every day. A new edition of the weather book that March blinded Hut 8 again for a time, and some
             days were read too late to use. But the reading came back, and by then it was not working alone. Long-range aircraft
             now closed the gap in mid-ocean where U-boats had been safe from the air. Escorts carried radar that found a U-boat
-            on the surface at night, and direction finders that took a bearing on its radio the moment it reported. Support
+            on the surface at night, and direction finders that took a bearing on its radio the moment it reported. Once it
+            dived, they hunted it with ASDIC, a beam of sound sent through the water that echoed back off its hull. Support
             groups of warships hunted the packs instead of waiting for them, and small escort carriers brought aircraft with the
             convoy.
           </p>
@@ -296,6 +298,7 @@ export default function TheUBoatWar() {
             that was the difference between a convoy arriving and not. In 1943 it was the difference between losing and winning.
           </p>
         </Prose>
+        <AsdicHunt />
         <AirCoverScene />
         <Timeline label="The war against the U-boats" moments={ATLANTIC_HISTORY} />
       </Chapter>

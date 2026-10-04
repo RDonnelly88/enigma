@@ -278,3 +278,155 @@ export function playReject() {
   osc.start();
   osc.stop(ctx.currentTime + 0.3);
 }
+
+/** A burst of filtered noise, shaped by an attack and a decay, into `to`. */
+function noise(ctx: AudioContext, { at, length, type, frequency, q = 0.8, gain, attack = 0.005 }: { at: number; length: number; type: BiquadFilterType; frequency: number; q?: number; gain: number; attack?: number }, to: AudioNode = ctx.destination) {
+  const samples = Math.ceil(ctx.sampleRate * length);
+  const buffer = ctx.createBuffer(1, samples, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < samples; i++) data[i] = Math.random() * 2 - 1;
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = type;
+  filter.frequency.value = frequency;
+  filter.Q.value = q;
+  const level = ctx.createGain();
+  level.gain.setValueAtTime(0.0001, at);
+  level.gain.exponentialRampToValueAtTime(gain, at + attack);
+  level.gain.exponentialRampToValueAtTime(0.0001, at + length);
+  source.connect(filter).connect(level).connect(to);
+  source.start(at);
+  return filter;
+}
+
+/** A pure tone with a quick attack and a long fade, the building block of pings and bells. */
+function tone(ctx: AudioContext, { at, frequency, length, gain, glide }: { at: number; frequency: number; length: number; gain: number; glide?: number }) {
+  const osc = ctx.createOscillator();
+  const level = ctx.createGain();
+  osc.frequency.setValueAtTime(frequency, at);
+  if (glide) osc.frequency.linearRampToValueAtTime(glide, at + length);
+  level.gain.setValueAtTime(0.0001, at);
+  level.gain.exponentialRampToValueAtTime(gain, at + 0.01);
+  level.gain.exponentialRampToValueAtTime(0.0001, at + length);
+  osc.connect(level).connect(ctx.destination);
+  osc.start(at);
+  osc.stop(at + length + 0.05);
+}
+
+/**
+ * An ASDIC ping going out from an escort's dome, and, if `echo` is given, the
+ * echo coming back from a U-boat that many seconds later, its note raised or
+ * lowered by the U-boat closing or opening the range.
+ */
+export function playPing(echo?: { after: number; shift: number }) {
+  const ctx = audio();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  tone(ctx, { at: t, frequency: 1180, length: 1.6, gain: 0.22 });
+  // The sea's own reverberation, a hiss trailing the ping
+  noise(ctx, { at: t + 0.05, length: 1.2, type: "bandpass", frequency: 1200, q: 6, gain: 0.03, attack: 0.2 });
+  if (echo) tone(ctx, { at: t + echo.after, frequency: 1180 * (1 + echo.shift), length: 0.9, gain: 0.12 });
+}
+
+/** A depth charge going off below: a deep thump and the rumble of water. */
+export function playDepthCharge(at = 0) {
+  const ctx = audio();
+  if (!ctx) return;
+  const t = ctx.currentTime + at;
+  tone(ctx, { at: t, frequency: 70, glide: 32, length: 1.4, gain: 0.7 });
+  noise(ctx, { at: t, length: 2.2, type: "lowpass", frequency: 240, gain: 0.6, attack: 0.02 });
+}
+
+/** A ship's horn, two long blasts: a convoy coming safe into port. */
+export function playHorn() {
+  const ctx = audio();
+  if (!ctx) return;
+  for (const start of [0, 1.6]) {
+    const t = ctx.currentTime + start;
+    const low = ctx.createBiquadFilter();
+    low.type = "lowpass";
+    low.frequency.value = 700;
+    const level = ctx.createGain();
+    level.gain.setValueAtTime(0.0001, t);
+    level.gain.exponentialRampToValueAtTime(0.18, t + 0.15);
+    level.gain.setValueAtTime(0.18, t + 1.1);
+    level.gain.exponentialRampToValueAtTime(0.0001, t + 1.35);
+    low.connect(level).connect(ctx.destination);
+    for (const hz of [110, 165.5]) {
+      const osc = ctx.createOscillator();
+      osc.type = "sawtooth";
+      osc.frequency.value = hz;
+      osc.connect(low);
+      osc.start(t);
+      osc.stop(t + 1.4);
+    }
+  }
+}
+
+/** A receiver being tuned in: static, and the whistle of the carrier sliding into place. */
+export function playStatic(): () => void {
+  const ctx = audio();
+  if (!ctx) return () => {};
+  const t = ctx.currentTime;
+  const out = ctx.createGain();
+  out.connect(ctx.destination);
+  noise(ctx, { at: t, length: 2.2, type: "bandpass", frequency: 1800, q: 0.6, gain: 0.12, attack: 0.05 }, out);
+  const osc = ctx.createOscillator();
+  const level = ctx.createGain();
+  osc.frequency.setValueAtTime(2400, t + 0.2);
+  osc.frequency.exponentialRampToValueAtTime(650, t + 1.6);
+  level.gain.setValueAtTime(0.0001, t + 0.2);
+  level.gain.exponentialRampToValueAtTime(0.05, t + 0.4);
+  level.gain.exponentialRampToValueAtTime(0.0001, t + 2);
+  osc.connect(level).connect(out);
+  osc.start(t + 0.2);
+  osc.stop(t + 2.1);
+  return () => out.disconnect();
+}
+
+/** A motorcycle going by on a country road: a single cylinder's beat, rising and falling as it passes. */
+export function playMotorcycle(seconds = 4): () => void {
+  const ctx = audio();
+  if (!ctx) return () => {};
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(48, t);
+  osc.frequency.linearRampToValueAtTime(58, t + seconds * 0.45);
+  osc.frequency.linearRampToValueAtTime(42, t + seconds);
+  // The engine's beat: a fast tremolo on the level
+  const beat = ctx.createOscillator();
+  const depth = ctx.createGain();
+  beat.frequency.value = 24;
+  depth.gain.value = 0.5;
+  const throb = ctx.createGain();
+  throb.gain.value = 0.5;
+  beat.connect(depth).connect(throb.gain);
+  const low = ctx.createBiquadFilter();
+  low.type = "lowpass";
+  low.frequency.value = 900;
+  const level = ctx.createGain();
+  level.gain.setValueAtTime(0.0001, t);
+  level.gain.exponentialRampToValueAtTime(0.2, t + seconds * 0.45);
+  level.gain.exponentialRampToValueAtTime(0.0001, t + seconds);
+  osc.connect(throb).connect(low).connect(level).connect(ctx.destination);
+  osc.start(t);
+  beat.start(t);
+  osc.stop(t + seconds);
+  beat.stop(t + seconds);
+  return () => level.disconnect();
+}
+
+/** Birds at first light: a few quick, rising chirps, scattered. */
+export function playBirdsong() {
+  const ctx = audio();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  for (let i = 0; i < 7; i++) {
+    const at = t + i * 0.35 + Math.random() * 0.2;
+    const base = 3200 + Math.random() * 1400;
+    tone(ctx, { at, frequency: base, glide: base * 1.35, length: 0.09, gain: 0.05 });
+    tone(ctx, { at: at + 0.11, frequency: base * 1.1, glide: base * 0.9, length: 0.08, gain: 0.04 });
+  }
+}

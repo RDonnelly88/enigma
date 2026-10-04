@@ -7,6 +7,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { ROUTES, YEARS, packsFor, sail, type Outcome, type Route, type Year } from "@/lib/story/atlantic";
 import { UBoat, Merchant, Destroyer } from "@/components/art/silhouettes";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { playDepthCharge, playHorn, playPing } from "@/lib/sound";
 import { cn } from "@/lib/cn";
 
 /** Each route as a path across the map from Halifax to Liverpool, and where a pack would lie in wait on it. */
@@ -84,14 +85,35 @@ export function ConvoyRouter() {
   const { ultra } = YEARS[year];
   const outcome = chosen ? sail(year, convoy, chosen) : null;
   const tally = tallies[year];
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const hush = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
+  useEffect(() => hush, []);
+
+  /** The voyage in sound, timed to the convoy on the map: the escort's ASDIC as it sails, then what it meets. */
+  const voyage = (result: Outcome) => {
+    hush();
+    const at = (ms: number, play: () => void) => timers.current.push(setTimeout(play, ms));
+    const reached = reduced ? 0 : result === "lost" ? 2400 : 4000;
+    playPing();
+    if (!reduced) at(1600, () => playPing());
+    if (result === "clear") at(reached, playHorn);
+    // Torpedoes in the night for a convoy that is lost; a pattern of depth charges from escorts that fight
+    else if (result === "lost") [0, 700, 1900].forEach((t) => at(reached + t, () => playDepthCharge()));
+    else [0, 350, 700, 1050, 1400].forEach((t) => at(reached / 2 + t, () => playDepthCharge()));
+  };
 
   const send = (route: Route) => {
     if (chosen) return;
     setChosen(route);
     const result = sail(year, convoy, route);
+    voyage(result);
     setTallies((t) => ({ ...t, [year]: { sent: t[year].sent + 1, through: t[year].through + (result === "clear" ? 1 : 0), hit: t[year].hit + (result === "clear" ? 0 : 1) } }));
   };
   const next = () => {
+    hush();
     setConvoy((c) => c + 1);
     setChosen(null);
   };

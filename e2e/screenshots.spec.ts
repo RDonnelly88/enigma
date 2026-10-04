@@ -63,6 +63,11 @@ test("the U-boat war", async ({ page }, { project }) => {
   await wheel.press("Home");
   await page.getByRole("figure").filter({ hasText: "The fourth wheel" }).scrollIntoViewIfNeeded();
   await page.screenshot({ path: `e2e/screenshots/${project.name}-atlantic-wheel.png` });
+  const game = page.getByRole("figure").filter({ hasText: "Hunt the U-boat" });
+  await game.getByLabel("Beam bearing").fill("190");
+  await game.getByRole("button", { name: "Ping" }).click();
+  await game.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `e2e/screenshots/${project.name}-atlantic-asdic.png` });
 });
 
 test("day", async ({ page }, { project }) => {

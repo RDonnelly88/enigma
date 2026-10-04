@@ -20,6 +20,15 @@ export type Term = {
 
 const ENTRIES: Term[] = [
   {
+    id: "asdic",
+    term: "ASDIC",
+    aka: ["Sonar"],
+    says: "A beam of sound sent through the water by a warship, which echoes back off a submarine.",
+    more: "The time the echo takes gives the range, and a change in its note shows whether the submarine is coming closer or moving away. The Americans called it sonar, the name that stuck.",
+    see: { href: "/atlantic#tide", label: "Hunt the U-boat" },
+    related: ["u-boat", "convoy"],
+  },
+  {
     id: "hut-8",
     term: "Hut 8",
     aka: ["Hut 4"],
