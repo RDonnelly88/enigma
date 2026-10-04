@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { ALPHABET } from "@/lib/enigma";
 import { THREE_ROTOR, WEATHER_REPORT, fourRotor, twin } from "@/lib/story/atlantic";
 import { machineLink } from "@/lib/share";
+import { playRotor, playStrikes } from "@/lib/sound";
 import { cn } from "@/lib/cn";
 
 const groups = (t: string) => t.match(/.{1,5}/g)?.join(" ") ?? "";
@@ -40,6 +41,12 @@ export function M4Twin() {
   const [text, setText] = useState(WEATHER_REPORT);
   const letters = text.toUpperCase().replace(/[^A-Z]/g, "");
   const { three, four, same, identical } = twin(letters, fourth);
+  // A click for each step of the wheel, and a bell as it reaches the one place the machines agree
+  const turn = (v: number) => {
+    setFourth(v);
+    playRotor();
+    if (v === 0 && letters) playStrikes(1);
+  };
 
   return (
     <Demo title="The fourth wheel" prompt="Turn it to A">
@@ -58,7 +65,7 @@ export function M4Twin() {
             className="rounded-md border border-panel-edge bg-room px-3 py-2 font-type text-base uppercase focus:outline-2 focus:outline-brass"
           />
         </label>
-        <Slider label="Fourth wheel at" value={fourth} min={0} max={25} onChange={setFourth} format={(v) => ALPHABET[v]} />
+        <Slider label="Fourth wheel at" value={fourth} min={0} max={25} onChange={turn} format={(v) => ALPHABET[v]} />
         <div className="grid gap-3 md:grid-cols-2">
           <Output label="Three rotors, reflector B" text={three} other={four} testid="m3-out" />
           <Output label={`Four rotors, Beta at ${ALPHABET[fourth]}, thin reflector B`} text={four} other={three} testid="m4-out" />

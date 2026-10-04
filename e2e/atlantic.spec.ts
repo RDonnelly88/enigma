@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { hunt, sector } from "../lib/story/asdic";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/atlantic");
@@ -43,4 +44,25 @@ test("Ultra shows the packs in 1941 and hides them in 1942", async ({ page }) =>
   // Once the convoy has sailed, the packs show where they were
   await expect(router.locator('[data-testid^="pack-"]')).toHaveCount(2);
   await expect(router.getByTestId("convoy-outcome")).toBeVisible();
+});
+
+test("ASDIC finds the U-boat only on its bearing, and the depth charges need a contact", async ({ page }) => {
+  const game = page.getByRole("figure").filter({ hasText: "Hunt the U-boat" });
+  const { bearing } = hunt(1);
+  await expect(game.getByTestId("asdic-hint")).toContainText(`a U-boat to the ${sector(bearing)}`);
+  const beam = game.getByLabel("Beam bearing");
+  const says = game.getByTestId("asdic-says");
+
+  await beam.fill(String((bearing + 180) % 360));
+  await game.getByRole("button", { name: "Ping" }).click();
+  await expect(says).toContainText("No echo");
+  await expect(game.getByTestId("asdic-contact")).toHaveCount(0);
+
+  await beam.fill(String(bearing));
+  await game.getByRole("button", { name: "Ping" }).click();
+  await expect(says).toContainText("Echo!");
+  await expect(game.getByTestId("asdic-contact")).toBeVisible();
+  await game.getByRole("button", { name: "Drop depth charges" }).click();
+  await expect(says).toContainText("the U-boat is sunk, found in 2 pings");
+  await expect(game.getByRole("button", { name: "Ping" })).toBeDisabled();
 });
