@@ -2,14 +2,29 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSound } from "@/hooks/use-preference";
-import { playAircraft, playStamp, playStrikes, playTeleprinter, startBombe } from "@/lib/sound";
+import { playAircraft, playBirdsong, playMotorcycle, playStamp, playStatic, playStrikes, playTeleprinter, startBombe } from "@/lib/sound";
 import { DAY_EVENTS } from "@/lib/story/day-events";
 
 /** What each moment of the day sounds like as the clock reaches it. Each returns how to cut it short. */
 const SOUNDS: Record<string, () => () => void> = {
   // The opening midnight is where the day starts, so it is never reached; the closing one strikes. Morse plays
   // only when asked for, from the Listen and Transmit buttons on each message
-  registry: () => playTeleprinter(45),
+  weather: () => {
+    playBirdsong();
+    return () => {};
+  },
+  intercept: () => playStatic(),
+  // The forms go to Bletchley by motorcycle and by teleprinter, so both are heard
+  registry: () => {
+    const stopRider = playMotorcycle();
+    let stopPrinter = () => {};
+    const printer = setTimeout(() => (stopPrinter = playTeleprinter(45)), 3600);
+    return () => {
+      clearTimeout(printer);
+      stopRider();
+      stopPrinter();
+    };
+  },
   bombe: () => {
     const stop = startBombe();
     const halt = setTimeout(() => {
@@ -21,6 +36,7 @@ const SOUNDS: Record<string, () => () => void> = {
       stop();
     };
   },
+  decrypt: () => playStrikes(1),
   broken: () => {
     playStamp();
     return () => {};
